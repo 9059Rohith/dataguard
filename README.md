@@ -1,131 +1,183 @@
-# DataGuard â€” data pipeline reliability and recovery
+# DataGuard
 
-[![CI](https://github.com/9059Rohith/dataguard/actions/workflows/ci.yml/badge.svg)](https://github.com/9059Rohith/dataguard/actions/workflows/ci.yml)
+**Keep the last reconciled settlement dataset available when the next export is wrong or a worker dies.** DataGuard stages immutable inputs, checks a cross-table financial data contract, and atomically publishes complete date partitions in SQL. Rejected exports stay quarantined; accepted historical versions remain available for authenticated change analysis.
 
-Hosted CI is currently blocked by an account-level runner restriction. [Executed local verification](evidence/verification.md) is recorded separately; no hosted pass is claimed.
+[Live synthetic dashboard](https://rohith-dataguard.vercel.app) · [Live API docs](https://rohith-dataguard.vercel.app/docs) · [Source](https://github.com/9059Rohith/dataguard) · [Verification evidence](evidence/verification.md)
 
-**Live synthetic demo:** [DataGuard dashboard](https://rohith-dataguard.vercel.app) · [API documentation](https://rohith-dataguard.vercel.app/docs). Anonymous access exposes bounded aggregate SQL state; raw records and operator actions require authentication. [Executed public HTTP checks](evidence/public-deployment-http.json) record the verified boundary.
+Built as an independent portfolio project for data engineering and DevOps work, including OpenFX internship roles: exact financial totals, deterministic reprocessing, SQL consistency, incident recovery and deployment operations. All demonstration records are synthetic; this is not an OpenFX integration or production financial service.
 
-A Python/SQL platform that stops invalid settlement batches from replacing a usable dataset. This project demonstrates data engineering contracts, SQL transactions, recovery, orchestration, and deployment operations relevant to OpenFX Data Engineering Intern and DevOps Intern work. It uses synthetic data and makes no claim of affiliation or production use.
+![DataGuard dashboard with real SQL publication state](evidence/public-dashboard.jpg)
 
-**The central invariant:** readers see complete accepted date partitions. Duplicate keys, wrong types, unknown references, stale exports, and mismatched settlement totals are quarantined with diagnostics. A worker killed after row insertion leaves the previous publication visible; retry recovers the exact immutable batch without duplicate rows.
+## Five implemented capabilities
 
-![Live PostgreSQL-backed DataGuard dashboard](evidence/dashboard-1440.png)
+| Capability | Concrete behavior | Why it matters |
+|---|---|---|
+| Executable settlement contracts | Reject unknown/missing fields, incorrect types, duplicate IDs, invalid references/currencies, stale exports, wrong UTC dates and inconsistent totals | A malformed export cannot replace the reconciled dataset |
+| Immutable, idempotent ingestion | Canonical JSON SHA256; repeated key/payload returns one ID; conflicting reuse returns 409; SQL triggers prohibit staged edits/deletes | Retries and investigations refer to exact source bytes |
+| Transactional publication and recovery | Rows, partition head and successful attempt commit together; durable leases and attempt fencing recover interrupted workers | A real process killed after insertion leaves the previous version readable |
+| Published-version change analysis | Protected SQL counts of added, removed, changed and unchanged trades/settlements with both source digests and publication provenance | Review a correction without exporting raw records or switching the head |
+| Operable service and deployment artifacts | FastAPI/CLI, Airflow 3 DAG, private metrics, liveness/readiness, non-root digest-pinned runtime, Compose, Kubernetes and Terraform | Connect correctness to repeatable operational checks and explicit rollout boundaries |
 
 ```mermaid
 flowchart LR
-  Source[Immutable JSON artifact] --> CLI[CLI / Airflow 3 task]
-  Source --> API[Authenticated FastAPI ingestion]
-  CLI --> Stage[(Immutable batches + SHA256)]
-  API --> Stage
-  Stage --> Claim[Durable lease + fenced attempt]
-  Claim --> Contract[Required / type / unique / FK / values / freshness / totals]
-  Contract -->|reject| Quarantine[(Diagnostics + original input)]
-  Contract -->|valid| TX[SQL transaction: rows + partition head + audit]
-  TX --> Published[(Last accepted partition)]
-  Published --> Read[Read API + live dashboard]
-  Claim --> Recovery[Expired lease recovery]
-  Recovery --> Contract
-  API --> Metrics[Prometheus metrics]
+  Input[CLI / protected API / Airflow] --> Stage[(Immutable source + SHA256)]
+  Stage --> Claim[Durable lease + attempt fencing]
+  Claim --> Contract[Cross-table contract]
+  Contract -->|invalid| Reject[(Quarantine + diagnostics)]
+  Contract -->|valid| Publish[One SQL transaction]
+  Publish --> Versions[(Retained accepted rows + date head)]
+  Versions --> Read[Protected snapshot / version comparison]
+  Versions --> Demo[Opt-in aggregate dashboard]
+  Claim -->|expired lease| Retry[Retry exact staged batch]
+  Retry --> Contract
 ```
 
-## Run locally
+## Try it locally
 
-Python 3.12+ is required. SQLite is the zero-dependency local storage option; PostgreSQL 16 is the tested deployment database. PowerShell:
+Python 3.12+; the pinned Docker runtime uses Python 3.15.1. SQLite needs no database server. Run from this repository in PowerShell:
 
 ```powershell
 python -m venv .venv
 .\.venv\Scripts\python.exe -m pip install -r requirements-dev.lock
 .\.venv\Scripts\python.exe -m pip install --no-deps -e .
+$env:DATABASE_URL = 'sqlite:///review.db'
 $env:DATAGUARD_TOKEN = python -c "import secrets; print(secrets.token_urlsafe(40))"
-$env:DATAGUARD_PUBLIC_DEMO = 'true' # Fresh synthetic demo databases only
+$env:DATAGUARD_PUBLIC_DEMO = 'true' # Dedicated synthetic database only
 $env:DATAGUARD_SEED_DEMO = 'true'
 .\.venv\Scripts\python.exe -m dataguard.cli init
 .\.venv\Scripts\uvicorn.exe dataguard.api:app --host 127.0.0.1 --port 8003
 ```
 
-Open [the dashboard](http://localhost:8003) or [OpenAPI documentation](http://localhost:8003/docs). In another terminal, with the same database configuration:
+Open [the local dashboard](http://localhost:8003) and [OpenAPI](http://localhost:8003/docs). Keep this terminal's database/token settings for the walkthrough below. Seeding uses the actual stage/validate/publish path and reuses its immutable seed on restart. Both demo flags default to false.
 
-```powershell
-.\.venv\Scripts\python.exe -m dataguard.cli fixture --rows 100 --output sample.json
-.\.venv\Scripts\python.exe -m dataguard.cli stage sample.json --key settlement-export-v1 --run
-.\.venv\Scripts\python.exe -m dataguard.cli demo --samples 100 --rows 100 --output evidence/local-benchmark.json
-```
-
-The demo inserts valid data, rejects duplicate and malformed batches, starts a child worker, kills that worker with exit code 91 inside an open transaction after row inserts, checks the previous snapshot, waits for its committed lease to expire, recovers, checks exact row counts, then measures real stage/validate/publish latency. `raw_ms` contains every sample; p50/p95/p99 use the nearest-rank estimator. The sample size is intentionally small; this is a reproducible local microbenchmark, not an SLA or capacity claim.
-
-For PostgreSQL and a restricted non-root container:
+For PostgreSQL 16 and the restricted service container, stop local Uvicorn on port 8003 first:
 
 ```powershell
 $env:POSTGRES_PASSWORD = python -c "import secrets; print(secrets.token_urlsafe(32))"
 $env:DATAGUARD_TOKEN = python -c "import secrets; print(secrets.token_urlsafe(40))"
-$env:DATAGUARD_PUBLIC_DEMO = 'true' # Dedicated synthetic demo only
-$env:DATAGUARD_SEED_DEMO = 'true'
 docker compose up -d --build
-$env:DATABASE_URL = "postgresql+psycopg://dataguard:$env:POSTGRES_PASSWORD@127.0.0.1:55434/dataguard?connect_timeout=5"
-.\.venv\Scripts\python.exe -m dataguard.cli demo --samples 100 --rows 100 --output evidence/postgres-benchmark.json
 ```
 
-Compose exposes PostgreSQL on **127.0.0.1:55434** and the dashboard on **127.0.0.1:8003**. Keep the environment variables for subsequent Compose calls; changing `POSTGRES_PASSWORD` does not rotate an existing volume's password. `docker compose down` stops this stack and preserves data. `down -v` deletes this project's database volume; use only for disposable data.
+Compose binds the API to `127.0.0.1:8003` and PostgreSQL to `127.0.0.1:55434`. Save the same environment values for later calls; changing the password variable does not rotate an existing volume's password. `docker compose down` preserves that volume. See [deployment instructions](docs/DEPLOYMENT.md) for bootstrap and configuration.
 
-## Contract and API
+## Walk through a correction and failure
 
-The contract is executable in `dataguard/contracts.py`, not a prose-only configuration. Exact allowed columns, integer amounts (booleans rejected), nonempty bounded identifiers, per-table primary-key uniqueness, same-batch settlement references, matching currencies, positive trade amounts, allowed currencies, UTC event partition date, export freshness (past 24 hours / future 5 minutes), and per-settlement trade totals are enforced. Inputs have 1â€“10,000 rows per table and an 8 MB HTTP/staging limit. Amounts are **minor currency units** despite the field name `amount_cents`; no exchange-rate conversion occurs. Historical backfills use an old event period and a freshly produced export. See [contract details](docs/CONTRACT.md).
+In the configured SQLite PowerShell terminal, stop Uvicorn with Ctrl+C while retaining its environment, create two accepted versions, and compare them:
 
-| Route | Purpose | Access |
-|---|---|---|
-| `POST /batches` | Stage `{key, payload}`; exact key+payload replay returns same ID | Bearer token |
-| `POST /batches/{id}/run` | Validate and atomically publish or quarantine | Bearer token |
-| `POST /recover` | Retry staged, failed, or expired-running batches | Bearer token |
-| `GET /batches/{id}` | Immutable source, digest, complete attempt history | Bearer token |
-| `GET /quarantine` | Last 100 rejected attempts with rule/row/field diagnostics | Bearer token |
-| `GET /snapshots/{period}` | Materialized trade and settlement records | Bearer token |
-| `GET /summary`, `/snapshots` | Bounded aggregate state; public only with explicit synthetic-demo setting | Bearer token by default |
-| `/`, `/docs`, `/health`, `/ready` | Dashboard shell, API docs, process health and readiness | Public; no raw records |
-| `/metrics` | Prometheus operational counters | Bearer token |
+```powershell
+$python = '.\.venv\Scripts\python.exe'
+& $python -m dataguard.cli fixture --rows 3 --output sample.json
+$first = & $python -m dataguard.cli stage sample.json --key review-v1 --run | ConvertFrom-Json
+$period = (Get-Content sample.json -Raw | ConvertFrom-Json).period
+& $python -c "import json; from pathlib import Path; p=json.loads(Path('sample.json').read_text()); p['trades'][0]['amount_cents']+=50; p['settlements'][0]['amount_cents']+=50; Path('sample-v2.json').write_text(json.dumps(p))"
+$second = & $python -m dataguard.cli stage sample-v2.json --key review-v2 --run | ConvertFrom-Json
+& $python -m dataguard.cli compare $period --from-batch $first.batch_id --to-batch $second.batch_id
+```
 
-Missing/short/blank token disables privileged routes with HTTP 503. Incorrect credentials return 401. Idempotency conflict or active worker lease returns 409. Invalid contract data returns a persisted `rejected` result, not a transient HTTP failure. Data correction requires a **new key and immutable batch**, never editing a rejected input. CLI and Airflow are trusted database clients and use database credentials rather than the HTTP token.
+Expected: trades `changed=1, unchanged=2`; settlements `changed=1`. Added means present only in the destination, removed means present only in the source. Same-ID records with any different stored non-key field count once as changed. A timestamp spelling change counts even if it denotes the same instant. Comparing a version to itself has zero changes. Older publications remain comparable after the head advances.
 
-For a public synthetic demonstration, see [the provider-neutral public profile](docs/PUBLIC_DEMO.md). `DATAGUARD_PUBLIC_DEMO=true` exposes only bounded aggregate metadata; raw records, quarantine, metrics and all writes stay authenticated. `DATAGUARD_SEED_DEMO=true` runs the actual idempotent synthetic stage/validate/publish startup path. Both flags default to false. `PORT` selects the container listener. Authentication precedes upload reads; body/depth/width/deadline and per-process concurrency limits protect a small container. No external host or persistent storage is claimed until a deployment is verified.
+To demonstrate quarantine, keep the changed trades but put the old settlement total in another export and stage it with a **new key**:
 
-Example authenticated publication:
+```powershell
+& $python -c "import json; from pathlib import Path; p=json.loads(Path('sample-v2.json').read_text()); p['settlements'][0]['amount_cents']-=50; Path('sample-bad.json').write_text(json.dumps(p))"
+$bad = & $python -m dataguard.cli stage sample-bad.json --key review-invalid --run | ConvertFrom-Json
+$bad # status=rejected; diagnostics include settlement_total
+```
+
+The head stays on the second accepted batch; comparison against the rejected ID returns not found. Correct the producer and stage another version; never edit staging. Rerunning with changed source requires new keys because key reuse is deliberately enforced.
+
+The file edits use Python's JSON parser to preserve timestamp strings exactly;
+PowerShell date inference followed by reserialization can change their spelling.
+
+Restart Uvicorn with the quickstart command. The same comparison through the protected API is:
 
 ```powershell
 $headers = @{ Authorization = "Bearer $env:DATAGUARD_TOKEN" }
-$body = @{ key = 'export-2026-10-30-v2'; payload = (Get-Content sample.json -Raw | ConvertFrom-Json) } | ConvertTo-Json -Depth 20
-$batch = Invoke-RestMethod -Method Post -Uri http://localhost:8003/batches -Headers $headers -ContentType application/json -Body $body
-Invoke-RestMethod -Method Post -Uri "http://localhost:8003/batches/$($batch.batch_id)/run" -Headers $headers
+Invoke-RestMethod -Headers $headers -Uri "http://localhost:8003/snapshots/$period/compare?from_batch=$($first.batch_id)&to_batch=$($second.batch_id)"
 ```
 
-## Verify and operate
+For a real worker interruption and fresh local measurement, stop Uvicorn again and run:
+
+```powershell
+& $python -m dataguard.cli demo --samples 100 --rows 100 --output evidence/local-benchmark.json
+```
+
+The demo rejects duplicate and malformed inputs, starts a child process, exits that worker with code 91 **inside an open transaction after row insertion**, verifies the previous head, waits for the committed one-second demo lease, recovers the exact batch, and checks row uniqueness. It then measures stage + validate + publication operations. This writes synthetic history: use a disposable local database. [Incident procedures](docs/RUNBOOKS.md) cover the API's default 30-second lease.
+
+## Contract and consistency model
+
+Root keys are exactly `period`, `produced_at`, `trades`, `settlements`. Both tables contain 1–10,000 rows; staging and HTTP bodies are bounded at 8 MB. Amounts are integer **minor currency units**, despite `amount_cents`; booleans/floats are rejected and no FX conversion occurs. Trades reference settlements in the same batch, use the same currency and sum exactly to each settlement total. Event UTC date equals the canonical date period. Export time must be within the past 24 hours / future five minutes; historical backfills need fresh exports. See [the contract](docs/CONTRACT.md).
+
+A global SQL gate, durable lease and current attempt identity fence workers. Rows, head and successful attempt commit atomically. Validation failure leaves the head unchanged. A later staged valid batch takes precedence; an older pending retry becomes `superseded` without publishing. Retained rows let readers use one captured batch identity even if the head advances mid-read.
+
+Comparison requires a committed `published` attempt for **both** IDs in the requested period. Staged, running, failed, rejected, never-published superseded, missing and wrong-period IDs share 404. Malformed periods/IDs return 422. SQL performs counts/key joins: the fixed-size response contains two provenance objects and six counts per table, without row IDs/values. It does not mutate heads or replay validation. Partition ownership is enforced; the application has one shared operator identity, not tenant RBAC.
+
+| Interface | Access and behavior |
+|---|---|
+| `POST /batches` | Bearer; stage `{key,payload}`; exact replay returns existing ID |
+| `POST /batches/{id}/run`, `POST /recover` | Bearer; publish/quarantine or recover pending work |
+| `GET /batches/{id}`, `GET /quarantine` | Bearer; immutable source/history or last 100 rejected attempts |
+| `GET /snapshots/{period}` | Bearer; complete active trade/settlement records |
+| `GET /snapshots/{period}/compare?from_batch=1&to_batch=2` | Bearer even in demo mode; accepted-version counts/provenance |
+| `GET /summary`, `GET /snapshots` | Bearer by default; bounded metadata public only with explicit demo opt-in |
+| `GET /metrics` | Bearer; Prometheus latency, process and persisted-attempt signals |
+| `/`, `/docs`, `/health`, `/ready` | Public shell/docs and process/database readiness |
+
+Missing/blank/short configured tokens fail closed with 503; invalid credentials return 401. Key conflicts/active leases return 409. Contract failure is a persisted `rejected` result. CLI/Airflow are trusted DB clients, using DB credentials rather than the HTTP token. The [Airflow 3 DAG](dags/dataguard_pipeline.py) stages a mounted artifact and publishes its ID; scheduler/workers are separate from the API image.
+
+## Measurements and verification
+
+Each microbenchmark has 100 samples, 100 trades + one settlement per batch, one sequential client and nearest-rank percentiles. Raw measurements/timestamps are committed. These are separate environments, not a controlled database comparison.
+
+| Stage + validate + publish environment | p50 | p95 | p99 | Evidence |
+|---|---:|---:|---:|---|
+| SQLite; Windows 11, Python 3.12.14 | 42.267 ms | 56.033 ms | 60.838 ms | [Raw SQLite run](evidence/sqlite-benchmark.json) |
+| Local PostgreSQL; Windows 11, Python 3.12.14 | 151.880 ms | 319.956 ms | 396.599 ms | [Raw PostgreSQL run](evidence/postgres-benchmark.json) |
+| PostgreSQL; WSL2 Linux minimal container, Python 3.15.1 | 34.884 ms | 57.207 ms | 86.589 ms | [Native runtime run](evidence/minimal-runtime-pg.json) |
+
+Timings exclude HTTP/network/client serialization. Recovery measurements include child startup and lease waiting. They do not establish load capacity, production SLOs, failover behavior or comparison latency. [Public release checks](evidence/public-release-verification.json) separately record auth boundaries and a small 12-request warm HTTPS sample from India; that is not a load test.
+
+The new comparison has a separate [native PostgreSQL measurement](evidence/comparison-native-pg.json): Python 3.15.1/WSL2, Intel Ultra 7 155H host, one sequential client, 50 samples per row count, one settlement/version, no first-sample exclusion:
+
+| Trades per accepted version | SQL comparison p50 | p95 | p99 | Observed response size |
+|---|---:|---:|---:|---:|
+| 100 | 14.071 ms | 20.368 ms | 22.584 ms | 687 bytes |
+| 10,000 | 48.661 ms | 63.904 ms | 15,169.065 ms | 697 bytes |
+
+The first 10,000-row comparison took 15.17 seconds. An [earlier concurrent-suite run](evidence/comparison-native-pg-contended.json) retained a 36.05-second first-read outlier. Causes are not established; host workloads were not controlled. These tails prevent a latency guarantee and need query-plan/cold-read investigation before production use. [Host observation](evidence/comparison-host-observation.json) is a point-in-time snapshot, not a causal diagnosis. Counts and private HTTP boundaries passed in both runs; the response shape stays bounded without returning records.
 
 ```powershell
 .\.venv\Scripts\python.exe -m pytest -q
 .\.venv\Scripts\ruff.exe check .
 .\.venv\Scripts\ruff.exe format --check .
 .\.venv\Scripts\python.exe -m bandit -r dataguard -ll
-.\.venv\Scripts\python.exe -m pip_audit -r requirements.lock --no-deps --disable-pip
-# First-time local test DB creation; the suite refuses PostgreSQL names without _test.
+# Dedicated disposable integration database only: tests truncate its tables.
 docker compose exec postgres psql -U dataguard -d dataguard -c "CREATE DATABASE dataguard_test"
 $env:TEST_DATABASE_URL = "postgresql+psycopg://dataguard:$env:POSTGRES_PASSWORD@127.0.0.1:55434/dataguard_test?connect_timeout=5"
-.\.venv\Scripts\python.exe -m pytest -q tests/test_pipeline.py
+.\.venv\Scripts\python.exe -m pytest -q
 ```
 
-See [verification evidence](evidence/verification.md), [implementation ledger](docs/LEDGER.md), [operator runbooks](docs/RUNBOOKS.md), [security model](SECURITY.md), [ADRs](docs/ADR.md), [interview questions](docs/INTERVIEW.md), and [requirements traceability](docs/TRACEABILITY.md). CI runs SQLite and PostgreSQL tests, lint/format, dependency audit, Bandit, actual Airflow 3 DAG import, container build/Trivy scan, and Terraform validation. Optional workflows publish an image or deploy a digest through AWS OIDC only when configured and manually triggered.
+The suite refuses PostgreSQL test database names without `_test`. Create the DB only once; never use the live DB. [Comparison verification](evidence/comparison-verification.md) records red/green and native execution. [Security evidence](evidence/public-security.md) covers pre-body authentication, upload/JSON/deadline/capacity bounds and seed restart behavior.
 
-The Airflow DAG in `dags/dataguard_pipeline.py` uses the Airflow 3 public `airflow.sdk` API. Its two real tasks stage an immutable mounted artifact and validate/publish it. Trigger with `{"artifact":"exports/day.json","idempotency_key":"settlements-day-v1"}`; initialize the database first and set `DATABASE_URL` plus `DATAGUARD_ARTIFACT_ROOT` on workers. Rejected contract inputs fail the DAG and remain quarantined. Artifact path traversal is rejected. Airflow itself is not bundled into the service image.
+Hosted GitHub Actions are currently blocked by an account-level runner restriction. Definitions exist for SQLite/PostgreSQL tests, lint, audit, Airflow DAG import, container scanning and Terraform validation; executed local evidence is reported independently. No passing hosted badge is claimed.
 
-## Deployment scope and honest limits
+## Live, local, or configuration only?
 
-`deploy/kubernetes.yaml` has resource requests/limits, probes, secret references, restricted pod security, no service-account token, and ingress/egress policies. Replace the image and database CIDR, create the Secret out of band, and expose through TLS ingress. [Deployment runbook](docs/DEPLOYMENT.md) includes concrete commands.
+| Scope | Status and boundary |
+|---|---|
+| Vercel synthetic API/dashboard + durable PostgreSQL | Live; [HTTP checks](evidence/public-deployment-http.json) and [release verification](evidence/public-release-verification.json). Anonymous visitors see aggregates; operator data/actions stay private. |
+| Published-version comparison | Implemented and verified locally; needs operator access and two accepted versions. Deployment of this revision is tracked by the release operator. |
+| SQLite/PostgreSQL publication, rejection, killed-worker recovery | Executed locally with committed tests and measurements |
+| Digest-pinned Python 3.15.1 image, Compose, HTTP/browser checks | Executed locally; UID 10001, no installer in runtime, restricted Compose service |
+| Airflow 3 orchestration | Real SDK DAG; requires separate scheduler/workers and artifact mount |
+| Kubernetes / AWS Terraform | Deployment artifacts; Terraform validated. No live Kubernetes rollout or AWS apply claimed |
 
-`infra/main.tf` provisions a VPC, HTTPS ALB, restricted security groups, private encrypted RDS PostgreSQL with backups and deletion protection, Fargate service with rollback circuit breaker, ECR, CloudWatch, and scoped execution-role secret access. It requires an existing ACM certificate, a Secrets Manager token ARN, trusted ingress CIDR and digest-pinned image. **No AWS resources were created.** Validation is distinct from a deployment; credentials, certificate, domain, image registry and budget are external prerequisites.
+Terraform describes HTTPS ALB, private encrypted RDS, Fargate, scoped secrets and rollback controls. Kubernetes describes resource limits, probes, restricted security and network policy. Both require environment-specific images, secrets and network/TLS configuration: [deployment scope](docs/DEPLOYMENT.md), [public-demo profile](docs/PUBLIC_DEMO.md).
 
-This is a small batch platform with intentionally serialized publication. It has no distributed streaming engine, tenant RBAC, automatic data correction, schema migration framework, durable scheduler inside the API, external side-effect exactly-once guarantee, or production SLO claim. PostgreSQL roles, audited retention/archive, TLS identity verification, and larger load tests require deployment-specific work. The global gate provides correctness at modest scale and is an explicit throughput limitation. Recovery scans staged history; very large installations should introduce indexed work queues and partition-scoped fencing. Readers are protected from invalid input, not from loss of the database or a malicious database superuser.
+## Security, tradeoffs and reviewer path
 
+Raw inputs, diagnostics, comparison provenance, metrics and writes require the operator token. Do not expose aggregates from real financial data; the public demo has synthetic records. SQL parameters are bound. Authentication precedes mutation-body reads; size, structure, deadline and per-process capacity limits bound small-service work. Documentation uses exact script CSP hashes; the dashboard uses a self-only script policy. See [security model](SECURITY.md).
 
-## Public deployment evidence
+The global gate trades throughput for inspectable correctness; recovery scans history. Retained versions consume storage. Comparison is bounded by admitted row counts, but is not a CDC feed, semantic timestamp normalizer or row-level diff. There is no streaming engine, multi-tenant RBAC, schema migration framework, production SLO, tested multi-AZ failover, external exactly-once guarantee or real payment execution. Database-admin tampering, upstream authenticity and backup/restore policy remain outside the application guarantee.
 
-![Verified public dashboard](evidence/public-dashboard.jpg)
-
-Captured from the actual public HTTPS deployment. [Executed public checks](evidence/public-release-verification.json) record real backend responses, authentication results and a small warm-request sample.
+Five-minute review: live dashboard → correction comparison → killed-worker demo → `Pipeline.process` and `Pipeline.compare` in [service.py](dataguard/service.py) → [ADRs](docs/ADR.md) and [interview discussion](docs/INTERVIEW.md). For data engineering, follow [contract](docs/CONTRACT.md), [traceability](docs/TRACEABILITY.md) and provenance. For DevOps, follow [runbooks](docs/RUNBOOKS.md), [Dockerfile](Dockerfile), deployment and verification evidence.

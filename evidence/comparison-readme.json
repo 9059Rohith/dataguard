@@ -1,0 +1,35 @@
+{
+  "period": "2026-10-30",
+  "from": {
+    "batch_id": 1,
+    "key": "review-v1",
+    "sha256": "039a18de980ff555f32f5c7cba1a1b462fd739745abe0602f8d8a1e1a5042104",
+    "attempt_id": 1,
+    "published_at": 1793373727.112964
+  },
+  "to": {
+    "batch_id": 2,
+    "key": "review-v2",
+    "sha256": "c47fb582f2d31525e730b489ec98931ec2c1934361b11da937bb67f636b532e3",
+    "attempt_id": 2,
+    "published_at": 1793373729.0610654
+  },
+  "tables": {
+    "trades": {
+      "before": 3,
+      "after": 3,
+      "added": 0,
+      "removed": 0,
+      "changed": 1,
+      "unchanged": 2
+    },
+    "settlements": {
+      "before": 1,
+      "after": 1,
+      "added": 0,
+      "removed": 0,
+      "changed": 1,
+      "unchanged": 0
+    }
+  }
+}

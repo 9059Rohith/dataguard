@@ -1,0 +1,20 @@
+{
+  "host_cpu": {
+    "Name": "Intel(R) Core(TM) Ultra 7 155H",
+    "NumberOfCores": 16,
+    "NumberOfLogicalProcessors": 22
+  },
+  "utc": "2026-10-30T15:24:57.1728248Z",
+  "postgres_container": {
+    "BlockIO": "12.3MB / 195MB",
+    "CPUPerc": "0.21%",
+    "Container": "dataguard-postgres-1",
+    "ID": "40889d831628",
+    "MemPerc": "0.52%",
+    "MemUsage": "82.02MiB / 15.34GiB",
+    "Name": "dataguard-postgres-1",
+    "NetIO": "34MB / 29.4MB",
+    "PIDs": "8"
+  },
+  "observation": "Snapshot captured during quiet follow-up probe; no causal attribution for earlier long-tail sample"
+}

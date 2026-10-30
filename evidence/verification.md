@@ -71,3 +71,14 @@ Public-profile browser checks now target the local minimal-runtime test containe
 ## Public HTTP deployment
 
 The synthetic public profile at https://rohith-dataguard.vercel.app was independently checked with anonymous HTTPS requests on 2026-10-30. `scripts/public-smoke.py` confirmed health/readiness, one actual published attempt/head, raw-record absence from public metadata, and 401 responses for private routes and recovery. `public-deployment-http.json` records those results. `public-deployment-headers.json` records 200 dashboard/docs/OpenAPI responses, no-store/nosniff and exact inline-script CSP hashes. No credentials were used or recorded. This evidence covers HTTP responses, not remote browser execution, remote worker fault recovery, uptime or hosted CI.
+## Accepted-version comparison follow-up
+
+The authenticated comparison API/CLI is implemented without dependency, schema,
+image-base or workflow changes. The final SQLite and PostgreSQL suites each pass
+71 tests; native Python 3.15.1/PostgreSQL SQL and real HTTP checks pass up to 10,000
+trades/version. README correction/rejection blocks were executed, including a
+fix to preserve timestamp strings through JSON edits. See
+[comparison verification](comparison-verification.md) for red/green, exact API,
+raw benchmarks, host observation and security checks. First-read tail outliers
+are retained and explicitly limit performance claims; no deployment of this
+revision or hosted CI pass is claimed by these local runs.

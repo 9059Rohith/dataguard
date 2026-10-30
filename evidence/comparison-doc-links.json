@@ -1,0 +1,150 @@
+{
+  "relative_targets_checked": 36,
+  "all_exist": true,
+  "targets": [
+    {
+      "source": "README.md",
+      "target": "evidence/verification.md"
+    },
+    {
+      "source": "README.md",
+      "target": "evidence/public-dashboard.jpg"
+    },
+    {
+      "source": "README.md",
+      "target": "docs/DEPLOYMENT.md"
+    },
+    {
+      "source": "README.md",
+      "target": "docs/RUNBOOKS.md"
+    },
+    {
+      "source": "README.md",
+      "target": "docs/CONTRACT.md"
+    },
+    {
+      "source": "README.md",
+      "target": "dags/dataguard_pipeline.py"
+    },
+    {
+      "source": "README.md",
+      "target": "evidence/sqlite-benchmark.json"
+    },
+    {
+      "source": "README.md",
+      "target": "evidence/postgres-benchmark.json"
+    },
+    {
+      "source": "README.md",
+      "target": "evidence/minimal-runtime-pg.json"
+    },
+    {
+      "source": "README.md",
+      "target": "evidence/public-release-verification.json"
+    },
+    {
+      "source": "README.md",
+      "target": "evidence/comparison-native-pg.json"
+    },
+    {
+      "source": "README.md",
+      "target": "evidence/comparison-native-pg-contended.json"
+    },
+    {
+      "source": "README.md",
+      "target": "evidence/comparison-host-observation.json"
+    },
+    {
+      "source": "README.md",
+      "target": "evidence/comparison-verification.md"
+    },
+    {
+      "source": "README.md",
+      "target": "evidence/public-security.md"
+    },
+    {
+      "source": "README.md",
+      "target": "evidence/public-deployment-http.json"
+    },
+    {
+      "source": "README.md",
+      "target": "evidence/public-release-verification.json"
+    },
+    {
+      "source": "README.md",
+      "target": "docs/DEPLOYMENT.md"
+    },
+    {
+      "source": "README.md",
+      "target": "docs/PUBLIC_DEMO.md"
+    },
+    {
+      "source": "README.md",
+      "target": "SECURITY.md"
+    },
+    {
+      "source": "README.md",
+      "target": "dataguard/service.py"
+    },
+    {
+      "source": "README.md",
+      "target": "docs/ADR.md"
+    },
+    {
+      "source": "README.md",
+      "target": "docs/INTERVIEW.md"
+    },
+    {
+      "source": "README.md",
+      "target": "docs/CONTRACT.md"
+    },
+    {
+      "source": "README.md",
+      "target": "docs/TRACEABILITY.md"
+    },
+    {
+      "source": "README.md",
+      "target": "docs/RUNBOOKS.md"
+    },
+    {
+      "source": "README.md",
+      "target": "Dockerfile"
+    },
+    {
+      "source": "docs/PUBLIC_DEMO.md",
+      "target": "../evidence/public-deployment-http.json"
+    },
+    {
+      "source": "docs/PUBLIC_DEMO.md",
+      "target": "../evidence/public-deployment-headers.json"
+    },
+    {
+      "source": "evidence/comparison-verification.md",
+      "target": "comparison-postgres-tests.txt"
+    },
+    {
+      "source": "evidence/comparison-verification.md",
+      "target": "comparison-native-pg.json"
+    },
+    {
+      "source": "evidence/comparison-verification.md",
+      "target": "comparison-native-pg-contended.json"
+    },
+    {
+      "source": "evidence/comparison-verification.md",
+      "target": "comparison-host-observation.json"
+    },
+    {
+      "source": "evidence/comparison-verification.md",
+      "target": "comparison-native-recovery.json"
+    },
+    {
+      "source": "evidence/comparison-verification.md",
+      "target": "comparison-readme.json"
+    },
+    {
+      "source": "evidence/verification.md",
+      "target": "comparison-verification.md"
+    }
+  ]
+}

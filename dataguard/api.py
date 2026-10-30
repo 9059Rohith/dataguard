@@ -11,7 +11,7 @@ from pathlib import Path
 from typing import Annotated
 
 import anyio
-from fastapi import Depends, FastAPI, Header, HTTPException, Request
+from fastapi import Depends, FastAPI, Header, HTTPException, Query, Request
 from fastapi import Path as PathParameter
 from fastapi.responses import HTMLResponse, JSONResponse, Response
 from prometheus_client import CollectorRegistry, Counter, Gauge, Histogram, generate_latest
@@ -22,6 +22,7 @@ from dataguard.guard import RequestGuard
 from dataguard.service import Busy, Conflict, Pipeline
 
 BatchId = Annotated[int, PathParameter(ge=1, le=2_147_483_647)]
+ComparisonId = Annotated[int, Query(ge=1, le=2_147_483_647)]
 
 DEFAULT_CSP = "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; frame-ancestors 'none'"
 DOCUMENTATION_ASSETS = {
@@ -56,6 +57,39 @@ class Submission(BaseModel):
     model_config = ConfigDict(extra="forbid")
     key: str = Field(min_length=1, max_length=128)
     payload: dict
+
+
+class PublishedProvenance(BaseModel):
+    """Source identity and successful attempt; never a staged document."""
+
+    batch_id: int
+    key: str
+    sha256: str
+    attempt_id: int
+    published_at: float
+
+
+class ComparisonCounts(BaseModel):
+    """Directional counts by record identity; changed means stored fields differ."""
+
+    before: int
+    after: int
+    added: int
+    removed: int
+    changed: int
+    unchanged: int
+
+
+class ComparisonTables(BaseModel):
+    trades: ComparisonCounts
+    settlements: ComparisonCounts
+
+
+class VersionComparison(BaseModel):
+    period: str
+    from_version: PublishedProvenance = Field(alias="from")
+    to: PublishedProvenance
+    tables: ComparisonTables
 
 
 def authorize(authorization: str | None = Header(default=None)):
@@ -184,6 +218,17 @@ def create_app(url=None):
     @app.get("/snapshots/{period}", dependencies=[Depends(authorize)])
     def current(period: str):
         return pipeline.current(period)
+
+    @app.get(
+        "/snapshots/{period}/compare",
+        dependencies=[Depends(authorize)],
+        response_model=VersionComparison,
+    )
+    def compare(period: str, from_batch: ComparisonId, to_batch: ComparisonId):
+        try:
+            return pipeline.compare(period, from_batch, to_batch)
+        except ValueError as error:
+            raise HTTPException(422, str(error)) from None
 
     @app.get("/quarantine", dependencies=[Depends(authorize)])
     def quarantine():

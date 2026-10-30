@@ -4,7 +4,7 @@ import hashlib
 import json
 import os
 import time
-from datetime import UTC, datetime
+from datetime import UTC, date, datetime
 
 from sqlalchemy import (
     JSON,
@@ -18,8 +18,10 @@ from sqlalchemy import (
     MetaData,
     String,
     Table,
+    and_,
     create_engine,
     event,
+    func,
     insert,
     select,
     text,
@@ -333,6 +335,85 @@ class Pipeline:
                         select(table).where(table.c.batch_id == head["batch_id"])
                     ).mappings()
                 ]
+            return result
+
+    def compare(self, period, from_batch, to_batch):
+        """Directional, constant-size comparison of two retained accepted versions.
+
+        This does not inspect staged records, change heads, or replay validation.
+        Published rows and their successful attempt commit in the same transaction.
+        """
+        try:
+            if date.fromisoformat(period).isoformat() != period:
+                raise ValueError
+        except (ValueError, TypeError):
+            raise ValueError("period must be a canonical YYYY-MM-DD date") from None
+        if any(
+            type(value) is not int or not 1 <= value <= 2_147_483_647
+            for value in (from_batch, to_batch)
+        ):
+            raise ValueError("batch IDs must be integers in 1..2147483647")
+        with self.engine.connect() as c:
+            accepted = {
+                row["batch_id"]: dict(row)
+                for row in c.execute(
+                    select(
+                        batches.c.id.label("batch_id"),
+                        batches.c.key,
+                        batches.c.digest.label("sha256"),
+                        attempts.c.id.label("attempt_id"),
+                        attempts.c.finished_at.label("published_at"),
+                    )
+                    .select_from(batches.join(attempts, batches.c.id == attempts.c.batch_id))
+                    .where(
+                        batches.c.id.in_([from_batch, to_batch]),
+                        batches.c.payload["period"].as_string() == period,
+                        attempts.c.status == "published",
+                    )
+                ).mappings()
+            }
+            if from_batch not in accepted or to_batch not in accepted:
+                # Unknown, wrong partition and never-published inputs share one result.
+                raise KeyError("published version")
+            result = {
+                "period": period,
+                "from": accepted[from_batch],
+                "to": accepted[to_batch],
+                "tables": {},
+            }
+            for label, table, key in (
+                ("trades", trades, "trade_id"),
+                ("settlements", settlements, "settlement_id"),
+            ):
+                old = select(table).where(table.c.batch_id == from_batch).subquery("old")
+                new = select(table).where(table.c.batch_id == to_batch).subquery("new")
+                joined = old.join(new, old.c[key] == new.c[key])
+                shared = select(func.count()).select_from(joined)
+                unchanged = shared.where(
+                    and_(
+                        *(
+                            old.c[col.name] == new.c[col.name]
+                            for col in table.c
+                            if col.name not in {"batch_id", key}
+                        )
+                    )
+                )
+                before, after, common, equal = c.execute(
+                    select(
+                        select(func.count()).select_from(old).scalar_subquery(),
+                        select(func.count()).select_from(new).scalar_subquery(),
+                        shared.scalar_subquery(),
+                        unchanged.scalar_subquery(),
+                    )
+                ).one()
+                result["tables"][label] = {
+                    "before": before,
+                    "after": after,
+                    "added": after - common,
+                    "removed": before - common,
+                    "changed": common - equal,
+                    "unchanged": equal,
+                }
             return result
 
     def quarantine(self, limit=100):

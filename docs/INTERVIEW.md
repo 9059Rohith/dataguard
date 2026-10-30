@@ -8,6 +8,16 @@
 
 **Why a head pointer?** All rows carry batch_id. The per-period head switches only in the transaction that inserted validated rows and completed the attempt. Reads choose one immutable batch identity, so even if a newer head commits during a multi-statement read, the original batch's rows remain coherent.
 
+**How do you investigate a correction without exporting financial records?** The
+protected comparison endpoint accepts two successfully published batch IDs in one
+date partition. SQL joins identity keys and counts additions, removals and shared
+records whose stored fields changed; it returns counts and source SHA256/key plus
+the successful publication attempt. Rejected/staged/failed/never-published inputs
+cannot be compared. It never switches the active head. This is exact stored-value
+comparison, so equivalent timestamp spellings can count as changed. It is not CDC
+or semantic reconciliation. Retaining accepted rows costs storage, while database
+aggregation keeps the response constant in size.
+
 **Why integer amounts?** Binary floating point can introduce rounding noise into reconciliation. Integer minor units make totals exact within documented bounds. This does not solve currency conversion or precision policy; the v1 contract deliberately has no exchange-rate arithmetic.
 
 **What if a slow worker resumes after recovery?** Publication checks the newest attempt ID while holding the same SQL gate used for claims. A stale attempt is fenced. The gate also prevents the recovery worker from racing a still-open publication transaction. A historical lower batch ID cannot replace a newer partition head.

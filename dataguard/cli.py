@@ -154,6 +154,10 @@ def main():
     worker.add_argument("batch_id", type=int)
     worker.add_argument("--fault", choices=["after_insert", "kill_after_insert"])
     subs.add_parser("recover")
+    compare = subs.add_parser("compare", help="Read-only counts between accepted period versions")
+    compare.add_argument("period")
+    compare.add_argument("--from-batch", type=int, required=True)
+    compare.add_argument("--to-batch", type=int, required=True)
     bench = subs.add_parser("demo")
     bench.add_argument("--samples", type=int, default=100)
     bench.add_argument("--rows", type=int, default=100)
@@ -175,6 +179,13 @@ def main():
         output = pipeline.process(args.batch_id, getattr(args, "fault", None))
     elif args.command == "recover":
         output = {"results": pipeline.recover()}
+    elif args.command == "compare":
+        try:
+            output = pipeline.compare(args.period, args.from_batch, args.to_batch)
+        except (ValueError, KeyError) as error:
+            parser.error(
+                str(error) if isinstance(error, ValueError) else "Published version not found"
+            )
     else:
         output = demo(pipeline, args.samples, args.rows)
     rendered = json.dumps(output, indent=2)

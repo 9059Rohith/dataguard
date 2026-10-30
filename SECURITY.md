@@ -2,6 +2,14 @@
 
 Threats addressed: accidental bad inputs, duplicate deliveries, unauthorized mutation via HTTP, oversized bodies, path traversal through Airflow artifact input, SQL injection through values, interrupted publication, and unsafe container privileges.
 
+Accepted-version comparison remains authenticated in public-demo mode because
+source keys, digests and publication provenance are operator metadata. Both
+versions must have a committed published attempt in the requested date partition.
+Wrong-partition, unknown and unpublished IDs share a not-found response. SQL
+aggregates retained accepted records; it does not return row values/identifiers,
+read staged source documents, replay validation or update partition heads. There
+is no tenant ownership model beyond this single-operator partition check.
+
 Privileged HTTP routes fail closed unless `DATAGUARD_TOKEN` contains at least 32 non-whitespace characters. Comparison uses constant-time byte comparison, including malformed non-ASCII header input. Use randomly generated tokens from Secrets Manager/Kubernetes Secret, terminate TLS before the API, rotate tokens with an operator rollout, and never place tokens in query strings or dashboard storage. This single shared operator credential has no individual attribution or tenant RBAC. Database connections are parameterized through SQLAlchemy; dynamic SQL in initialization is restricted to fixed UPDATE/DELETE trigger names.
 
 Aggregate metadata and metrics require authorization by default. Explicit `DATAGUARD_PUBLIC_DEMO=true` permits only bounded aggregate counts and at most 100 partition heads; use it exclusively with a dedicated synthetic dataset. Raw financial records, staged source documents and row diagnostics remain authenticated in every mode, and metrics always require a bearer token. Public demo startup can seed a named known fixture through actual contracts/publication; it does not forge state. Omit the operator token for a read-only public demo, or keep a random token only in server-side secrets for authenticated admin use. Private operator deployments should retain VPN/authenticated ingress; this remains a single-operator system, not a public multi-tenant service.

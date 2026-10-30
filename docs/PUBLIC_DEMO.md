@@ -18,6 +18,12 @@ Use a **dedicated synthetic database**, never a production database, for public-
 
 Omitting `DATAGUARD_TOKEN` gives a public read-only demonstration: write routes, raw batches, detailed snapshot records, quarantine and metrics all fail closed. Configuring a token retains authenticated admin capabilities; keep it in the hosting secret store and use an operator API client. Never put it in JavaScript, URLs, screenshots or browser storage.
 
+`GET /snapshots/{period}/compare?from_batch=1&to_batch=2` also requires the operator
+token in every mode. Although its result contains counts rather than records,
+the source keys/digests and successful-attempt provenance are private metadata.
+It compares two accepted versions in one date partition without changing the
+active head; quarantined/staged/failed/wrong-period versions are excluded.
+
 ## Resource and request boundary
 
 Host development uses Python 3.12+; the pinned minimal container runs Python 3.15.1 with native binary wheels and no package installer in its final runtime. One process with 512 MiB memory and one CPU is the verified local container profile. The application allows four in-flight requests per process, with fail-fast 503/Retry-After beyond that capacity; cheap liveness remains available. HTTP mutation authentication happens before receiving the body. Authenticated bodies have an 8 MB cap, a ten-second receive deadline, maximum JSON depth 32 and bounded structural width before framework parsing. Programmatic staging also limits the JSON tree and rejects invalid Unicode. Metadata responses contain at most 100 partition heads. Raw records and diagnostics never enter the public summary.

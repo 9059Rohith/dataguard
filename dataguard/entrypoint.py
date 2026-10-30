@@ -27,8 +27,8 @@ def main():
     # Container ingress is restricted by Compose loopback binding or platform security groups.
     os.execvp(
         "uvicorn",
-        ["uvicorn", "dataguard.api:app", "--host", "0.0.0.0", "--no-access-log", "--port", port],
-    )  # nosec B104
+        ["uvicorn", "dataguard.api:app", "--host", "0.0.0.0", "--no-access-log", "--port", port],  # nosec B104
+    )
 
 
 if __name__ == "__main__":

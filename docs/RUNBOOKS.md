@@ -11,6 +11,16 @@ Trigger: `rejected` increases or Airflow's publish task fails with a quarantined
 3. Export corrected source under a new idempotency key, retaining the historical period and a fresh produced_at timestamp. Stage/run the new export.
 4. Confirm published status, `GET /snapshots/{period}` row counts and totals, and successful downstream read. The rejected source remains for audit; do not update it in place.
 
+5. Compare the prior accepted batch ID to the corrected accepted batch ID using
+   authorized `GET /snapshots/{period}/compare?from_batch=OLD&to_batch=NEW`, or
+   `python -m dataguard.cli compare YYYY-MM-DD --from-batch OLD --to-batch NEW`.
+   Record both source SHA256/key/attempt provenance objects and table counts in
+   the incident. Comparison is read-only and leaves the current head untouched.
+   A rejected, staged or wrong-period ID returns not found; use accepted IDs, not
+   the quarantine attempt ID. Same-ID changed counts indicate content edits,
+   while additions/removals indicate record identity changes. No raw row values
+   are emitted; inspect protected source only when needed for reconciliation.
+
 ## Interrupted worker / expired lease
 
 Trigger: a running attempt persists after worker loss, or a worker raises a transient failure.
