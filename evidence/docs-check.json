@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-10-30T13:38:54.039Z",
-  "base": "http://127.0.0.1:8003",
+  "generated_at": "2026-10-30T14:29:19.063Z",
+  "base": "http://127.0.0.1:18085",
   "browser": "Chromium via Playwright 1.62.1",
   "execution": "reproducible headless browser integration test",
   "flow": "/docs → GET /health → Try it out → Execute → 200 alive",

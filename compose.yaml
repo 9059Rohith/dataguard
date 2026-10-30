@@ -20,6 +20,8 @@ services:
     environment:
       DATABASE_URL: postgresql+psycopg://dataguard:${POSTGRES_PASSWORD}@postgres:5432/dataguard
       DATAGUARD_TOKEN: ${DATAGUARD_TOKEN:?Set a randomly generated token of at least 32 characters}
+      DATAGUARD_PUBLIC_DEMO: ${DATAGUARD_PUBLIC_DEMO:-false}
+      DATAGUARD_SEED_DEMO: ${DATAGUARD_SEED_DEMO:-false}
     ports: ["127.0.0.1:8003:8000"]
     depends_on:
       postgres:

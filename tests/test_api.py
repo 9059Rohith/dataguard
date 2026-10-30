@@ -10,7 +10,7 @@ def test_write_auth_fails_closed_and_health_dashboard_work(tmp_path, monkeypatch
         assert c.get("/health").status_code == 200
         assert c.get("/ready").status_code == 200
         assert c.get("/").status_code == 200
-        assert c.get("/metrics").status_code == 200
+        assert c.get("/metrics").status_code == 503
         assert (
             c.post("/batches", json={"key": "a", "payload": fixture_payload()}).status_code == 503
         )
@@ -23,6 +23,7 @@ def test_write_auth_fails_closed_and_health_dashboard_work(tmp_path, monkeypatch
         assert r.status_code == 201
         bid = r.json()["batch_id"]
         assert c.post(f"/batches/{bid}/run", headers=headers).json()["status"] == "published"
-        assert c.get("/snapshots").json()[0]["batch_id"] == bid
+        assert c.get("/snapshots", headers=headers).json()[0]["batch_id"] == bid
+        assert c.get("/metrics", headers=headers).status_code == 200
         assert c.get(f"/batches/{bid}").status_code == 401
         assert c.get(f"/batches/{bid}", headers=headers).status_code == 200

@@ -25,9 +25,11 @@ from sqlalchemy import (
     text,
     update,
 )
+from sqlalchemy.engine import make_url
 from sqlalchemy.exc import IntegrityError
 
 from dataguard.contracts import validate
+from dataguard.limits import SAFE_KEY, check_json_value
 
 metadata = MetaData()
 batches = Table(
@@ -100,7 +102,12 @@ class Busy(Exception):
 class Pipeline:
     def __init__(self, url, lease_seconds=30):
         self.lease_seconds = lease_seconds
-        self.engine = create_engine(url, pool_pre_ping=True)
+        if isinstance(url, str) and url.startswith(("postgresql://", "postgres://")):
+            url = "postgresql+psycopg://" + url.split("://", 1)[1]
+        connect_args = (
+            {"connect_timeout": 5} if make_url(url).get_backend_name() == "postgresql" else {}
+        )
+        self.engine = create_engine(url, pool_pre_ping=True, connect_args=connect_args)
         if self.engine.dialect.name == "sqlite":
 
             @event.listens_for(self.engine, "connect")
@@ -142,8 +149,9 @@ class Pipeline:
             return c.execute(select(gate.c.id)).scalar() == 1
 
     def stage(self, key, payload):
-        if not isinstance(key, str) or not 1 <= len(key) <= 128:
-            raise ValueError("key must contain 1..128 characters")
+        if not isinstance(key, str) or not SAFE_KEY.fullmatch(key):
+            raise ValueError("key must be 1..128 safe ASCII identifier characters")
+        check_json_value(payload)
         encoded = json.dumps(payload, sort_keys=True, separators=(",", ":"), allow_nan=False)
         if len(encoded.encode()) > 8_000_000:
             raise ValueError("batch exceeds 8 MB")
@@ -306,7 +314,10 @@ class Pipeline:
     def snapshots(self):
         with self.engine.connect() as c:
             return [
-                dict(r) for r in c.execute(select(heads).order_by(heads.c.period.desc())).mappings()
+                dict(r)
+                for r in c.execute(
+                    select(heads).order_by(heads.c.period.desc()).limit(100)
+                ).mappings()
             ]
 
     def current(self, period):

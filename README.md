@@ -36,6 +36,8 @@ python -m venv .venv
 .\.venv\Scripts\python.exe -m pip install -r requirements-dev.lock
 .\.venv\Scripts\python.exe -m pip install --no-deps -e .
 $env:DATAGUARD_TOKEN = python -c "import secrets; print(secrets.token_urlsafe(40))"
+$env:DATAGUARD_PUBLIC_DEMO = 'true' # Fresh synthetic demo databases only
+$env:DATAGUARD_SEED_DEMO = 'true'
 .\.venv\Scripts\python.exe -m dataguard.cli init
 .\.venv\Scripts\uvicorn.exe dataguard.api:app --host 127.0.0.1 --port 8003
 ```
@@ -55,6 +57,8 @@ For PostgreSQL and a restricted non-root container:
 ```powershell
 $env:POSTGRES_PASSWORD = python -c "import secrets; print(secrets.token_urlsafe(32))"
 $env:DATAGUARD_TOKEN = python -c "import secrets; print(secrets.token_urlsafe(40))"
+$env:DATAGUARD_PUBLIC_DEMO = 'true' # Dedicated synthetic demo only
+$env:DATAGUARD_SEED_DEMO = 'true'
 docker compose up -d --build
 $env:DATABASE_URL = "postgresql+psycopg://dataguard:$env:POSTGRES_PASSWORD@127.0.0.1:55434/dataguard?connect_timeout=5"
 .\.venv\Scripts\python.exe -m dataguard.cli demo --samples 100 --rows 100 --output evidence/postgres-benchmark.json
@@ -74,10 +78,13 @@ The contract is executable in `dataguard/contracts.py`, not a prose-only configu
 | `GET /batches/{id}` | Immutable source, digest, complete attempt history | Bearer token |
 | `GET /quarantine` | Last 100 rejected attempts with rule/row/field diagnostics | Bearer token |
 | `GET /snapshots/{period}` | Materialized trade and settlement records | Bearer token |
-| `GET /summary`, `/snapshots`, `/` | Aggregate state and live read-only dashboard | Private network |
-| `/health`, `/ready`, `/metrics` | Process health, DB readiness, Prometheus | Private network |
+| `GET /summary`, `/snapshots` | Bounded aggregate state; public only with explicit synthetic-demo setting | Bearer token by default |
+| `/`, `/docs`, `/health`, `/ready` | Dashboard shell, API docs, process health and readiness | Public; no raw records |
+| `/metrics` | Prometheus operational counters | Bearer token |
 
 Missing/short/blank token disables privileged routes with HTTP 503. Incorrect credentials return 401. Idempotency conflict or active worker lease returns 409. Invalid contract data returns a persisted `rejected` result, not a transient HTTP failure. Data correction requires a **new key and immutable batch**, never editing a rejected input. CLI and Airflow are trusted database clients and use database credentials rather than the HTTP token.
+
+For a public synthetic demonstration, see [the provider-neutral public profile](docs/PUBLIC_DEMO.md). `DATAGUARD_PUBLIC_DEMO=true` exposes only bounded aggregate metadata; raw records, quarantine, metrics and all writes stay authenticated. `DATAGUARD_SEED_DEMO=true` runs the actual idempotent synthetic stage/validate/publish startup path. Both flags default to false. `PORT` selects the container listener. Authentication precedes upload reads; body/depth/width/deadline and per-process concurrency limits protect a small container. No external host or persistent storage is claimed until a deployment is verified.
 
 Example authenticated publication:
 

@@ -1,0 +1,10 @@
+{
+  "actual_container_restart": true,
+  "runtime": "Python 3.15.1 minimal image",
+  "batch_id_before": 1,
+  "batch_id_after": 1,
+  "published_attempts_after": 1,
+  "duplicate_publications": false,
+  "persistence": "named Docker volume",
+  "port": 7860
+}

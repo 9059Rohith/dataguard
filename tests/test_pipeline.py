@@ -62,6 +62,14 @@ def test_valid_publication_is_idempotent_and_payload_is_immutable(pipeline):
         c.execute(text("UPDATE batches SET payload = '{}' WHERE id = :id"), {"id": batch})
 
 
+@pytest.mark.parametrize("key", ["bad\x00key", "bad/key", " ", "\ud800"])
+def test_unsafe_key_never_reaches_storage(pipeline, key):
+    with pytest.raises(ValueError, match="key"):
+        pipeline.stage(key, fixture_payload())
+    with pipeline.engine.connect() as connection:
+        assert connection.execute(text("SELECT count(*) FROM batches")).scalar() == 0
+
+
 @pytest.mark.parametrize(
     "fault,rule",
     [

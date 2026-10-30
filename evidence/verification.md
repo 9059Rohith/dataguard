@@ -1,11 +1,11 @@
 # Executed verification — 2026-10-30
 
-Environment: Windows 11, host Python 3.12.14, Docker Engine 28.5.1 with Linux containers, PostgreSQL 16.13. Isolated `.venv` and independent Git repository. Synthetic data only. Commands were executed locally; this document does not claim remote CI or cloud deployment success.
+Environment: Windows 11, host Python 3.12.14, pinned minimal Linux runtime Python 3.15.1, Docker Engine 28.5.1, PostgreSQL 16.13. Isolated `.venv` and independent Git repository. Synthetic data only. Commands were executed locally; this document does not claim remote CI or cloud deployment success.
 
 | Check | Result | Retained evidence |
 |---|---|---|
-| Full `python -m pytest -q` | **25 passed**, 10.20 seconds, no warnings | unit-tests.txt |
-| PostgreSQL `pytest -q tests/test_pipeline.py` | **15 passed** against real PostgreSQL; final run uses dedicated dataguard_test database | postgres-tests.txt |
+| Full `python -m pytest -q` | **55 passed**, 17.24 seconds, no warnings | unit-tests.txt |
+| PostgreSQL `pytest -q tests/test_pipeline.py` | **19 passed** against real PostgreSQL in dedicated dataguard_test database, including unsafe-key rejection before storage | postgres-tests.txt |
 | Ruff check + format check | Passed | tool execution output |
 | Python compileall for service/DAG/scripts | Passed | tool execution output |
 | Runtime pip-audit (exact complete pinned closure, --no-deps --disable-pip) | **19 packages; zero known vulnerabilities** | dependency-audit.json |
@@ -19,9 +19,9 @@ Environment: Windows 11, host Python 3.12.14, Docker Engine 28.5.1 with Linux co
 | Terraform fmt -check | Passed | infra/main.tf |
 | Terraform init / validate | **Passed**, provider AWS v6.71.0; validation reports valid=true, 0 errors, 0 warnings | terraform-validation.json, infra/.terraform.lock.hcl |
 | Actual Airflow 3.1.0 DAG import | **Passed**, DAG and both tasks discovered; older-runtime compatibility evidence | Details and image digest below; configured 3.3.2 CI runtime remains unexecuted |
-| Trivy fixable HIGH/CRITICAL | **0 findings**, exit 0, final image scanned | container-scan.json; cache updated **2026-10-20**, context in container-scan-context.json |
+| Trivy ALL-severity vulnerability + secret scan | **0 vulnerabilities, 0 secrets**, exit 0; no severity filters, ignore flags or suppressions | container-scan.json; database updated **2026-10-30**, context in container-scan-context.json |
 
-Fresh Trivy database download was attempted and stopped after approximately 35 KiB/s transfer implied over an hour for 130.79 MiB. A read-only copy of an existing local DB was used to complete the dated scan. This provides a historical known-vulnerability check, not assurance against advisories after October 20. CI's fresh Trivy scan must pass before release. No unrelated Docker containers or cache source volume were modified.
+The initial Debian image used a transparently dated October 20 scan while a large database download was slow. The final pinned minimal runtime supersedes that evidence: it was scanned for all known vulnerability severities and secrets using a same-day database updated October 30 13:06 UTC and downloaded 14:09 UTC. No findings or suppressions were used. The source cache volume was read-only and unrelated containers were not modified. Remote CI remains separately scoped below.
 
 ## Measured fault/recovery and publication latency
 
@@ -59,3 +59,11 @@ An actual browser reproduced `/docs` returning HTTP 200 with no rendered Swagger
 `scripts/docs-check.cjs` is a reproducible headless Chromium test: load `/docs`, render the actual OpenAPI UI, open GET /health, select Try it out, execute and check its real 200/alive response. Desktop 1440x1000 and mobile 390x844 runs have zero console errors/CSP violations. ReDoc is separately rendered with zero console errors. This does not simulate or claim a hosted CI run.
 
 The final browser run targets the rebuilt Compose service at `http://127.0.0.1:8003`, with `/ready` reporting ready and Docker reporting healthy. The dashboard's desktop/mobile refresh checks also pass against that rebuilt service.
+
+## Public-boundary and minimal-runtime follow-up
+
+See public-security.md for the observed red/green security regressions. Metadata/metrics are authenticated by default; explicit synthetic-demo mode exposes only bounded aggregate state. Authenticated uploads are bounded before parsing, and unauthenticated mutations do not read their bodies. Raw records/quarantine remain private. The opt-in startup seed uses real staging, validation and SQL publication, and an actual container restart preserves its batch identity without duplicate publication.
+
+The final Dockerfile pins builder/runtime digests, installs cp315 native wheels, copies only the app virtualenv and writable data directory, removes installer/build tools, and runs UID 10001. Actual Python 3.15.1 image tests passed SQLite public startup, PostgreSQL stage/validate/reject/retry, real killed-worker recovery and authenticated HTTP API flows. A 100-sample native PostgreSQL run records p50/p95/p99 **34.884/57.207/86.589 ms** with 100 trades per batch at concurrency one; this local CLI acceptance run is not a production capacity/SLA claim. Details are in minimal-runtime-pg.json and minimal-runtime-pg-http.json.
+
+Public-profile browser checks now target the local minimal-runtime test container on port 18085 (container PORT=7860): dashboard and Swagger desktop/mobile checks pass, GET /health executes with 200/alive, ReDoc renders, and no console/CSP errors were observed. Public read-only HTTP checks and actual restart evidence are in public-demo-smoke.json and public-demo-restart.json. These localhost addresses are test fixtures, not claimed public deployment links.

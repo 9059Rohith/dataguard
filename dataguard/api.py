@@ -8,14 +8,20 @@ import secrets
 import time
 from contextlib import asynccontextmanager
 from pathlib import Path
+from typing import Annotated
 
+import anyio
 from fastapi import Depends, FastAPI, Header, HTTPException, Request
+from fastapi import Path as PathParameter
 from fastapi.responses import HTMLResponse, JSONResponse, Response
 from prometheus_client import CollectorRegistry, Counter, Gauge, Histogram, generate_latest
 from pydantic import BaseModel, ConfigDict, Field
 from sqlalchemy.exc import SQLAlchemyError
 
+from dataguard.guard import RequestGuard
 from dataguard.service import Busy, Conflict, Pipeline
+
+BatchId = Annotated[int, PathParameter(ge=1, le=2_147_483_647)]
 
 DEFAULT_CSP = "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; frame-ancestors 'none'"
 DOCUMENTATION_ASSETS = {
@@ -65,6 +71,15 @@ def authorize(authorization: str | None = Header(default=None)):
         raise HTTPException(401, "Invalid bearer token", headers={"WWW-Authenticate": "Bearer"})
 
 
+def public_demo_enabled():
+    return os.getenv("DATAGUARD_PUBLIC_DEMO", "").lower() == "true"
+
+
+def metadata_access(authorization: str | None = Header(default=None)):
+    if not public_demo_enabled():
+        authorize(authorization)
+
+
 def create_app(url=None):
     pipeline = Pipeline(url or os.getenv("DATABASE_URL", "sqlite:///dataguard.db"))
     registry = CollectorRegistry()
@@ -81,6 +96,10 @@ def create_app(url=None):
     async def lifespan(app):
         if os.getenv("DATAGUARD_AUTO_INIT", "true").lower() == "true":
             pipeline.initialize()
+        if os.getenv("DATAGUARD_SEED_DEMO", "").lower() == "true":
+            from dataguard.demo import seed_synthetic_demo
+
+            seed_synthetic_demo(pipeline)
         yield
         pipeline.engine.dispose()
 
@@ -91,22 +110,11 @@ def create_app(url=None):
         swagger_ui_parameters={"validatorUrl": None},
     )
     app.state.pipeline = pipeline
+    app.state.request_limiter = anyio.CapacityLimiter(4)
+    app.state.body_timeout_seconds = 10.0
 
     @app.middleware("http")
     async def boundary(request: Request, call_next):
-        length = request.headers.get("content-length")
-        if length and (not length.isdigit() or int(length) > 8_000_000):
-            return JSONResponse({"detail": "Body exceeds 8 MB"}, status_code=413)
-        # Enforce streamed bodies too; disconnecting clients are handled by ASGI server.
-        if request.method in {"POST", "PUT", "PATCH"}:
-            total = 0
-            chunks = []
-            async for chunk in request.stream():
-                total += len(chunk)
-                if total > 8_000_000:
-                    return JSONResponse({"detail": "Body exceeds 8 MB"}, status_code=413)
-                chunks.append(chunk)
-            request._body = b"".join(chunks)
         response = await call_next(request)
         # Built-in docs are small HTML responses. Buffer only these exact
         # routes so their real bootstrap bytes can be authorized by CSP hashes.
@@ -151,7 +159,7 @@ def create_app(url=None):
             raise HTTPException(503, "Database schema is not initialized")
         return {"status": "ready"}
 
-    @app.get("/metrics")
+    @app.get("/metrics", dependencies=[Depends(authorize)])
     def metrics():
         try:
             db_up.set(int(pipeline.ready()))
@@ -161,11 +169,15 @@ def create_app(url=None):
             db_up.set(0)
         return Response(generate_latest(registry), media_type="text/plain; version=0.0.4")
 
-    @app.get("/summary")
+    @app.get("/summary", dependencies=[Depends(metadata_access)])
     def summary():
-        return {"attempts": pipeline.summary(), "snapshots": pipeline.snapshots()}
+        return {
+            "public_demo": public_demo_enabled(),
+            "attempts": pipeline.summary(),
+            "snapshots": pipeline.snapshots(),
+        }
 
-    @app.get("/snapshots")
+    @app.get("/snapshots", dependencies=[Depends(metadata_access)])
     def snapshots():
         return pipeline.snapshots()
 
@@ -178,7 +190,7 @@ def create_app(url=None):
         return pipeline.quarantine()
 
     @app.get("/batches/{batch_id}", dependencies=[Depends(authorize)])
-    def batch(batch_id: int):
+    def batch(batch_id: BatchId):
         return pipeline.batch(batch_id)
 
     @app.post("/batches", status_code=201, dependencies=[Depends(authorize)])
@@ -189,7 +201,7 @@ def create_app(url=None):
             raise HTTPException(422, str(error)) from None
 
     @app.post("/batches/{batch_id}/run", dependencies=[Depends(authorize)])
-    def run(batch_id: int):
+    def run(batch_id: BatchId):
         start = time.perf_counter()
         try:
             result = pipeline.process(batch_id)
@@ -216,6 +228,7 @@ def create_app(url=None):
             media_type="text/javascript",
         )
 
+    app.add_middleware(RequestGuard, state=app.state, authorize=authorize, default_csp=DEFAULT_CSP)
     return app
 
 

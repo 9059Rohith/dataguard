@@ -43,4 +43,6 @@ def test_streamed_oversized_body_is_rejected_before_publication(tmp_path, monkey
             headers={"Authorization": "Bearer " + "a" * 32},
         )
         assert result.status_code == 413
-        assert client.get("/snapshots").json() == []
+        assert (
+            client.get("/snapshots", headers={"Authorization": "Bearer " + "a" * 32}).json() == []
+        )

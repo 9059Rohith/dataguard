@@ -1,0 +1,16 @@
+{
+  "generated_at": "2026-10-30T14:27:24.974493+00:00",
+  "base": "http://127.0.0.1:18085",
+  "public_demo": true,
+  "actual_published_attempts": 1,
+  "active_batch_id": 1,
+  "public_partition_count": 1,
+  "private_routes_denied": {
+    "/metrics": 503,
+    "/batches/1": 503,
+    "/quarantine": 503,
+    "/snapshots/2026-10-30": 503
+  },
+  "unauthenticated_mutation_status": 503,
+  "raw_records_absent_from_summary": true
+}
