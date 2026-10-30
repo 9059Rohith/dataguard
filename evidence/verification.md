@@ -41,6 +41,12 @@ Ten fault matrix cases cover duplicates, malformed numeric schema, missing field
 
 No AWS credentials, ACM certificate, domain, deployment role or approved cloud budget were supplied. No Terraform apply, production rollout, remote CI success or public registry artifact is asserted. The parent task owns repository publication and can record later external checks in an appended verification entry.
 
+## Publication and additional runtime verification
+
+The complete source and all three workflow files are published at https://github.com/9059Rohith/dataguard. Local and remote source trees were compared after publication. Remote Actions jobs could not start because of an account-level runner restriction; no passing hosted-CI result is claimed.
+
+An actual **Airflow 3.1.0** Linux container imported the DAG successfully: `dataguard_settlement_publication`, tasks `stage` and `validate_and_publish`, exit 0. Image digest: `sha256:e81cb98fe4e5f60fadde8cc6a1c926a363720339062cd53db04b6442950ab9ee`. This is an older-runtime compatibility check; the configured Airflow **3.3.2** CI runtime remains unexecuted while hosted runners are unavailable. It is not a production Airflow deployment.
+
 ## Terraform verification follow-up
 
 The initial slow provider download was stopped after the parent task supplied an extracted provider mirror verified against HashiCorp's official SHA256. `terraform init -backend=false -plugin-dir=... -input=false` and `terraform validate -json` then passed. The provider lock retains the Windows installed-package h1 and official archive zh hashes for all released platforms, including Linux CI. Official checksums were fetched from [HashiCorp's v6.71.0 release](https://releases.hashicorp.com/terraform-provider-aws/6.71.0/terraform-provider-aws_6.71.0_SHA256SUMS), saved as provider-sha256sums.txt and added by scripts/lock-provider.py. This validates provider schemas locally; it does not validate credentials, AWS quotas, regional capacity, deployment cost or an actual apply.
