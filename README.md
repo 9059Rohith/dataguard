@@ -13,7 +13,7 @@ Built as an independent portfolio project for data engineering and DevOps work, 
 | Capability | Concrete behavior | Why it matters |
 |---|---|---|
 | Executable settlement contracts | Reject unknown/missing fields, incorrect types, duplicate IDs, invalid references/currencies, stale exports, wrong UTC dates and inconsistent totals | A malformed export cannot replace the reconciled dataset |
-| Immutable, idempotent ingestion | Canonical JSON SHA256; repeated key/payload returns one ID; conflicting reuse returns 409; SQL triggers prohibit staged edits/deletes | Retries and investigations refer to exact source bytes |
+| Immutable, idempotent ingestion | Canonical JSON SHA256; repeated key/payload returns one ID; conflicting reuse returns 409; SQL triggers prohibit staged edits/deletes | Retries and investigations refer to immutable source values |
 | Transactional publication and recovery | Rows, partition head and successful attempt commit together; durable leases and attempt fencing recover interrupted workers | A real process killed after insertion leaves the previous version readable |
 | Published-version change analysis | Protected SQL counts of added, removed, changed and unchanged trades/settlements with both source digests and publication provenance | Review a correction without exporting raw records or switching the head |
 | Operable service and deployment artifacts | FastAPI/CLI, Airflow 3 DAG, private metrics, liveness/readiness, non-root digest-pinned runtime, Compose, Kubernetes and Terraform | Connect correctness to repeatable operational checks and explicit rollout boundaries |
@@ -110,7 +110,9 @@ Root keys are exactly `period`, `produced_at`, `trades`, `settlements`. Both tab
 
 A global SQL gate, durable lease and current attempt identity fence workers. Rows, head and successful attempt commit atomically. Validation failure leaves the head unchanged. A later staged valid batch takes precedence; an older pending retry becomes `superseded` without publishing. Retained rows let readers use one captured batch identity even if the head advances mid-read.
 
-Comparison requires a committed `published` attempt for **both** IDs in the requested period. Staged, running, failed, rejected, never-published superseded, missing and wrong-period IDs share 404. Malformed periods/IDs return 422. SQL performs counts/key joins: the fixed-size response contains two provenance objects and six counts per table, without row IDs/values. It does not mutate heads or replay validation. Partition ownership is enforced; the application has one shared operator identity, not tenant RBAC.
+Source digests identify canonical parsed JSON, including array order; they do not preserve a file's original whitespace or object-key formatting.
+
+Comparison requires a committed `published` attempt for **both** IDs in the requested period. Staged, running, failed, rejected, never-published superseded, missing and wrong-period IDs share 404. Malformed periods/IDs return 422. SQL unions both versions with explicit side markers, groups by record ID, and compares MIN/MAX of nonnull stored fields. It avoids record self joins. The fixed-size response contains two provenance objects and six counts per table, without row IDs/values. It does not mutate heads or replay validation. Partition ownership is enforced; the application has one shared operator identity, not tenant RBAC.
 
 | Interface | Access and behavior |
 |---|---|
@@ -137,14 +139,16 @@ Each microbenchmark has 100 samples, 100 trades + one settlement per batch, one 
 
 Timings exclude HTTP/network/client serialization. Recovery measurements include child startup and lease waiting. They do not establish load capacity, production SLOs, failover behavior or comparison latency. [Public release checks](evidence/public-release-verification.json) separately record auth boundaries and a small 12-request warm HTTPS sample from India; that is not a load test.
 
-The new comparison has a separate [native PostgreSQL measurement](evidence/comparison-native-pg.json): Python 3.15.1/WSL2, Intel Ultra 7 155H host, one sequential client, 50 samples per row count, one settlement/version, no first-sample exclusion:
+The first comparison implementation exposed 15.17s and 36.05s first-read tails in [unfiltered 50-sample runs](evidence/comparison-native-pg.json), [including concurrent-suite results](evidence/comparison-native-pg-contended.json). Investigation found two nested loops repeatedly scanning batch ranges, rather than JIT overhead: the [actual before plan](evidence/comparison-plan-before.json) recorded roughly 100 million rejected join candidates. The implementation now uses a join-free union/group aggregation; a PostgreSQL regression test measures actual plan work under unfavorable join-planner settings.
 
-| Trades per accepted version | SQL comparison p50 | p95 | p99 | Observed response size |
-|---|---:|---:|---:|---:|
-| 100 | 14.071 ms | 20.368 ms | 22.584 ms | 687 bytes |
-| 10,000 | 48.661 ms | 63.904 ms | 15,169.065 ms | 697 bytes |
+One before/after experiment executed `EXPLAIN ANALYZE` on the **first trade-comparison statement for freshly published 10,000-trade versions**, with one settlement/version. Python 3.15.1, PostgreSQL 16.13, WSL2 Linux, Intel Ultra 7 155H host; same admitted row counts and method, no warm-up or percentile claim:
 
-The first 10,000-row comparison took 15.17 seconds. An [earlier concurrent-suite run](evidence/comparison-native-pg-contended.json) retained a 36.05-second first-read outlier. Causes are not established; host workloads were not controlled. These tails prevent a latency guarantee and need query-plan/cold-read investigation before production use. [Host observation](evidence/comparison-host-observation.json) is a point-in-time snapshot, not a causal diagnosis. Counts and private HTTP boundaries passed in both runs; the response shape stays bounded without returning records.
+| First trade-comparison statement | Server execution | Instrumented plan work* | Evidence |
+|---|---:|---:|---|
+| Before: record self joins | 40,755.019 ms | 200,070,004 | [Full before plan](evidence/comparison-plan-before.json) |
+| After: union + per-ID aggregation | 43.985 ms | 90,001 | [Full after plan and native HTTP proofs](evidence/comparison-plan-after.json) |
+
+\* Sum of reported rows/filter candidates × loops across plan nodes, not distinct rows or physical reads. This instrumented single observation excludes provenance lookup, settlement comparison, HTTP and publication; it establishes removal of repeated scans, not a production latency guarantee. All older raw tails remain committed. [Host observation](evidence/comparison-host-observation.json) is a point-in-time snapshot. Native same-pair checks verify correct counts, bounded output, head preservation and private HTTP boundaries after the rewrite.
 
 ```powershell
 .\.venv\Scripts\python.exe -m pytest -q
@@ -157,7 +161,7 @@ $env:TEST_DATABASE_URL = "postgresql+psycopg://dataguard:$env:POSTGRES_PASSWORD@
 .\.venv\Scripts\python.exe -m pytest -q
 ```
 
-The suite refuses PostgreSQL test database names without `_test`. Create the DB only once; never use the live DB. [Comparison verification](evidence/comparison-verification.md) records red/green and native execution. [Security evidence](evidence/public-security.md) covers pre-body authentication, upload/JSON/deadline/capacity bounds and seed restart behavior.
+The suite refuses PostgreSQL test database names without `_test`. Create the DB only once; never use the live DB. Current local evidence: 71 SQLite passes + one PG-only skip, 72 PostgreSQL passes, and all 72 tests passing in the actual minimal Python 3.15.1 image. [Comparison verification](evidence/comparison-verification.md) records red/green, native execution and package/image context. [Security evidence](evidence/public-security.md) covers pre-body authentication, upload/JSON/deadline/capacity bounds and seed restart behavior.
 
 Hosted GitHub Actions are currently blocked by an account-level runner restriction. Definitions exist for SQLite/PostgreSQL tests, lint, audit, Airflow DAG import, container scanning and Terraform validation; executed local evidence is reported independently. No passing hosted badge is claimed.
 

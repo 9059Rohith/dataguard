@@ -10,13 +10,22 @@
 
 **How do you investigate a correction without exporting financial records?** The
 protected comparison endpoint accepts two successfully published batch IDs in one
-date partition. SQL joins identity keys and counts additions, removals and shared
-records whose stored fields changed; it returns counts and source SHA256/key plus
+date partition. SQL unions side-marked versions, groups identity keys, and uses
+MIN/MAX of NONNULL fields to count edits; it returns counts and source SHA256/key plus
 the successful publication attempt. Rejected/staged/failed/never-published inputs
 cannot be compared. It never switches the active head. This is exact stored-value
 comparison, so equivalent timestamp spellings can count as changed. It is not CDC
 or semantic reconciliation. Retaining accepted rows costs storage, while database
 aggregation keeps the response constant in size.
+
+**How did measurement change the design?** Initial version self joins returned
+correct counts but had 15–36 second first-read tails at 10,000 trades/version.
+An actual EXPLAIN ANALYZE reproduced two nested loops with about 100 million
+rejected join candidates; JIT was absent. A work-budget regression failed at
+2,007,004 instrumented tuple/filter visits for 1,000 trades/version. Union/group
+aggregation removed those joins. One fresh 10,000-trade before/after plan measured
+40,755.019 ms versus 43.985 ms server execution. Both plans and all earlier tails
+are retained; this is a targeted algorithmic improvement, not a percentile or SLO.
 
 **Why integer amounts?** Binary floating point can introduce rounding noise into reconciliation. Integer minor units make totals exact within documented bounds. This does not solve currency conversion or precision policy; the v1 contract deliberately has no exchange-rate arithmetic.
 

@@ -43,8 +43,11 @@ array order and export-level produced_at do not change record counts. Invariants
 `after = added + changed + unchanged`. Reversing the direction exchanges added
 and removed; self-comparison is valid and has zero changes.
 
-SQL counts and joins operate on retained materialized tables (at most 10,000 rows
-per admitted table/version). Only provenance and aggregate counts reach Python;
+SQL unions both retained materialized versions with old/new side markers (at
+most 10,000 rows per admitted table/version), groups by record ID, uses MAX for
+side presence and MIN/MAX of each NONNULL stored field to detect edits, then
+aggregates counts. No record self join or repeated per-key scan is required;
+UNION ALL preserves both sides even for self-comparison. Only provenance and aggregate counts reach Python;
 response size does not grow with record count. No extra schema, third-party
 dependency, mutation, publication lock, export freshness recheck or raw staging
 read is required. Unknown, wrong-period and unpublished IDs share 404; malformed

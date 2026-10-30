@@ -1,5 +1,5 @@
 {
-  "relative_targets_checked": 36,
+  "relative_targets_checked": 44,
   "all_exist": true,
   "targets": [
     {
@@ -49,6 +49,18 @@
     {
       "source": "README.md",
       "target": "evidence/comparison-native-pg-contended.json"
+    },
+    {
+      "source": "README.md",
+      "target": "evidence/comparison-plan-before.json"
+    },
+    {
+      "source": "README.md",
+      "target": "evidence/comparison-plan-before.json"
+    },
+    {
+      "source": "README.md",
+      "target": "evidence/comparison-plan-after.json"
     },
     {
       "source": "README.md",
@@ -124,6 +136,10 @@
     },
     {
       "source": "evidence/comparison-verification.md",
+      "target": "comparison-postgres-tests-after.txt"
+    },
+    {
+      "source": "evidence/comparison-verification.md",
       "target": "comparison-native-pg.json"
     },
     {
@@ -133,6 +149,22 @@
     {
       "source": "evidence/comparison-verification.md",
       "target": "comparison-host-observation.json"
+    },
+    {
+      "source": "evidence/comparison-verification.md",
+      "target": "comparison-plan-before.json"
+    },
+    {
+      "source": "evidence/comparison-verification.md",
+      "target": "comparison-plan-after.json"
+    },
+    {
+      "source": "evidence/comparison-verification.md",
+      "target": "comparison-native-full-tests.txt"
+    },
+    {
+      "source": "evidence/comparison-verification.md",
+      "target": "comparison-native-full-context.json"
     },
     {
       "source": "evidence/comparison-verification.md",

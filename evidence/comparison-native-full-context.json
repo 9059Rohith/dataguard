@@ -1,0 +1,12 @@
+{
+  "python": "3.15.1",
+  "os": "Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.44",
+  "uid": 10001,
+  "dataguard_module": "/opt/venv/lib/python3.15/site-packages/dataguard/__init__.py",
+  "sqlalchemy_module": "/opt/venv/lib/python3.15/site-packages/sqlalchemy/__init__.py",
+  "psycopg_module": "/opt/venv/lib/python3.15/site-packages/psycopg/__init__.py",
+  "sqlalchemy_version": "2.1.6",
+  "psycopg_version": "3.3.6",
+  "image_id": "sha256:ca82daf144205768b59446a66cc3330e9520998c21fadfad5948aa00a78764c9",
+  "test_method": "All72tests executed in this image against a dedicated PostgreSQL test DB. Tests and existing pure-Python pytest/httpx dev libraries mounted read-only; dev library path appended AFTER native runtime site-packages. Plugin auto-load disabled. No installer or runtime dependency changes; auto-init enabled for test startup. See comparison-native-full-tests.txt."
+}

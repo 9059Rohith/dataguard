@@ -19,12 +19,16 @@ from sqlalchemy import (
     String,
     Table,
     and_,
+    case,
     create_engine,
     event,
     func,
     insert,
+    literal,
+    or_,
     select,
     text,
+    union_all,
     update,
 )
 from sqlalchemy.engine import make_url
@@ -385,35 +389,56 @@ class Pipeline:
                 ("trades", trades, "trade_id"),
                 ("settlements", settlements, "settlement_id"),
             ):
-                old = select(table).where(table.c.batch_id == from_batch).subquery("old")
-                new = select(table).where(table.c.batch_id == to_batch).subquery("new")
-                joined = old.join(new, old.c[key] == new.c[key])
-                shared = select(func.count()).select_from(joined)
-                unchanged = shared.where(
-                    and_(
-                        *(
-                            old.c[col.name] == new.c[col.name]
-                            for col in table.c
-                            if col.name not in {"batch_id", key}
-                        )
+                fields = [column for column in table.c if column.name != "batch_id"]
+                versions = union_all(
+                    select(*fields, literal(1).label("has_old"), literal(0).label("has_new")).where(
+                        table.c.batch_id == from_batch
+                    ),
+                    select(*fields, literal(0).label("has_old"), literal(1).label("has_new")).where(
+                        table.c.batch_id == to_batch
+                    ),
+                ).subquery("versions")
+                # Every admitted field is NONNULL and each ID occurs at most once
+                # per version. MIN != MAX therefore detects any stored-field edit.
+                # Side markers must survive UNION ALL even for self-comparison.
+                changed = or_(
+                    *(
+                        func.min(versions.c[column.name]) != func.max(versions.c[column.name])
+                        for column in fields
+                        if column.name != key
                     )
                 )
-                before, after, common, equal = c.execute(
+                records = (
                     select(
-                        select(func.count()).select_from(old).scalar_subquery(),
-                        select(func.count()).select_from(new).scalar_subquery(),
-                        shared.scalar_subquery(),
-                        unchanged.scalar_subquery(),
+                        versions.c[key],
+                        func.max(versions.c.has_old).label("has_old"),
+                        func.max(versions.c.has_new).label("has_new"),
+                        case((changed, 1), else_=0).label("changed"),
                     )
-                ).one()
-                result["tables"][label] = {
-                    "before": before,
-                    "after": after,
-                    "added": after - common,
-                    "removed": before - common,
-                    "changed": common - equal,
-                    "unchanged": equal,
+                    .group_by(versions.c[key])
+                    .subquery("record_changes")
+                )
+                shared = and_(records.c.has_old == 1, records.c.has_new == 1)
+                expressions = {
+                    "before": records.c.has_old,
+                    "after": records.c.has_new,
+                    "added": case((records.c.has_old == 0, 1), else_=0),
+                    "removed": case((records.c.has_new == 0, 1), else_=0),
+                    "changed": case((and_(shared, records.c.changed == 1), 1), else_=0),
+                    "unchanged": case((and_(shared, records.c.changed == 0), 1), else_=0),
                 }
+                result["tables"][label] = dict(
+                    c.execute(
+                        select(
+                            *(
+                                func.coalesce(func.sum(expression), 0).label(name)
+                                for name, expression in expressions.items()
+                            )
+                        )
+                    )
+                    .mappings()
+                    .one()
+                )
             return result
 
     def quarantine(self, limit=100):

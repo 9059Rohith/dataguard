@@ -74,11 +74,15 @@ The synthetic public profile at https://rohith-dataguard.vercel.app was independ
 ## Accepted-version comparison follow-up
 
 The authenticated comparison API/CLI is implemented without dependency, schema,
-image-base or workflow changes. The final SQLite and PostgreSQL suites each pass
-71 tests; native Python 3.15.1/PostgreSQL SQL and real HTTP checks pass up to 10,000
+image-base or workflow changes. Following the grouping rewrite, SQLite passes
+71 tests with one intentional PG-only skip, and PostgreSQL passes 72 tests;
+native Python 3.15.1/PostgreSQL SQL and real HTTP checks pass up to 10,000
 trades/version. README correction/rejection blocks were executed, including a
 fix to preserve timestamp strings through JSON edits. See
 [comparison verification](comparison-verification.md) for red/green, exact API,
 raw benchmarks, host observation and security checks. First-read tail outliers
-are retained and explicitly limit performance claims; no deployment of this
-revision or hosted CI pass is claimed by these local runs.
+led to an actual EXPLAIN diagnosis of about 100 million rejected nested-loop
+candidates; a join-free union/group implementation reduces one fresh first-trade
+statement from 40,755.019 to 43.985 ms in the recorded before/after experiment.
+The plan-work regression passes; all older tails are retained. No deployment of
+this revision, hosted CI pass or production latency guarantee is claimed.

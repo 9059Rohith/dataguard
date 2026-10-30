@@ -9,7 +9,7 @@
 | Atomic publication, last valid preserved | service.py gate + transaction + heads | rollback test, rejection matrix, real killed worker demo |
 | Idempotent replay and concurrency | unique key/hash + terminal attempts | repeated publication and concurrent staging tests |
 | Recovery/backfill | leases, fencing, recover(), partition heads | killed worker CLI test, backfill and monotonic version tests |
-| Accepted-version change analysis | Pipeline.compare SQL aggregates + protected API + trusted CLI | test_comparison: directional/self counts, partition ownership, published provenance, all unpublished states denied, no state mutation; native 10,000-trade probe |
+| Accepted-version change analysis | Pipeline.compare union/group aggregates + protected API + trusted CLI | test_comparison: directional/self counts, ownership/provenance, unpublished states denied, no mutation, PostgreSQL EXPLAIN work budget; native fresh 10,000-trade before/after plans + HTTP |
 | Useful quarantine | row/table/field/rule/message + source history | rejection matrix + HTTP smoke script |
 | Read API/dashboard | api.py + dashboard.html/js | TestClient and container HTTP smoke |
 | Auth fail-closed | authorize() minimum token + byte compare | missing/invalid token, blank config, malformed non-ASCII tests |

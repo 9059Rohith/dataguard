@@ -5,10 +5,11 @@ import json
 
 import pytest
 from fastapi.testclient import TestClient
-from sqlalchemy import text
+from sqlalchemy import event, text
 from test_pipeline import fixture_payload
 
 from dataguard.api import create_app
+from dataguard.cli import fixture
 
 pytest_plugins = ["test_pipeline"]
 
@@ -165,3 +166,53 @@ def test_comparison_api_is_private_in_public_demo_and_checks_ownership(tmp_path,
         )
         monkeypatch.delenv("DATAGUARD_TOKEN")
         assert client.get(route).status_code == 503
+
+
+def test_comparison_query_work_stays_linear_with_unfavorable_join_planner(pipeline):
+    """Catch repeated per-record scans; inspect actual work, not elapsed time or SQL text."""
+    if pipeline.engine.dialect.name != "postgresql":
+        pytest.skip("PostgreSQL EXPLAIN ANALYZE work-budget regression")
+    source = fixture(1000)
+    before = pipeline.stage("plan-old", source)
+    pipeline.process(before)
+    target = copy.deepcopy(source)
+    target["trades"][0]["amount_cents"] += 50
+    target["settlements"][0]["amount_cents"] += 50
+    after = pipeline.stage("plan-new", target)
+    pipeline.process(after)
+    captured = []
+
+    class Captured(Exception):
+        pass
+
+    def capture(_connection, _cursor, statement, parameters, _context, _many):
+        if "published_trades" in statement:
+            captured.append((statement, parameters))
+            raise Captured
+
+    event.listen(pipeline.engine, "before_cursor_execute", capture)
+    try:
+        with pytest.raises(Captured):
+            pipeline.compare(source["period"], before, after)
+    finally:
+        event.remove(pipeline.engine, "before_cursor_execute", capture)
+    statement, parameters = captured[0]
+    with pipeline.engine.begin() as connection:
+        # Model a valid unfavorable planner choice independently of current stats.
+        connection.exec_driver_sql("SET LOCAL enable_hashjoin = off")
+        connection.exec_driver_sql("SET LOCAL enable_mergejoin = off")
+        connection.exec_driver_sql("SET LOCAL statement_timeout = '10s'")
+        plan = connection.exec_driver_sql(
+            "EXPLAIN (ANALYZE, FORMAT JSON) " + statement, parameters
+        ).scalar()[0]["Plan"]
+
+    def visited(node):
+        return (
+            node.get("Actual Rows", 0)
+            + node.get("Rows Removed by Filter", 0)
+            + node.get("Rows Removed by Join Filter", 0)
+        ) * node.get("Actual Loops", 1) + sum(visited(child) for child in node.get("Plans", []))
+
+    # 2,000 admitted records, generous 16 visits/record across the plan tree.
+    # The original self joins visited about two million tuples/filter candidates.
+    assert visited(plan) <= 32000, f"Comparison rescans records: {visited(plan)} tuple visits"

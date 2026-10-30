@@ -32,3 +32,18 @@ CLI subprocess failed because compare was unregistered. See
 evidence/comparison-verification.md for current suite and native runtime results.
 README rebuilt around implemented capabilities, executable review path, measured
 sample/environment boundaries and live/local/configuration distinctions.
+
+Comparison plan follow-up: preserved baseline commit 14eae11 and all raw tails.
+Fresh 10,000-trade EXPLAIN ANALYZE reproduced 40.755-second nested-loop repeated
+batch scans, with about 100 million rejected candidates and no JIT. A 1,000-trade
+actual plan-work regression failed at 2,007,004 visits versus a 32,000 budget.
+Replaced record self joins with side-marked UNION ALL, per-ID MAX/MIN-MAX and
+final counts. SQLite: 71 passes + one PG-only skip; PostgreSQL: 72 passes.
+One fresh same-method native after plan takes 43.985 ms; tuple/filter plan work
+200,070,004 -> 90,001. Full plans, original tails and native real HTTP proofs are
+retained; no production percentile/SLA is claimed.
+
+Native full-suite follow-up: all 72 tests pass in the actual grouped Python
+3.15.1 non-root image, using a dedicated PostgreSQL test database and read-only
+test/dev-library mounts with native runtime package precedence. Image and module
+context plus complete output are committed; no installer/dependency changes.
