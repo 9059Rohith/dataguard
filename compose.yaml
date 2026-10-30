@@ -1,0 +1,35 @@
+name: dataguard
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: dataguard
+      POSTGRES_USER: dataguard
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in environment or .env}
+    ports: ["127.0.0.1:55434:5432"]
+    volumes: ["pgdata:/var/lib/postgresql/data"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U dataguard -d dataguard"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+    restart: unless-stopped
+  api:
+    build: .
+    image: dataguard:local
+    environment:
+      DATABASE_URL: postgresql+psycopg://dataguard:${POSTGRES_PASSWORD}@postgres:5432/dataguard
+      DATAGUARD_TOKEN: ${DATAGUARD_TOKEN:?Set a randomly generated token of at least 32 characters}
+    ports: ["127.0.0.1:8003:8000"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+    read_only: true
+    tmpfs: ["/tmp:rw,noexec,nosuid,size=16m"]
+    cap_drop: ["ALL"]
+    security_opt: ["no-new-privileges:true"]
+    mem_limit: 512m
+    cpus: 1
+    restart: unless-stopped
+volumes:
+  pgdata:

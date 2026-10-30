@@ -1,0 +1,11 @@
+{
+  "scanner": "Trivy v0.76 image from locally cached aquasec/trivy:latest",
+  "database_updated_at": "2026-10-20T07:17:35.368599961Z",
+  "database_downloaded_at": "2026-10-20T10:30:54.87258254Z",
+  "scan_date": "2026-10-30",
+  "source": "Read-only copy of an existing local scanner cache, never modified at source",
+  "fresh_database_attempt": "Stopped because remote 130.79 MiB DB download was ~35 KiB/s with >1h ETA",
+  "flags": ["--skip-db-update", "--offline-scan", "--scanners", "vuln", "--severity", "HIGH,CRITICAL", "--ignore-unfixed", "--exit-code", "1"],
+  "scope": "Known HIGH/CRITICAL vulnerabilities with fixes as of cached database; not a fresh vulnerability guarantee",
+  "release_gate": "CI must complete a fresh Trivy DB update and scan before release"
+}

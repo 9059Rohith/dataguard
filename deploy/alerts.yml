@@ -1,0 +1,16 @@
+groups:
+  - name: dataguard
+    rules:
+      - alert: DataGuardDatabaseUnavailable
+        expr: dataguard_database_up == 0
+        for: 1m
+        labels: {severity: critical}
+        annotations:
+          summary: DataGuard cannot reach its publication database
+          runbook: See docs/RUNBOOKS.md database outage
+      - alert: DataGuardRejectingInputs
+        expr: increase(dataguard_process_total{status="rejected"}[5m]) > 0
+        labels: {severity: warning}
+        annotations:
+          summary: At least one API-triggered input was quarantined
+          runbook: See docs/RUNBOOKS.md quarantine

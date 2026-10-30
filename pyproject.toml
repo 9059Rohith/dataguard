@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools>=75"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "dataguard-reliability"
+version = "1.0.0"
+description = "Transactional settlement data contracts, quarantine, and recovery"
+requires-python = ">=3.12"
+dependencies = ["fastapi>=0.115,<1", "uvicorn>=0.32,<1", "sqlalchemy>=2.0,<3", "psycopg[binary]>=3.2,<4", "prometheus-client>=0.21,<1"]
+
+[project.optional-dependencies]
+dev = ["pytest>=8,<10", "httpx>=0.28,<1", "httpx2", "ruff>=0.12,<1", "pip-audit>=2.9,<3", "bandit>=1.8,<2"]
+airflow = ["apache-airflow>=3.1,<4"]
+
+[project.scripts]
+dataguard = "dataguard.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["dataguard*"]
+
+[tool.setuptools.package-data]
+dataguard = ["*.html", "*.js"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F", "I", "B", "UP"]

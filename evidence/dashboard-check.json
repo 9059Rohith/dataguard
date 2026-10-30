@@ -1,0 +1,31 @@
+{
+  "browser": "Chromium via Playwright 1.62.1",
+  "browser_plugin": "unavailable",
+  "flow": "Load dashboard → live SQL state → Refresh state → consistent displayed result",
+  "checks": [
+    {
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "title": "DataGuard | Reliability console",
+      "no_runtime_errors": true,
+      "no_horizontal_overflow": true,
+      "live_sql_state": true,
+      "refresh_preserves_current_state": true,
+      "screenshot": "evidence/dashboard-1440.png"
+    },
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "title": "DataGuard | Reliability console",
+      "no_runtime_errors": true,
+      "no_horizontal_overflow": true,
+      "live_sql_state": true,
+      "refresh_preserves_current_state": true,
+      "screenshot": "evidence/dashboard-390.png"
+    }
+  ]
+}

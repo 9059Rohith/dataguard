@@ -1,0 +1,25 @@
+# Interview discussion guide
+
+**What is the business failure you prevent?** A malformed export or duplicate delivery can replace a reconciled settlement view with partial or incorrect data. A batch is staged immutably, validated across tables, then published atomically. Invalid input is isolated while the last valid partition remains available.
+
+**How is this different from catching an exception and retrying?** The failure may occur after some rows were inserted. The transaction rolls those rows back, while the separately committed attempt/lease records that work was in flight. Recovery retries exact staged bytes after lease expiration and verifies a fencing identity. The demo kills a real process after row insertion and checks both publication preservation and row uniqueness.
+
+**What exactly is idempotent?** A stable key names canonical JSON. Same key and same digest returns the same batch ID; different bytes conflict. A committed terminal attempt is returned without republishing. Database PKs protect materialized row identities. This is an idempotent database publication guarantee, not an end-to-end exactly-once guarantee for upstream transport or external payments.
+
+**Why a head pointer?** All rows carry batch_id. The per-period head switches only in the transaction that inserted validated rows and completed the attempt. Reads choose one immutable batch identity, so even if a newer head commits during a multi-statement read, the original batch's rows remain coherent.
+
+**Why integer amounts?** Binary floating point can introduce rounding noise into reconciliation. Integer minor units make totals exact within documented bounds. This does not solve currency conversion or precision policy; the v1 contract deliberately has no exchange-rate arithmetic.
+
+**What if a slow worker resumes after recovery?** Publication checks the newest attempt ID while holding the same SQL gate used for claims. A stale attempt is fenced. The gate also prevents the recovery worker from racing a still-open publication transaction. A historical lower batch ID cannot replace a newer partition head.
+
+**How do backfills work?** Historical period/events plus fresh export time pass the same contract. The head for that period changes; unrelated periods remain untouched. Corrected inputs receive a new key/version and retain rejected evidence.
+
+**What is your biggest scaling bottleneck?** The global gate allows one claim/publication writer at a time, and recovery scans history. This makes correctness easy to inspect for modest batches but limits throughput. A measured next step is a bounded indexed queue and partition-scoped fencing, with concurrency/failure tests for absent partitions and lease transfer.
+
+**What do your benchmark numbers prove?** Actual local stage/validation/publication latency for 100-trade batches at concurrency one, with raw samples and machine/database details. Nearest-rank p99 of 100 samples is unstable; it is reproducibility evidence, not a production SLA. Crash recovery timing includes process startup and lease wait.
+
+**Why use Airflow if the service already retries?** Airflow provides task scheduling, delivery retries and operator visibility. Correctness stays in the storage layer because API, CLI, retries and multiple schedulers must share one guarantee. The DAG stages mounted immutable JSON and passes only the batch ID to its publish task.
+
+**Which DevOps practices are present?** Real PostgreSQL integration tests, pinned Python dependencies, container build/security checks, separate liveness/readiness, Prometheus signals, non-root resource-limited deployment, secret references, network controls, Terraform AWS infrastructure and a manual OIDC rollout workflow with rollback detection.
+
+**What would block production rollout?** No live AWS deployment/failover evidence, no schema migration tool, shared operator token instead of user identities, bootstrap owner credentials, deployment-specific TLS identity verification and retention policy, and no tested multi-AZ or high-concurrency capacity. These are explicit engineering work items, not hidden behind a self-healing label.
