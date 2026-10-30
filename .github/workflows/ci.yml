@@ -1,0 +1,47 @@
+name: verify
+on: [push, pull_request]
+permissions: {contents: read}
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env: {POSTGRES_DB: dataguard_test, POSTGRES_USER: dataguard, POSTGRES_PASSWORD: ci-disposable-db-only}
+        ports: ["5432:5432"]
+        options: --health-cmd="pg_isready -U dataguard" --health-interval=3s --health-retries=20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12', cache: pip}
+      - run: pip install -r requirements-dev.lock && pip install --no-deps -e .
+      - run: pytest -q
+      - run: pytest -q tests/test_pipeline.py
+        env: {TEST_DATABASE_URL: 'postgresql+psycopg://dataguard:ci-disposable-db-only@localhost:5432/dataguard_test'}
+      - run: ruff check . && ruff format --check .
+      - run: bandit -r dataguard -ll && pip-audit -r requirements.lock --no-deps --disable-pip
+      - run: python -m dataguard.cli demo --samples 100 --rows 100 --output evidence/ci-benchmark.json
+      - uses: actions/upload-artifact@v4
+        with: {name: recovery-and-benchmark, path: evidence/ci-benchmark.json}
+  airflow:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: >
+          docker run --rm --entrypoint python -v "$PWD/dags:/dags:ro" apache/airflow:3.3.2-python3.12
+          -c "import runpy; d=runpy.run_path('/dags/dataguard_pipeline.py')['dag']; assert d.dag_id == 'dataguard_settlement_publication'; assert len(d.tasks)==2"
+  container:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - run: docker build -t dataguard:ci .
+      - uses: aquasecurity/trivy-action@0.35.0
+        with: {image-ref: 'dataguard:ci', severity: 'CRITICAL,HIGH', exit-code: '1', ignore-unfixed: true}
+  terraform:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v3
+        with: {terraform_version: '1.13.5'}
+      - run: terraform -chdir=infra fmt -check && terraform -chdir=infra init -backend=false && terraform -chdir=infra validate
