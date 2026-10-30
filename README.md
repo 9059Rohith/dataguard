@@ -1,4 +1,8 @@
-# DataGuard — data pipeline reliability and recovery
+# DataGuard â€” data pipeline reliability and recovery
+
+[![CI](https://github.com/9059Rohith/dataguard/actions/workflows/ci.yml/badge.svg)](https://github.com/9059Rohith/dataguard/actions/workflows/ci.yml)
+
+Hosted CI is currently blocked by an account-level runner restriction. [Executed local verification](evidence/verification.md) is recorded separately; no hosted pass is claimed.
 
 A Python/SQL platform that stops invalid settlement batches from replacing a usable dataset. This project demonstrates data engineering contracts, SQL transactions, recovery, orchestration, and deployment operations relevant to OpenFX Data Engineering Intern and DevOps Intern work. It uses synthetic data and makes no claim of affiliation or production use.
 
@@ -60,7 +64,7 @@ Compose exposes PostgreSQL on **127.0.0.1:55434** and the dashboard on **127.0.0
 
 ## Contract and API
 
-The contract is executable in `dataguard/contracts.py`, not a prose-only configuration. Exact allowed columns, integer amounts (booleans rejected), nonempty bounded identifiers, per-table primary-key uniqueness, same-batch settlement references, matching currencies, positive trade amounts, allowed currencies, UTC event partition date, export freshness (past 24 hours / future 5 minutes), and per-settlement trade totals are enforced. Inputs have 1–10,000 rows per table and an 8 MB HTTP/staging limit. Amounts are **minor currency units** despite the field name `amount_cents`; no exchange-rate conversion occurs. Historical backfills use an old event period and a freshly produced export. See [contract details](docs/CONTRACT.md).
+The contract is executable in `dataguard/contracts.py`, not a prose-only configuration. Exact allowed columns, integer amounts (booleans rejected), nonempty bounded identifiers, per-table primary-key uniqueness, same-batch settlement references, matching currencies, positive trade amounts, allowed currencies, UTC event partition date, export freshness (past 24 hours / future 5 minutes), and per-settlement trade totals are enforced. Inputs have 1â€“10,000 rows per table and an 8 MB HTTP/staging limit. Amounts are **minor currency units** despite the field name `amount_cents`; no exchange-rate conversion occurs. Historical backfills use an old event period and a freshly produced export. See [contract details](docs/CONTRACT.md).
 
 | Route | Purpose | Access |
 |---|---|---|
