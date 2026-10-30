@@ -1,0 +1,33 @@
+{
+  "generated_at": "2026-10-30T16:01:22.472469+00:00",
+  "probe_python": "3.12.14",
+  "database": "postgresql",
+  "source_versions": [
+    2,
+    10000
+  ],
+  "observed_violation_counts": [
+    0,
+    9599
+  ],
+  "single_request_ms": 634.78,
+  "response_bytes": 3680,
+  "proofs": {
+    "actual_http": true,
+    "unauthenticated_denied": true,
+    "typed_openapi": true,
+    "invalid_input_redacted": true,
+    "quarantined_version_excluded": true,
+    "published_state_unchanged": true,
+    "max_admitted_trade_version_evaluated": true,
+    "bounded_opaque_samples": true,
+    "overstrict_candidate_blocked": true
+  },
+  "scope": "one synthetic max-trade HTTP experiment; not a performance distribution or production-accuracy estimate",
+  "runtime": {
+    "python": "3.15.1 (heads/3.15-dirty:d6903b58e39, Oct 27 2026, 20:52:19) [GCC 16.2.0]",
+    "uid": 10001
+  },
+  "image": "dataguard:policylab",
+  "image_id": "sha256:a9d2885987a49f60d1ef73ff04e324af81720da6750640ce339c66c93dc85567"
+}

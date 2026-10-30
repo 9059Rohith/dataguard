@@ -1,0 +1,13 @@
+{
+  "python": "3.15.1",
+  "database": "sqlite",
+  "result": {
+    "passed": 150,
+    "skipped": 1,
+    "failed": 0
+  },
+  "skip_reason": "PostgreSQL-only EXPLAIN ANALYZE planner-work regression",
+  "observed_duration_seconds": 35.51,
+  "command": "docker run --rm --read-only --tmpfs /tmp:rw,noexec,nosuid,size=128m --cap-drop ALL --security-opt no-new-privileges -v <repository>:/workspace:ro -w /workspace -e DATAGUARD_AUTO_INIT=true dataguard:policylab-tests python -m pytest tests -q -o cache_dir=/tmp/pytest-cache",
+  "scope": "Full repository suite observed from the tool output; derived minimal runtime test image adds pinned test tooling only; current source mounted read-only. Final production-image HTTP probe is recorded separately."
+}

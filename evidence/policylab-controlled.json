@@ -1,0 +1,164 @@
+{
+  "scope": "controlled_synthetic_policy_decisions",
+  "generated_at": "2026-10-30T16:00:44.257614+00:00",
+  "environment": {
+    "python": "3.15.1",
+    "database": "sqlite",
+    "database_scope": "disposable_temporary_directory"
+  },
+  "published_versions": 3,
+  "trades_per_version": 2,
+  "settlements_per_version": 1,
+  "dataset_recipe": [
+    {
+      "amounts_cents": [
+        100,
+        200
+      ],
+      "currency": "USD"
+    },
+    {
+      "amounts_cents": [
+        100,
+        900
+      ],
+      "currency": "USD"
+    },
+    {
+      "amounts_cents": [
+        100,
+        200
+      ],
+      "currency": "EUR"
+    }
+  ],
+  "expected_decisions_match": true,
+  "policy_scenarios": [
+    {
+      "name": "compatible-cap",
+      "expected_acceptance": [
+        true,
+        true,
+        true
+      ],
+      "observed_acceptance": [
+        true,
+        true,
+        true
+      ],
+      "expected_violation_counts": [
+        0,
+        0,
+        0
+      ],
+      "observed_violation_counts": [
+        0,
+        0,
+        0
+      ],
+      "baseline_sha256": "975029ef5bb96c4301c161dbd27e44886fe24be0a99ec7ef4d1ae84c41d8948a",
+      "candidate_sha256": "165b357e416b3b85f636c20783b20a8d523da92c8043362cca03e3c26a8a5618",
+      "newly_rejected_published_versions": 0,
+      "recommendation": "shadow_only"
+    },
+    {
+      "name": "overstrict-cap",
+      "expected_acceptance": [
+        true,
+        false,
+        true
+      ],
+      "observed_acceptance": [
+        true,
+        false,
+        true
+      ],
+      "expected_violation_counts": [
+        0,
+        1,
+        0
+      ],
+      "observed_violation_counts": [
+        0,
+        1,
+        0
+      ],
+      "baseline_sha256": "975029ef5bb96c4301c161dbd27e44886fe24be0a99ec7ef4d1ae84c41d8948a",
+      "candidate_sha256": "d44f8c12a3aec07c89e1f46c227dd75c309ecf91d44a8aea2b6abcd567082cfa",
+      "newly_rejected_published_versions": 1,
+      "recommendation": "block_candidate"
+    },
+    {
+      "name": "overstrict-currency",
+      "expected_acceptance": [
+        true,
+        true,
+        false
+      ],
+      "observed_acceptance": [
+        true,
+        true,
+        false
+      ],
+      "expected_violation_counts": [
+        0,
+        0,
+        2
+      ],
+      "observed_violation_counts": [
+        0,
+        0,
+        2
+      ],
+      "baseline_sha256": "975029ef5bb96c4301c161dbd27e44886fe24be0a99ec7ef4d1ae84c41d8948a",
+      "candidate_sha256": "078449d92392d07e4a2e61722431e77d3631677be61ea4f210ebf2ad24b8d98b",
+      "newly_rejected_published_versions": 1,
+      "recommendation": "block_candidate"
+    },
+    {
+      "name": "overstrict-settlement-uniqueness",
+      "expected_acceptance": [
+        false,
+        false,
+        false
+      ],
+      "observed_acceptance": [
+        false,
+        false,
+        false
+      ],
+      "expected_violation_counts": [
+        2,
+        2,
+        2
+      ],
+      "observed_violation_counts": [
+        2,
+        2,
+        2
+      ],
+      "baseline_sha256": "975029ef5bb96c4301c161dbd27e44886fe24be0a99ec7ef4d1ae84c41d8948a",
+      "candidate_sha256": "3295c24e547954deb895336ab833a3e536b1d650c395ac94d82e29b7e41ad717",
+      "newly_rejected_published_versions": 3,
+      "recommendation": "block_candidate"
+    }
+  ],
+  "invalid_policy_cases": {
+    "sql-column": "rejected",
+    "boolean-bound": "rejected",
+    "unknown-version": "rejected"
+  },
+  "unpublished_cases": {
+    "negative": "excluded",
+    "duplicate": "excluded",
+    "total-mismatch": "excluded"
+  },
+  "mutation_check": "publication_state_unchanged",
+  "limitations": [
+    "Three hand-constructed valid versions and four policy scenarios are a finite regression study.",
+    "Synthetic values shown in the recipe are deliberately public; operator reports never include source values.",
+    "Labels encode compatibility with these known valid synthetic fixtures, not general business correctness.",
+    "No production accuracy, false-positive rate, statistical confidence, or model-performance estimate follows.",
+    "Negative/duplicate/total-mismatch batches demonstrate admission and eligibility boundaries, not anomaly-model recall."
+  ]
+}

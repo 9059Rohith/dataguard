@@ -16,6 +16,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 from sqlalchemy import text
+from sqlalchemy.exc import SQLAlchemyError
 
 from dataguard.service import Pipeline
 
@@ -158,13 +159,21 @@ def main():
     compare.add_argument("period")
     compare.add_argument("--from-batch", type=int, required=True)
     compare.add_argument("--to-batch", type=int, required=True)
+    impact = subs.add_parser("policy-impact", help="Read-only proposed-policy experiment")
+    impact.add_argument("file", help="ImpactRequest JSON, at most 64 KiB")
+    impact.add_argument("--token-env", default="DATAGUARD_OPERATOR_TOKEN")
+    evaluate = subs.add_parser("policy-evaluate", help="Isolated controlled synthetic policy study")
+    evaluate.add_argument("--token-env", default="DATAGUARD_OPERATOR_TOKEN")
+    evaluate.add_argument("--output")
     bench = subs.add_parser("demo")
     bench.add_argument("--samples", type=int, default=100)
     bench.add_argument("--rows", type=int, default=100)
     bench.add_argument("--output")
     args = parser.parse_args()
-    pipeline = Pipeline(
-        args.database, lease_seconds=1 if args.command in {"demo", "worker"} else 30
+    pipeline = (
+        None
+        if args.command == "policy-evaluate"
+        else Pipeline(args.database, lease_seconds=1 if args.command in {"demo", "worker"} else 30)
     )
     if args.command in {"init", "demo"}:
         pipeline.initialize()
@@ -186,6 +195,30 @@ def main():
             parser.error(
                 str(error) if isinstance(error, ValueError) else "Published version not found"
             )
+    elif args.command == "policy-impact":
+        from dataguard.policy_engine import PolicyBudgetExceeded, PolicyLab
+        from dataguard.policy_io import authorize_operator, load_impact_file
+
+        try:
+            authorize_operator(args.token_env)
+            output = PolicyLab(pipeline.engine).impact(load_impact_file(args.file)).model_dump()
+        except (ValueError, PolicyBudgetExceeded) as error:
+            parser.error(str(error))
+        except KeyError:
+            parser.error("Published version not found")
+        except OSError:
+            parser.error("Cannot read policy document")
+        except SQLAlchemyError:
+            parser.error("Database unavailable")
+    elif args.command == "policy-evaluate":
+        from dataguard.policy_evaluation import controlled_evaluation
+        from dataguard.policy_io import authorize_operator
+
+        try:
+            authorize_operator(args.token_env)
+            output = controlled_evaluation()
+        except ValueError as error:
+            parser.error(str(error))
     else:
         output = demo(pipeline, args.samples, args.rows)
     rendered = json.dumps(output, indent=2)

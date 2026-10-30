@@ -6,6 +6,7 @@ from starlette.exceptions import HTTPException
 from starlette.responses import JSONResponse
 
 from dataguard.limits import MAX_BODY_BYTES, check_json_structure
+from dataguard.policy_io import POLICY_MAX_BYTES, decode_policy_json
 
 
 class RequestGuard:
@@ -48,11 +49,15 @@ class RequestGuard:
                 await reject(413, "Body exceeds 8 MB")
                 return
         mutation = method in {"POST", "PUT", "PATCH", "DELETE"}
+        policy_request = path == "/policies/impact"
         if mutation:
             try:
                 self.authorize(headers.get("authorization"))
             except HTTPException as error:
                 await reject(error.status_code, error.detail, error.headers)
+                return
+            if policy_request and length is not None and int(length) > POLICY_MAX_BYTES:
+                await reject(413, "Policy document exceeds 64 KiB")
                 return
         elif (length is not None and int(length)) or headers.get("transfer-encoding"):
             await reject(400, "Request bodies are not supported for this method")
@@ -77,8 +82,9 @@ class RequestGuard:
                             if message["type"] == "http.disconnect":
                                 return
                             chunk = message.get("body", b"")
-                            if len(chunk) > MAX_BODY_BYTES - len(body):
-                                await reject(413, "Body exceeds 8 MB")
+                            body_limit = POLICY_MAX_BYTES if policy_request else MAX_BODY_BYTES
+                            if len(chunk) > body_limit - len(body):
+                                await reject(413, "Body exceeds request limit")
                                 return
                             body.extend(chunk)
                             if not message.get("more_body", False):
@@ -93,6 +99,12 @@ class RequestGuard:
                 except ValueError:
                     await reject(413, "JSON nesting or structural limit exceeded")
                     return
+                if policy_request:
+                    try:
+                        decode_policy_json(raw)
+                    except ValueError:
+                        await reject(422, "Invalid policy request")
+                        return
                 replayed = False
 
                 async def bounded_receive():

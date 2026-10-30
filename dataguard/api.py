@@ -13,12 +13,15 @@ from typing import Annotated
 import anyio
 from fastapi import Depends, FastAPI, Header, HTTPException, Query, Request
 from fastapi import Path as PathParameter
+from fastapi.exceptions import RequestValidationError
 from fastapi.responses import HTMLResponse, JSONResponse, Response
 from prometheus_client import CollectorRegistry, Counter, Gauge, Histogram, generate_latest
 from pydantic import BaseModel, ConfigDict, Field
 from sqlalchemy.exc import SQLAlchemyError
 
 from dataguard.guard import RequestGuard
+from dataguard.policy_engine import PolicyBudgetExceeded, PolicyLab
+from dataguard.policy_models import ImpactReport, ImpactRequest
 from dataguard.service import Busy, Conflict, Pipeline
 
 BatchId = Annotated[int, PathParameter(ge=1, le=2_147_483_647)]
@@ -183,6 +186,23 @@ def create_app(url=None):
     async def unavailable(_request, _error):
         return JSONResponse({"detail": "Database unavailable"}, status_code=503)
 
+    @app.exception_handler(PolicyBudgetExceeded)
+    async def policy_budget(_request, _error):
+        return JSONResponse(
+            {"detail": "Policy experiment work budget exceeded"},
+            status_code=503,
+            headers={"Retry-After": "1"},
+        )
+
+    @app.exception_handler(RequestValidationError)
+    async def validation_error(request, error):
+        if request.url.path.removeprefix(request.scope.get("root_path", "")) == "/policies/impact":
+            # Pydantic default errors reflect rejected values, discriminator tags and keys.
+            return JSONResponse({"detail": "Invalid policy request"}, status_code=422)
+        from fastapi.exception_handlers import request_validation_exception_handler
+
+        return await request_validation_exception_handler(request, error)
+
     @app.get("/health")
     def health():
         return {"status": "alive"}
@@ -233,6 +253,10 @@ def create_app(url=None):
     @app.get("/quarantine", dependencies=[Depends(authorize)])
     def quarantine():
         return pipeline.quarantine()
+
+    @app.post("/policies/impact", dependencies=[Depends(authorize)], response_model=ImpactReport)
+    def policy_impact(body: ImpactRequest):
+        return PolicyLab(pipeline.engine).impact(body)
 
     @app.get("/batches/{batch_id}", dependencies=[Depends(authorize)])
     def batch(batch_id: BatchId):

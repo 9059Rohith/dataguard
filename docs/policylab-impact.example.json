@@ -1,0 +1,23 @@
+{
+  "baseline": {
+    "version": 1,
+    "rules": [
+      {"id": "business-amount-cap", "kind": "range", "table": "trades", "field": "amount_cents", "minimum": 1, "maximum": 10000},
+      {"id": "settlement-reference", "kind": "reference", "match_currency": true},
+      {"id": "settlement-total", "kind": "totals", "tolerance_cents": 0}
+    ]
+  },
+  "candidate": {
+    "version": 1,
+    "rules": [
+      {"id": "business-amount-cap", "kind": "range", "table": "trades", "field": "amount_cents", "minimum": 1, "maximum": 500},
+      {"id": "settlement-reference", "kind": "reference", "match_currency": true},
+      {"id": "settlement-total", "kind": "totals", "tolerance_cents": 0}
+    ]
+  },
+  "versions": [
+    {"period": "2026-10-30", "batch_id": 1},
+    {"period": "2026-10-30", "batch_id": 2}
+  ],
+  "sample_limit": 3
+}

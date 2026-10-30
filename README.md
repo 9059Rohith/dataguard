@@ -8,7 +8,24 @@ Built as an independent portfolio project for data engineering and DevOps work, 
 
 ![DataGuard dashboard with real SQL publication state](evidence/public-dashboard.jpg)
 
-## Five implemented capabilities
+## PolicyLab signature: test quality policy against immutable evidence
+
+`POST /policies/impact` compares a baseline and proposed policy against up to eight explicitly selected published versions, including retained versions behind the current head. A stricter amount cap, narrower currency set, or mistaken settlement-reference uniqueness rule can reject already valid data. PolicyLab shows those compatibility regressions before enforcement, with canonical policy hashes, successful publication provenance, exact rule counts, bounded opaque samples and conservative `block_candidate`, `shadow_only` or `limited_canary` recommendations. It never installs a policy or changes publication state.
+
+The typed version-1 language supports ranges, currency categories, completeness, uniqueness, publication-relative event freshness, settlement references and reconciled totals. It accepts no executable expressions or SQL. Both policies run in one read-only snapshot with 10-second statement timeouts, a 20-second experiment budget and strict rule/version/source/input bounds. Operator authentication remains required in public-demo mode. Reports exclude raw source IDs, values, idempotency keys and staged payloads.
+
+Read the [PolicyLab language, method and limitations](docs/policylab-method.md), and adapt the explicit version selectors in the [example request](docs/policylab-impact.example.json). Local commands use `DATAGUARD_TOKEN` plus a separately supplied matching `DATAGUARD_OPERATOR_TOKEN`:
+
+```powershell
+# impact.json contains baseline, candidate, versions:[{period,batch_id}], sample_limit
+python -m dataguard.cli policy-impact impact.json
+# Always uses a disposable synthetic SQLite database; never the operator database
+python -m dataguard.cli policy-evaluate --output evidence/policylab-controlled.json
+```
+
+The controlled evaluation runs four policies over three synthetic accepted versions with literal expected outcomes: a compatible cap accepts all, a tighter cap rejects one, a currency restriction rejects another, and settlement-reference uniqueness rejects all three. Invalid policies and quarantined batches are also exercised. This is a finite policy-compatibility study, with no production-accuracy or generalization claim. [Recorded study](evidence/policylab-controlled.json) · [Verification](evidence/policylab-verification.md).
+
+## Six implemented capabilities
 
 | Capability | Concrete behavior | Why it matters |
 |---|---|---|
@@ -16,6 +33,7 @@ Built as an independent portfolio project for data engineering and DevOps work, 
 | Immutable, idempotent ingestion | Canonical JSON SHA256; repeated key/payload returns one ID; conflicting reuse returns 409; SQL triggers prohibit staged edits/deletes | Retries and investigations refer to immutable source values |
 | Transactional publication and recovery | Rows, partition head and successful attempt commit together; durable leases and attempt fencing recover interrupted workers | A real process killed after insertion leaves the previous version readable |
 | Published-version change analysis | Protected SQL counts of added, removed, changed and unchanged trades/settlements with both source digests and publication provenance | Review a correction without exporting raw records or switching the head |
+| PolicyLab quality-policy experiments | Strict declarative policies, immutable SQL evidence, baseline/candidate rejection transitions, opaque bounded samples and staged recommendations | Catch a proposed policy rejecting valid historical data before enforcement |
 | Operable service and deployment artifacts | FastAPI/CLI, Airflow 3 DAG, private metrics, liveness/readiness, non-root digest-pinned runtime, Compose, Kubernetes and Terraform | Connect correctness to repeatable operational checks and explicit rollout boundaries |
 
 ```mermaid

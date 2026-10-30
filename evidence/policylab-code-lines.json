@@ -1,0 +1,70 @@
+{
+  "method": "Net Python token-bearing physical lines excluding blanks, comments and standalone module/class/function docstrings. Includes necessary continuation/structure lines; not a count of statements or claimed performance. Docs/evidence excluded.",
+  "totals": {
+    "production": 841,
+    "tests": 660,
+    "verification_scripts": 146
+  },
+  "files": [
+    {
+      "file": "dataguard/api.py",
+      "category": "production",
+      "net_code_lines": 19
+    },
+    {
+      "file": "dataguard/cli.py",
+      "category": "production",
+      "net_code_lines": 31
+    },
+    {
+      "file": "dataguard/guard.py",
+      "category": "production",
+      "net_code_lines": 12
+    },
+    {
+      "file": "dataguard/policy_engine.py",
+      "category": "production",
+      "net_code_lines": 361
+    },
+    {
+      "file": "dataguard/policy_evaluation.py",
+      "category": "production",
+      "net_code_lines": 202
+    },
+    {
+      "file": "dataguard/policy_io.py",
+      "category": "production",
+      "net_code_lines": 43
+    },
+    {
+      "file": "dataguard/policy_models.py",
+      "category": "production",
+      "net_code_lines": 173
+    },
+    {
+      "file": "scripts/policylab-smoke.py",
+      "category": "verification_scripts",
+      "net_code_lines": 146
+    },
+    {
+      "file": "tests/test_policy_api.py",
+      "category": "tests",
+      "net_code_lines": 147
+    },
+    {
+      "file": "tests/test_policy_engine.py",
+      "category": "tests",
+      "net_code_lines": 324
+    },
+    {
+      "file": "tests/test_policy_evaluation.py",
+      "category": "tests",
+      "net_code_lines": 32
+    },
+    {
+      "file": "tests/test_policy_models.py",
+      "category": "tests",
+      "net_code_lines": 157
+    }
+  ]
+}
