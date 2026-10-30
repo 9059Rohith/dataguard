@@ -170,7 +170,7 @@ Hosted GitHub Actions are currently blocked by an account-level runner restricti
 | Scope | Status and boundary |
 |---|---|
 | Vercel synthetic API/dashboard + durable PostgreSQL | Live; [HTTP checks](evidence/public-deployment-http.json) and [release verification](evidence/public-release-verification.json). Anonymous visitors see aggregates; operator data/actions stay private. |
-| Published-version comparison | Implemented and verified locally; needs operator access and two accepted versions. Deployment of this revision is tracked by the release operator. |
+| Published-version comparison | Deployed and verified over public HTTPS; operator token required. [Live feature proof](evidence/review-public-feature.json) checks accepted-version counts, provenance and denied access. Local tests exercise changed versions and recovery. |
 | SQLite/PostgreSQL publication, rejection, killed-worker recovery | Executed locally with committed tests and measurements |
 | Digest-pinned Python 3.15.1 image, Compose, HTTP/browser checks | Executed locally; UID 10001, no installer in runtime, restricted Compose service |
 | Airflow 3 orchestration | Real SDK DAG; requires separate scheduler/workers and artifact mount |
@@ -185,3 +185,5 @@ Raw inputs, diagnostics, comparison provenance, metrics and writes require the o
 The global gate trades throughput for inspectable correctness; recovery scans history. Retained versions consume storage. Comparison is bounded by admitted row counts, but is not a CDC feed, semantic timestamp normalizer or row-level diff. There is no streaming engine, multi-tenant RBAC, schema migration framework, production SLO, tested multi-AZ failover, external exactly-once guarantee or real payment execution. Database-admin tampering, upstream authenticity and backup/restore policy remain outside the application guarantee.
 
 Five-minute review: live dashboard → correction comparison → killed-worker demo → `Pipeline.process` and `Pipeline.compare` in [service.py](dataguard/service.py) → [ADRs](docs/ADR.md) and [interview discussion](docs/INTERVIEW.md). For data engineering, follow [contract](docs/CONTRACT.md), [traceability](docs/TRACEABILITY.md) and provenance. For DevOps, follow [runbooks](docs/RUNBOOKS.md), [Dockerfile](Dockerfile), deployment and verification evidence.
+
+Current release evidence: [protected public feature](evidence/review-public-feature.json), [fresh all-severity runtime image scan](evidence/review-image-scan.json), and [tracked-source secret scan](evidence/review-source-secret-scan.json). These are executed checks with defined scope, not a guarantee of perfect security.

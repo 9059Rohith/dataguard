@@ -1,0 +1,7 @@
+{
+  "commit": "c7351afee76c3a34a347bfeb2a186094b81396a4",
+  "scanner": "Trivy0.76.0",
+  "input": "git archive HEAD; tracked files only",
+  "secret_findings": 0,
+  "scope": "No ignored credentials, virtualenvs or unrelated parent projects scanned"
+}

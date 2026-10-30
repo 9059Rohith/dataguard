@@ -1,0 +1,29 @@
+{
+  "verified_at_utc": "2026-10-30T15:38:26.044832+00:00",
+  "public_url": "https://rohith-dataguard.vercel.app",
+  "scope": "Actual protected feature calls through the public production hostname; credentials excluded",
+  "checks": {
+    "anonymous_denied": true,
+    "tables": {
+      "trades": {
+        "before": 3,
+        "after": 3,
+        "added": 0,
+        "removed": 0,
+        "changed": 0,
+        "unchanged": 3
+      },
+      "settlements": {
+        "before": 2,
+        "after": 2,
+        "added": 0,
+        "removed": 0,
+        "changed": 0,
+        "unchanged": 2
+      }
+    },
+    "wrong_period_404": true,
+    "unknown_version_404": true,
+    "same_version_provenance_consistent": true
+  }
+}
