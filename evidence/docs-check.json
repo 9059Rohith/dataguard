@@ -1,0 +1,41 @@
+{
+  "generated_at": "2026-10-30T13:38:54.039Z",
+  "base": "http://127.0.0.1:8003",
+  "browser": "Chromium via Playwright 1.62.1",
+  "execution": "reproducible headless browser integration test",
+  "flow": "/docs → GET /health → Try it out → Execute → 200 alive",
+  "checks": [
+    {
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "title": "DataGuard - Swagger UI",
+      "swagger_rendered": true,
+      "health_execute_status": 200,
+      "health_execute_body": "{\"status\":\"alive\"}",
+      "csp": "default-src 'self'; script-src 'self' https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/ 'sha256-j8SaXne87U2VMpyMoUFgvGSgdewzd5d5jACoTkrqCy4='; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/; img-src 'self' data: https://fastapi.tiangolo.com/img/favicon.png; font-src 'self' https://fonts.gstatic.com; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'",
+      "csp_violations": [],
+      "console_errors": [],
+      "screenshot": "evidence/docs-1440.png"
+    },
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "title": "DataGuard - Swagger UI",
+      "swagger_rendered": true,
+      "health_execute_status": 200,
+      "health_execute_body": "{\"status\":\"alive\"}",
+      "csp": "default-src 'self'; script-src 'self' https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/ 'sha256-j8SaXne87U2VMpyMoUFgvGSgdewzd5d5jACoTkrqCy4='; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/; img-src 'self' data: https://fastapi.tiangolo.com/img/favicon.png; font-src 'self' https://fonts.gstatic.com; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'",
+      "csp_violations": [],
+      "console_errors": [],
+      "screenshot": "evidence/docs-390.png"
+    }
+  ],
+  "redoc": {
+    "rendered": true,
+    "console_errors": []
+  }
+}

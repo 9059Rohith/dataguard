@@ -1,6 +1,9 @@
 """Operator API. Raw inputs and diagnostics require the same token as writes."""
 
+import base64
+import hashlib
 import os
+import re
 import secrets
 import time
 from contextlib import asynccontextmanager
@@ -13,6 +16,34 @@ from pydantic import BaseModel, ConfigDict, Field
 from sqlalchemy.exc import SQLAlchemyError
 
 from dataguard.service import Busy, Conflict, Pipeline
+
+DEFAULT_CSP = "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; frame-ancestors 'none'"
+DOCUMENTATION_ASSETS = {
+    "/docs": "https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/",
+    "/redoc": "https://cdn.jsdelivr.net/npm/redoc@2/",
+    "/docs/oauth2-redirect": "",
+}
+
+
+def documentation_csp(body: bytes, path: str) -> str:
+    """Hash only server-generated documentation bootstrap scripts, never arbitrary inline JS."""
+    scripts = re.findall(r"<script(?:\s[^>]*)?>(.*?)</script>", body.decode(), flags=re.DOTALL)
+    hashes = " ".join(
+        f"'sha256-{base64.b64encode(hashlib.sha256(script.encode()).digest()).decode()}'"
+        for script in scripts
+        if script.strip()
+    )
+    assets = DOCUMENTATION_ASSETS[path]
+    redoc_fonts = " https://fonts.googleapis.com" if path == "/redoc" else ""
+    redoc_workers = "; worker-src 'self' blob:" if path == "/redoc" else ""
+    redoc_logo = " https://cdn.redoc.ly/redoc/logo-mini.svg" if path == "/redoc" else ""
+    return (
+        f"default-src 'self'; script-src 'self' {assets} {hashes}; "
+        f"style-src 'self' 'unsafe-inline' {assets}{redoc_fonts}; "
+        f"img-src 'self' data: https://fastapi.tiangolo.com/img/favicon.png{redoc_logo}; "
+        "font-src 'self' https://fonts.gstatic.com; connect-src 'self'; "
+        f"object-src 'none'; base-uri 'none'; frame-ancestors 'none'{redoc_workers}"
+    )
 
 
 class Submission(BaseModel):
@@ -53,7 +84,12 @@ def create_app(url=None):
         yield
         pipeline.engine.dispose()
 
-    app = FastAPI(title="DataGuard", version="1.0.0", lifespan=lifespan)
+    app = FastAPI(
+        title="DataGuard",
+        version="1.0.0",
+        lifespan=lifespan,
+        swagger_ui_parameters={"validatorUrl": None},
+    )
     app.state.pipeline = pipeline
 
     @app.middleware("http")
@@ -72,11 +108,24 @@ def create_app(url=None):
                 chunks.append(chunk)
             request._body = b"".join(chunks)
         response = await call_next(request)
+        # Built-in docs are small HTML responses. Buffer only these exact
+        # routes so their real bootstrap bytes can be authorized by CSP hashes.
+        route_path = request.scope["path"].removeprefix(request.scope.get("root_path", ""))
+        csp = DEFAULT_CSP
+        if route_path in DOCUMENTATION_ASSETS and response.headers.get(
+            "content-type", ""
+        ).startswith("text/html"):
+            body = b"".join([chunk async for chunk in response.body_iterator])
+            csp = documentation_csp(body, route_path)
+            response = Response(
+                body,
+                status_code=response.status_code,
+                headers=dict(response.headers),
+                background=response.background,
+            )
         response.headers["X-Content-Type-Options"] = "nosniff"
         response.headers["Cache-Control"] = "no-store"
-        response.headers["Content-Security-Policy"] = (
-            "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; frame-ancestors 'none'"
-        )
+        response.headers["Content-Security-Policy"] = csp
         return response
 
     @app.exception_handler(KeyError)

@@ -16,5 +16,6 @@ Date: 2026-10-30. Scope: this independent dataguard Git repository only. Branch:
 | Security | 19 runtime packages have no known pip-audit vulnerabilities; Bandit has zero medium/high; final container has zero fixable high/critical findings against explicitly dated Oct20 cached Trivy DB; fresh CI scan is required |
 | Boundaries | No real upstream/financial data, no deployed AWS resources, no live Kubernetes rollout and no production availability claims |
 | Terraform follow-up | Shared Windows provider verified against official HashiCorp SHA256 unblocked init/validate; 0 errors/warnings; official all-platform archive checksums and provider lock committed |
+| Documentation CSP follow-up | Browser-reproduced blocked Swagger UI fixed with documentation-only source scopes and exact bootstrap hashes; 3 observed red/green regressions; full suite 25 passes; rebuilt Compose port8003 Swagger Try it out and dashboard desktop/mobile checks pass |
 
 Implementation sources: Airflow's public SDK DAG documentation and SQLAlchemy transaction documentation are linked in ADR.md. Dependency versions are resolved and pinned from the verified local environment. New behavioral regressions used observed red/green tests. Low-level deployment configuration is verified by relevant tools rather than unit tests that merely mirror YAML.

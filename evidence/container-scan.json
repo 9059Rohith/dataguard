@@ -3,18 +3,18 @@
   "Trivy": {
     "Version": "0.76.0"
   },
-  "ReportID": "01a18ce1-3d80-7414-969c-a4b6dfa190b2",
-  "CreatedAt": "2026-10-30T12:55:34.016274552Z",
-  "ArtifactID": "sha256:0f3e8317c4877e88a43c1259facce11b55c12c94e61a0f9d3b674a4c17f0be63",
+  "ReportID": "01a18d09-b2c6-70fd-8c94-1c73e0b00a2c",
+  "CreatedAt": "2026-10-30T13:39:45.478075533Z",
+  "ArtifactID": "sha256:7a1124c31c75a29fa7b4c7f4317d068afd08795e5755bf06dca47b849a3b5ed5",
   "ArtifactName": "dataguard:local",
   "ArtifactType": "container_image",
   "Metadata": {
-    "Size": 192374272,
+    "Size": 192379392,
     "OS": {
       "Family": "debian",
       "Name": "13.7"
     },
-    "ImageID": "sha256:5d63297b784367f124dc24dadb9cd383695ba17e466e7b7e976c06091d1205a5",
+    "ImageID": "sha256:cec87d56c2179b9b7f8c5b36be6640ae2d000c66c34de80aa47fe90879493625",
     "DiffIDs": [
       "sha256:15f1c8eb1ab18eae260c7fb6296434cbe1ff0e1e30fd814ae92a80dd54005e62",
       "sha256:e1fa2746ad6d51e7de9171dfcbb1fe93d01d51c5d8d3623e0c3b223076dc5d23",
@@ -23,19 +23,19 @@
       "sha256:f77ee410bbd98be0db2dfe93d02659f4014e40962e2b5b4190eb2f8e8b16de41",
       "sha256:88a0bf1e87488ddd2517cf03261cefce966597f32fce6f4e8b059852761394f5",
       "sha256:b83358038ab33de3c6b190cefc1d262b32bb4951536f6989e06bf59b00915461",
-      "sha256:3d4a2de32915dcd9e7c55043c736675375ff1cf670f70fd621132e7859d266ff",
-      "sha256:6e676864d4d07f8a46b4ec2c494f549792df551150334d6229c71ccc2f3051e9"
+      "sha256:9514d9e584a89dd67521553e9309efebecc94ce0e5968d88102cfd0aad09625a",
+      "sha256:160d1da16afcafe01e76b46618216009bd60786430fe376017039f5a6cfdcc36"
     ],
     "RepoTags": [
       "dataguard:local"
     ],
     "RepoDigests": [
-      "dataguard@sha256:5d63297b784367f124dc24dadb9cd383695ba17e466e7b7e976c06091d1205a5"
+      "dataguard@sha256:cec87d56c2179b9b7f8c5b36be6640ae2d000c66c34de80aa47fe90879493625"
     ],
     "Reference": "dataguard:local",
     "ImageConfig": {
       "architecture": "amd64",
-      "created": "2026-10-30T12:55:05.823278195Z",
+      "created": "2026-10-30T13:38:25.352391969Z",
       "history": [
         {
           "created": "2026-10-05T00:00:00Z",
@@ -115,41 +115,41 @@
           "comment": "buildkit.dockerfile.v0"
         },
         {
-          "created": "2026-10-30T12:55:05Z",
+          "created": "2026-10-30T13:38:24Z",
           "created_by": "COPY dataguard /app/dataguard # buildkit",
           "comment": "buildkit.dockerfile.v0"
         },
         {
-          "created": "2026-10-30T12:55:05Z",
+          "created": "2026-10-30T13:38:25Z",
           "created_by": "RUN /bin/sh -c useradd --uid 10001 --create-home app \u0026\u0026 mkdir /data \u0026\u0026 chown app:app /data # buildkit",
           "comment": "buildkit.dockerfile.v0"
         },
         {
-          "created": "2026-10-30T12:55:05Z",
+          "created": "2026-10-30T13:38:25Z",
           "created_by": "USER 10001:10001",
           "comment": "buildkit.dockerfile.v0",
           "empty_layer": true
         },
         {
-          "created": "2026-10-30T12:55:05Z",
+          "created": "2026-10-30T13:38:25Z",
           "created_by": "ENV DATAGUARD_AUTO_INIT=false",
           "comment": "buildkit.dockerfile.v0",
           "empty_layer": true
         },
         {
-          "created": "2026-10-30T12:55:05Z",
+          "created": "2026-10-30T13:38:25Z",
           "created_by": "EXPOSE [8000/tcp]",
           "comment": "buildkit.dockerfile.v0",
           "empty_layer": true
         },
         {
-          "created": "2026-10-30T12:55:05Z",
+          "created": "2026-10-30T13:38:25Z",
           "created_by": "HEALTHCHECK \u0026{[\"CMD\" \"python\" \"-c\" \"import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/ready', timeout=2)\"] \"30s\" \"3s\" \"0s\" \"0s\" '\\x00'}",
           "comment": "buildkit.dockerfile.v0",
           "empty_layer": true
         },
         {
-          "created": "2026-10-30T12:55:05Z",
+          "created": "2026-10-30T13:38:25Z",
           "created_by": "CMD [\"python\" \"-m\" \"dataguard.entrypoint\"]",
           "comment": "buildkit.dockerfile.v0",
           "empty_layer": true
@@ -166,8 +166,8 @@
           "sha256:f77ee410bbd98be0db2dfe93d02659f4014e40962e2b5b4190eb2f8e8b16de41",
           "sha256:88a0bf1e87488ddd2517cf03261cefce966597f32fce6f4e8b059852761394f5",
           "sha256:b83358038ab33de3c6b190cefc1d262b32bb4951536f6989e06bf59b00915461",
-          "sha256:3d4a2de32915dcd9e7c55043c736675375ff1cf670f70fd621132e7859d266ff",
-          "sha256:6e676864d4d07f8a46b4ec2c494f549792df551150334d6229c71ccc2f3051e9"
+          "sha256:9514d9e584a89dd67521553e9309efebecc94ce0e5968d88102cfd0aad09625a",
+          "sha256:160d1da16afcafe01e76b46618216009bd60786430fe376017039f5a6cfdcc36"
         ]
       },
       "config": {
@@ -247,14 +247,14 @@
         "DiffID": "sha256:b83358038ab33de3c6b190cefc1d262b32bb4951536f6989e06bf59b00915461"
       },
       {
-        "Size": 103424,
-        "Digest": "sha256:d341ee4c5543d954707eb2dd372f48cb5c09dc0e66e75a543bf5a6683775e93c",
-        "DiffID": "sha256:3d4a2de32915dcd9e7c55043c736675375ff1cf670f70fd621132e7859d266ff"
+        "Size": 108544,
+        "Digest": "sha256:35b60c62545ae3b693d104b84251aca6be0addfce406e69d60c4f796d7db47c6",
+        "DiffID": "sha256:9514d9e584a89dd67521553e9309efebecc94ce0e5968d88102cfd0aad09625a"
       },
       {
         "Size": 22016,
-        "Digest": "sha256:14092f14c0073c8c36405e5efd08ce048d0b6a3b60f8f6ab3e1b6e7527596fe3",
-        "DiffID": "sha256:6e676864d4d07f8a46b4ec2c494f549792df551150334d6229c71ccc2f3051e9"
+        "Digest": "sha256:c63f951f0fab44e21f9051e6349d096c9ce13622303f4431a42d31fdc204f9d9",
+        "DiffID": "sha256:160d1da16afcafe01e76b46618216009bd60786430fe376017039f5a6cfdcc36"
       }
     ]
   },

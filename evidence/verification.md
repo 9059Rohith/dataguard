@@ -4,7 +4,7 @@ Environment: Windows 11, host Python 3.12.14, Docker Engine 28.5.1 with Linux co
 
 | Check | Result | Retained evidence |
 |---|---|---|
-| Full `python -m pytest -q` | **22 passed**, 13.67 seconds, no warnings | unit-tests.txt |
+| Full `python -m pytest -q` | **25 passed**, 10.20 seconds, no warnings | unit-tests.txt |
 | PostgreSQL `pytest -q tests/test_pipeline.py` | **15 passed** against real PostgreSQL; final run uses dedicated dataguard_test database | postgres-tests.txt |
 | Ruff check + format check | Passed | tool execution output |
 | Python compileall for service/DAG/scripts | Passed | tool execution output |
@@ -13,11 +13,12 @@ Environment: Windows 11, host Python 3.12.14, Docker Engine 28.5.1 with Linux co
 | Compose image build + actual PostgreSQL/API start | Passed; service healthcheck healthy | Docker image metadata and container-smoke.json |
 | HTTP end-to-end smoke | Passed readiness, dashboard, unauthenticated write denial, valid publish, exact replay, duplicate quarantine, old snapshot preservation and Prometheus DB-up metric | container-smoke.json |
 | Chromium Playwright 1.62.1 | Desktop 1440x1000 and mobile 390x844 pass identity/content/console/overflow/refresh checks | dashboard-check.json and dashboard-1440.png, dashboard-390.png |
+| Interactive API documentation | Swagger renders at desktop/mobile; actual GET /health execution returns 200 alive with no console/CSP errors; ReDoc also renders without console errors | docs-check.json, docs-1440.png, docs-390.png |
 | Kubeconform v0.7.0 strict | **4 valid, 0 invalid, 0 errors, 0 skipped** | command: `docker run --rm -v "${PWD}/deploy:/manifests:ro" ghcr.io/yannh/kubeconform:v0.7.0 -strict -summary /manifests/kubernetes.yaml` |
 | Kubernetes client OpenAPI validation | Blocked: local Docker Kubernetes API at 127.0.0.1:6443 refused connection; independent schema check above passed | no live cluster rollout claimed |
 | Terraform fmt -check | Passed | infra/main.tf |
 | Terraform init / validate | **Passed**, provider AWS v6.71.0; validation reports valid=true, 0 errors, 0 warnings | terraform-validation.json, infra/.terraform.lock.hcl |
-| Actual Airflow 3.1.0 DAG import | **Pending image download**; official image pull began but large layers have not completed at this checkpoint | CI contains actual SDK/DAG import assertion; no local import success claimed |
+| Actual Airflow 3.1.0 DAG import | **Passed**, DAG and both tasks discovered; older-runtime compatibility evidence | Details and image digest below; configured 3.3.2 CI runtime remains unexecuted |
 | Trivy fixable HIGH/CRITICAL | **0 findings**, exit 0, final image scanned | container-scan.json; cache updated **2026-10-20**, context in container-scan-context.json |
 
 Fresh Trivy database download was attempted and stopped after approximately 35 KiB/s transfer implied over an hour for 130.79 MiB. A read-only copy of an existing local DB was used to complete the dated scan. This provides a historical known-vulnerability check, not assurance against advisories after October 20. CI's fresh Trivy scan must pass before release. No unrelated Docker containers or cache source volume were modified.
@@ -50,3 +51,11 @@ An actual **Airflow 3.1.0** Linux container imported the DAG successfully: `data
 ## Terraform verification follow-up
 
 The initial slow provider download was stopped after the parent task supplied an extracted provider mirror verified against HashiCorp's official SHA256. `terraform init -backend=false -plugin-dir=... -input=false` and `terraform validate -json` then passed. The provider lock retains the Windows installed-package h1 and official archive zh hashes for all released platforms, including Linux CI. Official checksums were fetched from [HashiCorp's v6.71.0 release](https://releases.hashicorp.com/terraform-provider-aws/6.71.0/terraform-provider-aws_6.71.0_SHA256SUMS), saved as provider-sha256sums.txt and added by scripts/lock-provider.py. This validates provider schemas locally; it does not validate credentials, AWS quotas, regional capacity, deployment cost or an actual apply.
+
+## Documentation CSP regression
+
+An actual browser reproduced `/docs` returning HTTP 200 with no rendered Swagger UI because the global CSP blocked its CDN script, stylesheet, favicon and inline bootstrap. Three regression cases failed for Swagger, ReDoc and OAuth redirect hashes/assets before the fix. Documentation HTML now receives narrowly scoped asset sources and SHA256 hashes of its exact bootstrap bytes; ordinary API, dashboard and non-documentation error responses keep the existing self-only script policy. The full suite passes 25 tests.
+
+`scripts/docs-check.cjs` is a reproducible headless Chromium test: load `/docs`, render the actual OpenAPI UI, open GET /health, select Try it out, execute and check its real 200/alive response. Desktop 1440x1000 and mobile 390x844 runs have zero console errors/CSP violations. ReDoc is separately rendered with zero console errors. This does not simulate or claim a hosted CI run.
+
+The final browser run targets the rebuilt Compose service at `http://127.0.0.1:8003`, with `/ready` reporting ready and Docker reporting healthy. The dashboard's desktop/mobile refresh checks also pass against that rebuilt service.
