@@ -21,3 +21,5 @@ Date: 2026-10-30. Scope: this independent dataguard Git repository only. Branch:
 | Minimal public runtime | Pinned Python 3.15.1 native-wheel runtime has no installer; real SQLite seed/restart, PostgreSQL fault recovery and authenticated HTTP flows pass; same-day all-severity vulnerability/secret scan has zero findings |
 
 Implementation sources: Airflow's public SDK DAG documentation and SQLAlchemy transaction documentation are linked in ADR.md. Dependency versions are resolved and pinned from the verified local environment. New behavioral regressions used observed red/green tests. Low-level deployment configuration is verified by relevant tools rather than unit tests that merely mirror YAML.
+
+Public HTTP publication follow-up: independently verified https://rohith-dataguard.vercel.app with actual SQL aggregate publication/head, health/readiness, private route/recovery 401, documentation/assets 200 and exact CSP hashes. No remote browser, worker crash or CI success is claimed.

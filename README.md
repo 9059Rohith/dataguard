@@ -4,6 +4,8 @@
 
 Hosted CI is currently blocked by an account-level runner restriction. [Executed local verification](evidence/verification.md) is recorded separately; no hosted pass is claimed.
 
+**Live synthetic demo:** [DataGuard dashboard](https://rohith-dataguard.vercel.app) · [API documentation](https://rohith-dataguard.vercel.app/docs). Anonymous access exposes bounded aggregate SQL state; raw records and operator actions require authentication. [Executed public HTTP checks](evidence/public-deployment-http.json) record the verified boundary.
+
 A Python/SQL platform that stops invalid settlement batches from replacing a usable dataset. This project demonstrates data engineering contracts, SQL transactions, recovery, orchestration, and deployment operations relevant to OpenFX Data Engineering Intern and DevOps Intern work. It uses synthetic data and makes no claim of affiliation or production use.
 
 **The central invariant:** readers see complete accepted date partitions. Duplicate keys, wrong types, unknown references, stale exports, and mismatched settlement totals are quarantined with diagnostics. A worker killed after row insertion leaves the previous publication visible; retry recovers the exact immutable batch without duplicate rows.

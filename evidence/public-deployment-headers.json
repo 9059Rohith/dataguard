@@ -1,0 +1,42 @@
+{
+  "generated_at": "2026-10-30T14:44:05.089280+00:00",
+  "base": "https://rohith-dataguard.vercel.app",
+  "scope": "Anonymous HTTP response and CSP hash checks; no browser execution or remote worker claim",
+  "checks": {
+    "/": {
+      "status": 200,
+      "nosniff": true,
+      "cache_control": "no-store",
+      "csp": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; frame-ancestors 'none'"
+    },
+    "/dashboard.js": {
+      "status": 200,
+      "nosniff": true,
+      "cache_control": "no-store",
+      "csp": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; frame-ancestors 'none'",
+      "synthetic_public_label_in_script": true
+    },
+    "/docs": {
+      "status": 200,
+      "nosniff": true,
+      "cache_control": "no-store",
+      "csp": "default-src 'self'; script-src 'self' https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/ 'sha256-j8SaXne87U2VMpyMoUFgvGSgdewzd5d5jACoTkrqCy4='; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/; img-src 'self' data: https://fastapi.tiangolo.com/img/favicon.png; font-src 'self' https://fonts.gstatic.com; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'",
+      "inline_script_hashes_match": true,
+      "inline_script_count": 1
+    },
+    "/redoc": {
+      "status": 200,
+      "nosniff": true,
+      "cache_control": "no-store",
+      "csp": "default-src 'self'; script-src 'self' https://cdn.jsdelivr.net/npm/redoc@2/ ; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net/npm/redoc@2/ https://fonts.googleapis.com; img-src 'self' data: https://fastapi.tiangolo.com/img/favicon.png https://cdn.redoc.ly/redoc/logo-mini.svg; font-src 'self' https://fonts.gstatic.com; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; worker-src 'self' blob:",
+      "inline_script_hashes_match": true,
+      "inline_script_count": 0
+    },
+    "/openapi.json": {
+      "status": 200,
+      "nosniff": true,
+      "cache_control": "no-store",
+      "csp": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; frame-ancestors 'none'"
+    }
+  }
+}

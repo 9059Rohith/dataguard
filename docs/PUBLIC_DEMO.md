@@ -1,6 +1,6 @@
 # Provider-neutral public synthetic demo
 
-The public profile is a read-only view of real SQL publication state seeded with named synthetic records. It is not a public data-upload or code-execution service. No hosting provider, deployed URL, persistent storage or uptime is implied by this file.
+The public profile is a read-only view of real SQL publication state seeded with named synthetic records. It is not a public data-upload or code-execution service. The current public HTTP profile is hosted at [rohith-dataguard.vercel.app](https://rohith-dataguard.vercel.app) with external PostgreSQL persistence. This synthetic deployment makes no production uptime or capacity claim.
 
 ## Runtime settings
 
@@ -31,6 +31,10 @@ This is an application budget, not a distributed rate limiter or network DDoS de
 | One container + writable durable SQLite volume | Yes; mount `/data` writable by UID 10001 and set explicit SQLite DATABASE_URL | Retains immutable inputs, audit attempts and accepted snapshots; back up the volume; single-node filesystem semantics |
 | Container + external PostgreSQL | Yes; set its secret URL and appropriate TLS; bootstrap once before multiple replicas | Durable state across container replacement; connection limits, roles, migrations and remote database availability remain operator responsibilities |
 | Free container with ephemeral writable disk | Functional for a clearly labeled synthetic demo | Restarts can lose all history and recreate the actual synthetic seed; no durability/production recovery claim is appropriate |
-| Stateless/serverless HTTP function | Requires deployment-specific adaptation, not implemented here | Use external PostgreSQL; separate schema/seed bootstrap from request cold starts; consider connection pooling, concurrent initialization, request deadlines and process-local admission limits; local ephemeral SQLite cannot provide durable history |
+| Stateless/serverless HTTP function | Public FastAPI profile deployed on Vercel with external PostgreSQL | Bootstrap schema/seed before parallel cold starts; configure connection pooling, request deadlines and process-local admission limits; local ephemeral SQLite cannot provide durable history |
 
-No provider-specific database SDK, storage adapter, account change, paid resource or external deployment is introduced by the public hardening. Airflow and recovery jobs are separate trusted operator processes; a public web function does not replace their durable scheduler.
+The runtime uses the existing SQLAlchemy/Psycopg PostgreSQL storage path, without a provider-specific database SDK. Hosting settings and credentials are managed separately from source. Airflow and recovery jobs remain separate trusted operator processes; the deployed public web function does not replace their durable scheduler.
+
+## Executed public checks
+
+On 2026-10-30, anonymous HTTP checks against the public alias confirmed ready/alive responses, one actual published attempt and one active partition. Metrics, raw batches, quarantine, detailed snapshots and recovery returned 401. The dashboard, JavaScript, Swagger, ReDoc and OpenAPI responses returned 200 with no-store/nosniff headers; the Swagger inline bootstrap matches its CSP SHA256 hash, and script-src has no unsafe-inline. Evidence: [public boundary](../evidence/public-deployment-http.json) and [HTTP headers/CSP](../evidence/public-deployment-headers.json). These checks do not claim remote browser execution, a hosted worker crash test or hosted CI success; actual PostgreSQL publication/recovery tests are recorded separately in the local execution evidence.
