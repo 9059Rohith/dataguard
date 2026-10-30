@@ -204,4 +204,6 @@ The global gate trades throughput for inspectable correctness; recovery scans hi
 
 Five-minute review: live dashboard → correction comparison → killed-worker demo → `Pipeline.process` and `Pipeline.compare` in [service.py](dataguard/service.py) → [ADRs](docs/ADR.md) and [interview discussion](docs/INTERVIEW.md). For data engineering, follow [contract](docs/CONTRACT.md), [traceability](docs/TRACEABILITY.md) and provenance. For DevOps, follow [runbooks](docs/RUNBOOKS.md), [Dockerfile](Dockerfile), deployment and verification evidence.
 
-Current release evidence: [protected public feature](evidence/review-public-feature.json), [fresh all-severity runtime image scan](evidence/review-image-scan.json), and [tracked-source secret scan](evidence/review-source-secret-scan.json). These are executed checks with defined scope, not a guarantee of perfect security.
+Current release evidence: [protected public feature](evidence/review-public-feature.json), [fresh all-severity runtime image scan](evidence/signature-image-scan.json), and [tracked-source secret scan](evidence/review-source-secret-scan.json). These are executed checks with defined scope, not a guarantee of perfect security.
+
+Current signature release: [actual protected HTTPS checks](evidence/signature-public-feature.json), [all-severity runtime scan](evidence/signature-image-scan.json), and [measured code changes](evidence/signature-code-metrics.json). Application, test and operational-script lines are counted separately; documentation, comments and docstrings are excluded.

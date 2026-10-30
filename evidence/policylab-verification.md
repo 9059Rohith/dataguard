@@ -1,6 +1,6 @@
 # PolicyLab verification — 2026-10-30
 
-This evidence concerns the local PolicyLab changes. The existing public deployment has not been updated.
+This ledger records local PolicyLab experiments. The release operator subsequently deployed and verified the same application source over public HTTPS; see [live feature proof](signature-public-feature.json) and [deployment identity](public-deployment.json).
 
 | Check | Observed result | Evidence |
 | --- | --- | --- |

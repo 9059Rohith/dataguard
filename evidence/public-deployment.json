@@ -1,13 +1,13 @@
 {
-  "verified_at": "2026-10-30T15:38:47.647759+00:00",
+  "verified_at": "2026-10-30T16:10:03.276121+00:00",
   "provider": "Vercel",
   "plan": "Hobby",
   "runtime": "OCI Container (Beta)",
   "durable_database": "isolated Neon Free PostgreSQL",
   "public_url": "https://rohith-dataguard.vercel.app",
-  "deployment_id": "dpl_A1E9epcWPTF9isB7e5YYiFWQmM63",
+  "deployment_id": "dpl_FnKEvHN1hUjQvz5HEC59BdBm3pr9",
   "provider_state": "READY",
-  "deployed_commit": "c7351afee76c3a34a347bfeb2a186094b81396a4",
+  "deployed_commit": "18afee95c15161b6e7686573f90af3a4230011a3",
   "source_repo": "https://github.com/9059Rohith/dataguard",
   "scope": "Synthetic portfolio workloads; protected administrative APIs; free usage and cold-start limits apply"
 }

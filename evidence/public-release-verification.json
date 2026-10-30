@@ -1,5 +1,5 @@
 {
-  "verified_at": "2026-10-30T15:38:46.445738+00:00",
+  "verified_at": "2026-10-30T16:08:08.188531+00:00",
   "base": "https://rohith-dataguard.vercel.app",
   "checks": {
     "/health": 200,
@@ -27,9 +27,9 @@
   "request_measurement": {
     "samples": 12,
     "method": "nearest rank; sequential warm public HTTPS requests from India; not a load test",
-    "p50_ms": 1022.755,
-    "p95_ms": 2069.367,
-    "p99_ms": 2069.367
+    "p50_ms": 1044.396,
+    "p95_ms": 1090.348,
+    "p99_ms": 1090.348
   },
   "security": {
     "database_identity_verified_tls": true,
