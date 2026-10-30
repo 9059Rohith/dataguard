@@ -1,0 +1,26 @@
+name: optional-aws-rollout
+on:
+  workflow_dispatch:
+    inputs:
+      image_digest:
+        description: Existing ECR image digest to deploy
+        required: true
+permissions: {contents: read, id-token: write}
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.AWS_DEPLOY_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION }}
+      - name: Register immutable task revision and wait for circuit breaker
+        env:
+          IMAGE_DIGEST: ${{ inputs.image_digest }}
+          ECR_REPOSITORY: ${{ vars.ECR_REPOSITORY }}
+          ECS_CLUSTER: ${{ vars.ECS_CLUSTER }}
+          ECS_SERVICE: ${{ vars.ECS_SERVICE }}
+          ECS_TASK_FAMILY: ${{ vars.ECS_TASK_FAMILY }}
+        run: python scripts/rollout.py

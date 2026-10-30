@@ -27,8 +27,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: >
-          docker run --rm --entrypoint python -v "$PWD/dags:/dags:ro" apache/airflow:3.3.2-python3.12
+      - name: Import DAG in actual Airflow runtime
+        run: >-
+          docker run --rm --entrypoint python -v "$PWD/dags:/dags:ro"
+          apache/airflow:3.3.2-python3.12
           -c "import runpy; d=runpy.run_path('/dags/dataguard_pipeline.py')['dag']; assert d.dag_id == 'dataguard_settlement_publication'; assert len(d.tasks)==2"
   container:
     runs-on: ubuntu-latest
