@@ -122,3 +122,10 @@ The Airflow DAG in `dags/dataguard_pipeline.py` uses the Airflow 3 public `airfl
 `infra/main.tf` provisions a VPC, HTTPS ALB, restricted security groups, private encrypted RDS PostgreSQL with backups and deletion protection, Fargate service with rollback circuit breaker, ECR, CloudWatch, and scoped execution-role secret access. It requires an existing ACM certificate, a Secrets Manager token ARN, trusted ingress CIDR and digest-pinned image. **No AWS resources were created.** Validation is distinct from a deployment; credentials, certificate, domain, image registry and budget are external prerequisites.
 
 This is a small batch platform with intentionally serialized publication. It has no distributed streaming engine, tenant RBAC, automatic data correction, schema migration framework, durable scheduler inside the API, external side-effect exactly-once guarantee, or production SLO claim. PostgreSQL roles, audited retention/archive, TLS identity verification, and larger load tests require deployment-specific work. The global gate provides correctness at modest scale and is an explicit throughput limitation. Recovery scans staged history; very large installations should introduce indexed work queues and partition-scoped fencing. Readers are protected from invalid input, not from loss of the database or a malicious database superuser.
+
+
+## Public deployment evidence
+
+![Verified public dashboard](evidence/public-dashboard.jpg)
+
+Captured from the actual public HTTPS deployment. [Executed public checks](evidence/public-release-verification.json) record real backend responses, authentication results and a small warm-request sample.

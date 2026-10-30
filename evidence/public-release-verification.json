@@ -1,0 +1,40 @@
+{
+  "verified_at": "2026-10-30T14:53:34.823622+00:00",
+  "base": "https://rohith-dataguard.vercel.app",
+  "checks": {
+    "/health": 200,
+    "/ready": 200,
+    "/summary": 200,
+    "/metrics": 401,
+    "/quarantine": 401,
+    "/batches/1": 401,
+    "unauthenticated_mutation": 401,
+    "authenticated_operational_read": 200
+  },
+  "summary": {
+    "public_demo": true,
+    "attempts": {
+      "published": 1
+    },
+    "snapshots": [
+      {
+        "period": "2026-10-30",
+        "batch_id": 1,
+        "published_at": 1793371097.7185032
+      }
+    ]
+  },
+  "request_measurement": {
+    "samples": 12,
+    "method": "nearest rank; sequential warm public HTTPS requests from India; not a load test",
+    "p50_ms": 1063.608,
+    "p95_ms": 1114.274,
+    "p99_ms": 1114.274
+  },
+  "security": {
+    "database_identity_verified_tls": true,
+    "database_role": "isolated non-superuser",
+    "cross_project_connect_denied": true,
+    "administrative_token_public": false
+  }
+}
