@@ -111,6 +111,10 @@ function operatorToken() {
       fullPage: true,
     });
     await page.setViewportSize({ width: 390, height: 844 });
+    await page.waitForFunction(
+      () =>
+        document.querySelector(".sidebar").getBoundingClientRect().right <= 0.5,
+    );
     if (
       await page
         .locator("body")

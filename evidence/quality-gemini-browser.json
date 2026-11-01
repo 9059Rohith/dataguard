@@ -1,11 +1,11 @@
 {
-  "verified_at": "2026-11-01T18:47:44.204Z",
+  "verified_at": "2026-11-01T18:48:53.857Z",
   "base_url": "https://rohith-dataguard.vercel.app",
   "http_status": 200,
   "workflow": "Connect authenticated operator → ask about public GitHub records → actual Gemini evidence tools → cited model answer",
   "question": "Inspect actual records in the latest public GitHub capture using inspect_capture. In concise plain text, identify the repository with the most stars and the repository with the most open issues, with exact counts, full capture ID, record count and SHA-256. Cite only observed evidence.",
   "result": {
-    "answer": "Based on the latest public GitHub capture (`71623033-6147-4fa0-a5b6-2d0019ca5f7a`), which contains 8 records and SHA-256 digest `54d89c05d727cef779eaf4148dd570d2fb21a3f3714cefab86621d44fdf71bd0`:\n\n* **Most stars:** `fastapi/fastapi` with **104,531** stars (`stargazers_count`).\n* **Most open issues:** `pytest-dev/pytest` with **915** open issues (`open_issues_count`).",
+    "answer": "Based on the latest public GitHub capture (`71623033-6147-4fa0-a5b6-2d0019ca5f7a`), which contains 8 records and has SHA-256 digest `54d89c05d727cef779eaf4148dd570d2fb21a3f3714cefab86621d44fdf71bd0`:\n\n- **Most stars**: `fastapi/fastapi` with `104,531` stars (`stargazers_count: 104531`).\n- **Most open issues**: `pytest-dev/pytest` with `915` open issues (`open_issues_count: 915`).",
     "trace": [
       {
         "tool": "list_captures",
@@ -427,7 +427,7 @@
     "provider": "Google Gemini",
     "public_data_only": true,
     "provider_requests": 3,
-    "created_at": "2026-11-01T18:47:38.221504+00:00"
+    "created_at": "2026-11-01T18:48:47.235345+00:00"
   },
   "browser_errors": []
 }
