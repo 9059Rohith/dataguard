@@ -159,3 +159,45 @@ assert.equal({}.polluted, undefined);
 console.log(
   "Safe DOM Markdown: headings, bold, source buttons, tables, rejected active HTML and unsafe links passed.",
 );
+const css = require("node:fs").readFileSync(
+  require("node:path").join(__dirname, "../dataguard/console.css"),
+  "utf8",
+);
+const luminance = (hex) => {
+  const channels = [1, 3, 5]
+    .map((offset) => parseInt(hex.slice(offset, offset + 2), 16) / 255)
+    .map((v) => (v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4));
+  return channels.reduce(
+    (sum, channel, index) => sum + channel * [0.2126, 0.7152, 0.0722][index],
+    0,
+  );
+};
+for (const selector of [
+  ".sub",
+  ".rail-facts dt",
+  ".source-note",
+  ".form-hint",
+  ".check-row small",
+  ".capture-meta",
+  ".evidence-list dt",
+  ".mini-label",
+  ".public-limits",
+  ".data-notice",
+  ".answer-provenance",
+  ".tool-args",
+  ".tool-result p",
+  ".connection-card dt",
+  ".settings-row p",
+  ".drawer-kicker",
+  ".record-stat-grid span",
+]) {
+  const rule = css.slice(css.indexOf(selector + " {")).split("}")[0];
+  const color = rule.match(/(?:^|[;\s])color:\s*(#[0-9a-f]{6})/)[1];
+  assert.ok(
+    (luminance("#f6f3e9") + 0.05) / (luminance(color) + 0.05) >= 4.5,
+    selector + " has sufficient small-text contrast on ivory",
+  );
+}
+assert.match(css, /\.dialog-close\s*\{\s*min-width: 44px;\s*min-height: 44px;/);
+assert.match(css, /\.mobile-menu\s*\{\s*min-width: 44px;\s*min-height: 44px;/);
+console.log("Small-text contrast and mobile/menu close target checks passed.");

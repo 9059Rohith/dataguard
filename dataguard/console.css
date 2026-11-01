@@ -95,7 +95,7 @@ textarea {
 }
 input::placeholder,
 textarea::placeholder {
-  color: #858b84;
+  color: #636962;
 }
 textarea {
   min-height: 170px;
@@ -369,7 +369,7 @@ time {
 }
 .breadcrumb {
   font-size: 12px;
-  color: #768075;
+  color: #616b60;
   white-space: nowrap;
 }
 .breadcrumb span {
@@ -454,7 +454,7 @@ time {
   align-items: center;
   gap: 10px;
   font-size: 12px;
-  color: #8a6c26;
+  color: #81631d;
   border: 0;
   border-bottom: 1px solid transparent;
   padding: 0;
@@ -671,7 +671,7 @@ main {
   position: absolute;
   left: 12px;
   top: 12px;
-  color: #778674;
+  color: #5d6c5a;
 }
 .search-input input {
   padding: 10px 12px 10px 36px;
@@ -699,14 +699,14 @@ main {
   font: 600 13px var(--ui);
 }
 .record-name:hover {
-  color: #8f722f;
+  color: #816421;
   text-decoration: underline;
   text-underline-offset: 4px;
 }
 .sub {
   display: block;
   font-size: 10px;
-  color: #8b9488;
+  color: #616a5e;
   line-height: 1.7;
   margin-top: 4px;
 }
@@ -728,7 +728,7 @@ main {
   border: 0;
   background: none;
   padding: 5px;
-  color: #687b64;
+  color: #5a6d56;
 }
 .table-action:hover {
   color: #233c28;
@@ -740,7 +740,7 @@ main {
   padding: 18px 22px;
   border-top: 1px solid var(--line);
   font-size: 11px;
-  color: #6f7b6b;
+  color: #5f6b5b;
 }
 .data-table-footer .text-link {
   font-size: 11px;
@@ -776,7 +776,7 @@ main {
   line-height: 1.6;
 }
 .rail-facts dt {
-  color: #8b9387;
+  color: #626a5e;
 }
 .rail-facts dd {
   margin: 0;
@@ -830,14 +830,14 @@ main {
 .rail-event time {
   display: block;
   font-size: 10px;
-  color: #8b9387;
+  color: #626a5e;
   margin-top: 7px;
   line-height: 1.8;
 }
 .source-note {
   font-size: 11px;
   line-height: 1.8;
-  color: #8b9387;
+  color: #626a5e;
   border-top: 1px solid var(--line);
   padding-top: 18px;
   margin: 20px 0 0;
@@ -851,10 +851,10 @@ main {
   padding: 19px 0;
   border-top: 1px solid var(--line);
   font-size: 10px;
-  color: #92998b;
+  color: #636a5c;
 }
 .footer > span:first-child {
-  color: #6f806c;
+  color: #5b6c58;
 }
 .footer .muted {
   margin: 0 7px;
@@ -896,7 +896,7 @@ main {
   background: #edf2de;
   border: 1px solid #d5dfc3;
   border-radius: 3px;
-  color: #5e7850;
+  color: #556f47;
   font-size: 10px;
   font-weight: 500;
   line-height: 1.3;
@@ -905,17 +905,17 @@ main {
 .pill.bad {
   background: #f8ece2;
   border-color: #e7cfbd;
-  color: #9e6143;
+  color: #95583a;
 }
 .pill.neutral {
   background: #f0f2e8;
   border-color: #dfe4d5;
-  color: #7a886e;
+  color: #5e6c52;
 }
 .pill.warn {
   background: #f7f0dd;
   border-color: #e3d4ab;
-  color: #987d36;
+  color: #7f641d;
 }
 .live-dot {
   display: inline-block;
@@ -928,7 +928,7 @@ main {
   display: flex;
   align-items: center;
   gap: 15px;
-  color: #778772;
+  color: #5c6c57;
   font-size: 11px;
   margin: 0 0 24px;
 }
@@ -952,7 +952,7 @@ main {
 }
 .dataset-heading p {
   font-size: 12px;
-  color: #8b9385;
+  color: #626a5c;
   line-height: 1.8;
   margin: 0;
 }
@@ -966,7 +966,7 @@ main {
 }
 .dataset-info span {
   font-size: 10px;
-  color: #8a9380;
+  color: #626b58;
   display: block;
   margin-bottom: 7px;
 }
@@ -1006,12 +1006,12 @@ main {
 }
 .bar-row > span:last-child {
   text-align: right;
-  color: #8d967f;
+  color: #626b54;
   font-variant-numeric: tabular-nums;
 }
 .form-hint {
   font-size: 11px;
-  color: #8a9383;
+  color: #626b5b;
   line-height: 1.8;
   margin: 10px 0;
 }
@@ -1034,7 +1034,7 @@ main {
 .editorial-note p,
 .explain {
   font-size: 12px;
-  color: #7c8873;
+  color: #606c57;
   line-height: 1.9;
   margin: 0 0 18px;
 }
@@ -1044,7 +1044,7 @@ main {
   gap: 8px;
   font-size: 10px;
   line-height: 1.7;
-  color: #8c967c;
+  color: #616b51;
   margin-top: 23px;
 }
 .contract-layout {
@@ -1080,7 +1080,7 @@ main {
 .form-field p {
   font-size: 11px;
   line-height: 1.8;
-  color: #8a9382;
+  color: #626b5a;
   margin: 8px 0;
 }
 .checkbox-row {
@@ -1102,7 +1102,7 @@ main {
 }
 .checkbox-row p {
   font-size: 11px;
-  color: #8a9382;
+  color: #626b5a;
   line-height: 1.8;
   margin: 7px 0 0;
 }
@@ -1143,12 +1143,12 @@ main {
 }
 .rule-num {
   font: 400 20px var(--serif);
-  color: #a08b52;
+  color: #7b662d;
 }
 .rule-list code {
   margin-left: auto;
   font: 10px var(--mono);
-  color: #8e9d7c;
+  color: #5e6d4c;
 }
 .code-panel {
   background: var(--forest);
@@ -1187,7 +1187,7 @@ main {
   display: flex;
   align-items: center;
   gap: 15px;
-  color: #849278;
+  color: #5e6c52;
   font-size: 11px;
 }
 .check-list {
@@ -1210,7 +1210,7 @@ main {
   display: grid;
   place-items: center;
   background: #edf2df;
-  color: #6d8c54;
+  color: #527139;
   border-radius: 50%;
 }
 .check-glyph.bad {
@@ -1224,7 +1224,7 @@ main {
 }
 .check-row p {
   font-size: 12px;
-  color: #7d8c73;
+  color: #5d6c53;
   line-height: 1.8;
   margin: 0;
   overflow-wrap: anywhere;
@@ -1232,7 +1232,7 @@ main {
 .check-row small {
   display: block;
   font-size: 10px;
-  color: #96a086;
+  color: #616b51;
   margin-top: 10px;
   line-height: 1.8;
 }
@@ -1245,7 +1245,7 @@ main {
 }
 .empty-icon {
   display: block;
-  color: #899c73;
+  color: #5b6e45;
   margin-bottom: 18px;
 }
 .empty-state h2 {
@@ -1255,7 +1255,7 @@ main {
 .empty-state p {
   font-size: 12px;
   line-height: 1.9;
-  color: #8b9582;
+  color: #616b58;
   max-width: 450px;
   margin: 0 auto 20px;
 }
@@ -1300,7 +1300,7 @@ main {
 }
 .capture-event p {
   font-size: 11px;
-  color: #8b9480;
+  color: #626b57;
   line-height: 1.8;
   overflow-wrap: anywhere;
 }
@@ -1310,7 +1310,7 @@ main {
   gap: 22px;
   flex-wrap: wrap;
   font-size: 11px;
-  color: #7d8d6f;
+  color: #5d6d4f;
   margin: 20px 0;
 }
 .capture-actions {
@@ -1340,7 +1340,7 @@ main {
 .drop-area p {
   font-size: 11px;
   line-height: 1.8;
-  color: #89967a;
+  color: #5f6c50;
 }
 .forest-note,
 .grounding-panel {
@@ -1369,7 +1369,7 @@ main {
   gap: 13px;
   border: 1px solid #d6dfc2;
   background: #edf2df;
-  color: #7b8b67;
+  color: #5d6d49;
   padding: 19px 22px;
   border-radius: 4px;
   font-size: 12px;
@@ -1382,7 +1382,7 @@ main {
 .info-band.warning {
   background: #faf2e5;
   border-color: #e6d9b8;
-  color: #9a7a3d;
+  color: #836326;
 }
 .incident-summary {
   display: flex;
@@ -1396,7 +1396,7 @@ main {
 }
 .incident-summary > strong {
   font: 400 65px var(--serif);
-  color: #708657;
+  color: #596f40;
 }
 .incident-summary h2 {
   font-size: 14px;
@@ -1405,13 +1405,13 @@ main {
 }
 .incident-summary p {
   font-size: 12px;
-  color: #89957d;
+  color: #606c54;
   line-height: 1.8;
   margin: 0;
 }
 .incident-summary > svg {
   margin-left: auto;
-  color: #789162;
+  color: #566f40;
 }
 .comparison {
   display: grid;
@@ -1433,13 +1433,13 @@ main {
 }
 .version-box p {
   font-size: 11px;
-  color: #8c987f;
+  color: #606c53;
   margin: 0;
 }
 .mini-label {
   font-size: 10px;
   letter-spacing: 0.08em;
-  color: #8c967e;
+  color: #616b53;
 }
 .diff-summary {
   display: grid;
@@ -1463,7 +1463,7 @@ main {
 }
 .diff-summary span {
   font-size: 11px;
-  color: #8a977b;
+  color: #5f6c50;
 }
 .lineage-flow {
   display: grid;
@@ -1492,7 +1492,7 @@ main {
 }
 .lineage-node > span {
   display: block;
-  color: #829866;
+  color: #596f3d;
   margin-bottom: 20px;
 }
 .lineage-node h3 {
@@ -1503,7 +1503,7 @@ main {
 .lineage-node p {
   font-size: 10px;
   line-height: 1.8;
-  color: #8c9b7a;
+  color: #5e6d4c;
   margin: 0;
 }
 .lineage-node.active {
@@ -1531,7 +1531,7 @@ main {
   border-bottom: 0;
 }
 .evidence-list dt {
-  color: #8c987e;
+  color: #606c52;
 }
 .evidence-list dd {
   margin: 0;
@@ -1555,7 +1555,7 @@ main {
   height: 31px;
   width: 31px;
   background: #eaf1dc;
-  color: #829967;
+  color: #586f3d;
   flex-shrink: 0;
 }
 .activity-copy strong {
@@ -1566,12 +1566,12 @@ main {
   font-size: 11px;
   line-height: 1.8;
   margin: 7px 0;
-  color: #8b987d;
+  color: #5f6c51;
   overflow-wrap: anywhere;
 }
 .activity-copy small {
   font-size: 10px;
-  color: #9ba58c;
+  color: #616b52;
 }
 .recovery-steps {
   display: flex;
@@ -1585,7 +1585,7 @@ main {
 }
 .recovery-steps span {
   font: 400 24px var(--serif);
-  color: #a58a47;
+  color: #7f6421;
 }
 .recovery-steps h3 {
   font-size: 13px;
@@ -1594,7 +1594,7 @@ main {
 .recovery-steps p {
   font-size: 11px;
   line-height: 1.8;
-  color: #8b987e;
+  color: #5f6c52;
   margin: 0;
 }
 .investigation-steps {
@@ -1611,12 +1611,12 @@ main {
   border-bottom: 1px solid #d7d8ce;
   padding: 0 0 12px;
   font: 400 23px var(--serif);
-  color: #8e9589;
+  color: #636a5e;
   position: relative;
 }
 .investigation-steps span {
   font: 400 23px var(--serif);
-  color: #a3a694;
+  color: #676a58;
 }
 .investigation-steps .active,
 .investigation-steps .complete {
@@ -1632,7 +1632,7 @@ main {
 }
 .investigation-steps .active span,
 .investigation-steps .complete span {
-  color: #a3843d;
+  color: #82631c;
 }
 .investigation-steps [aria-disabled="true"] {
   pointer-events: none;
@@ -1711,7 +1711,7 @@ main {
 }
 .no-account {
   font-size: 12px;
-  color: #8a9580;
+  color: #606b56;
   line-height: 1.7;
 }
 .public-limits {
@@ -1722,12 +1722,12 @@ main {
   padding-top: 20px;
   margin-top: 26px;
   font-size: 11px;
-  color: #7d8b70;
+  color: #5e6c51;
 }
 .public-limits span + span:before {
-  content: "·";
+  content: "Â·";
   margin-right: 10px;
-  color: #a5ad97;
+  color: #636b55;
 }
 .data-notice {
   display: flex;
@@ -1735,7 +1735,7 @@ main {
   gap: 11px;
   font-size: 10px;
   line-height: 1.9;
-  color: #8e9982;
+  color: #606b54;
   margin: 17px 0 0;
 }
 .data-notice svg {
@@ -1850,7 +1850,7 @@ main {
   letter-spacing: -0.4px;
 }
 .finding-heading > svg {
-  color: #728854;
+  color: #596f3b;
 }
 .answer-prose {
   font-size: 13px;
@@ -1887,7 +1887,7 @@ main {
 }
 .answer-prose code {
   font: 11px/1.8 var(--mono);
-  color: #637d43;
+  color: #567036;
   background: #eef2e3;
   border: 1px solid #e0e6d0;
   border-radius: 3px;
@@ -1939,7 +1939,7 @@ main {
 .answer-provenance {
   font-size: 10px;
   line-height: 1.9;
-  color: #949e85;
+  color: #616b52;
   border-top: 1px solid var(--line);
   padding-top: 16px;
   margin-top: 22px;
@@ -1953,7 +1953,7 @@ main {
 .citation-button {
   background: #f0f3e4;
   border-color: #d8e0c6;
-  color: #718254;
+  color: #5d6e40;
   padding: 7px 10px;
   font-size: 10px;
   min-height: 31px;
@@ -1994,12 +1994,12 @@ main {
 }
 .tool-args {
   font: 9px var(--mono);
-  color: #9aa58a;
+  color: #616c51;
   margin-left: auto;
   overflow-wrap: anywhere;
 }
 .tool-trace summary > svg {
-  color: #9bab81;
+  color: #5d6d43;
 }
 .tool-trace[open] summary > svg {
   transform: rotate(180deg);
@@ -2010,7 +2010,7 @@ main {
 }
 .tool-result p {
   font-size: 10px;
-  color: #8c9a7a;
+  color: #5f6d4d;
   margin: 0 0 13px;
 }
 .tool-result pre {
@@ -2019,7 +2019,7 @@ main {
   max-height: 300px;
   overflow: auto;
   overflow-wrap: anywhere;
-  color: #657d4b;
+  color: #576f3d;
   margin: 0;
 }
 .connection-grid {
@@ -2042,7 +2042,7 @@ main {
 .connection-symbol {
   display: grid;
   place-items: center;
-  color: #7c925d;
+  color: #596f3a;
   background: #eef2e2;
   border: 1px solid #dde6c9;
   border-radius: 6px;
@@ -2056,7 +2056,7 @@ main {
 .connection-card p {
   font-size: 12px;
   line-height: 1.9;
-  color: #8b987d;
+  color: #5f6c51;
   max-width: 530px;
   margin: 0;
   min-height: 45px;
@@ -2076,11 +2076,11 @@ main {
   margin-top: 13px;
 }
 .connection-card dt {
-  color: #919d80;
+  color: #606c4f;
 }
 .connection-card dd {
   margin: 0;
-  color: #657e48;
+  color: #566f39;
   text-align: right;
   overflow-wrap: anywhere;
 }
@@ -2095,7 +2095,7 @@ main {
   gap: 18px;
   padding-top: 25px;
   font-size: 12px;
-  color: #929e83;
+  color: #606c51;
 }
 .settings-nav > span {
   color: #5c773f;
@@ -2121,13 +2121,13 @@ main {
 }
 .settings-row p {
   font-size: 11px;
-  color: #8b987c;
+  color: #5f6c50;
   line-height: 1.9;
   margin: 8px 0 0;
   max-width: 700px;
 }
 .settings-row > span {
-  color: #78905a;
+  color: #576f39;
   text-align: right;
   font-size: 11px;
   flex-shrink: 0;
@@ -2136,7 +2136,7 @@ main {
 }
 .readonly-label {
   font-size: 11px;
-  color: #97a188;
+  color: #616b52;
   line-height: 1.8;
   margin: 20px 0 0;
 }
@@ -2168,13 +2168,13 @@ dialog h3 {
 dialog p {
   font-size: 12px;
   line-height: 1.9;
-  color: #89977a;
+  color: #5e6c4f;
 }
 dialog .dialog-symbol {
   display: inline-flex;
   background: #edf3db;
   padding: 10px;
-  color: #81995b;
+  color: #587032;
   border-radius: 5px;
   font: 24px var(--serif);
 }
@@ -2182,12 +2182,14 @@ dialog input {
   margin: 5px 0 12px;
 }
 .dialog-close {
+  min-width: 44px;
+  min-height: 44px;
   position: absolute;
   top: 17px;
   right: 18px;
   border: 0;
   background: transparent;
-  color: #849771;
+  color: #5b6e48;
   padding: 6px;
 }
 .detail-drawer {
@@ -2207,7 +2209,7 @@ dialog input {
   align-items: center;
   gap: 10px;
   font-size: 10px;
-  color: #8a9979;
+  color: #5e6d4d;
   margin: 7px 35px 25px 0;
 }
 .drawer-kicker > span {
@@ -2220,7 +2222,7 @@ dialog input {
 }
 .drawer-description {
   font-size: 13px;
-  color: #7c8d6b;
+  color: #5c6d4b;
   line-height: 1.9;
   margin: 20px 0 25px;
 }
@@ -2239,7 +2241,7 @@ dialog input {
 }
 .record-stat-grid span {
   font-size: 10px;
-  color: #8d9c7c;
+  color: #5e6d4d;
   display: block;
 }
 .record-stat-grid strong {
@@ -2276,7 +2278,7 @@ dialog input {
 }
 .record-json {
   font: 10px/1.9 var(--mono);
-  color: #5e7843;
+  color: #56703b;
   white-space: pre-wrap;
   overflow-wrap: anywhere;
   background: #edf2df;
@@ -2332,7 +2334,7 @@ dialog input {
 }
 .loading p {
   font-size: 13px;
-  color: #88967a;
+  color: #5e6c50;
 }
 .spinner {
   display: inline-block;
@@ -2625,6 +2627,8 @@ dialog input {
     margin-left: 0;
   }
   .mobile-menu {
+    min-width: 44px;
+    min-height: 44px;
     display: grid;
     place-items: center;
     border: 0;
@@ -3393,11 +3397,11 @@ dialog input {
   color: #426331;
 }
 .check-summary strong span {
-  color: #9dac85;
+  color: #5e6d46;
 }
 .check-summary p {
   font-size: 11px;
-  color: #83906e;
+  color: #5f6c4a;
   margin: 10px 0 0;
 }
 .check-matrix {
@@ -3411,10 +3415,10 @@ dialog input {
   display: flex;
   align-items: center;
   gap: 8px;
-  color: #70834e;
+  color: #5b6e39;
 }
 .check-matrix a svg {
-  color: #7f9b51;
+  color: #557127;
 }
 .check-matrix .failed,
 .check-matrix .failed svg {
