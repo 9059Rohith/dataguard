@@ -1,0 +1,259 @@
+{
+  "verified_utc": "2026-11-01T20:13:37.220659+00:00",
+  "canonical": "https://rohith-dataguard.vercel.app",
+  "deployment_id": "dpl_GeuNEBRjiHmQzSNsC4As4PkW8K58",
+  "source_commit": "0c7625659dda08c7f585d178c88fa95ad74adabc",
+  "inference_calls": 0,
+  "checks": [
+    {
+      "path": "/console/overview",
+      "status": 200,
+      "bytes": 7776,
+      "content_type": "text/html; charset=utf-8",
+      "cache_control": "no-store"
+    },
+    {
+      "path": "/console/datasets",
+      "status": 200,
+      "bytes": 7776,
+      "content_type": "text/html; charset=utf-8",
+      "cache_control": "no-store"
+    },
+    {
+      "path": "/console/contracts",
+      "status": 200,
+      "bytes": 7776,
+      "content_type": "text/html; charset=utf-8",
+      "cache_control": "no-store"
+    },
+    {
+      "path": "/console/checks",
+      "status": 200,
+      "bytes": 7776,
+      "content_type": "text/html; charset=utf-8",
+      "cache_control": "no-store"
+    },
+    {
+      "path": "/console/batches",
+      "status": 200,
+      "bytes": 7776,
+      "content_type": "text/html; charset=utf-8",
+      "cache_control": "no-store"
+    },
+    {
+      "path": "/console/quarantine",
+      "status": 200,
+      "bytes": 7776,
+      "content_type": "text/html; charset=utf-8",
+      "cache_control": "no-store"
+    },
+    {
+      "path": "/console/versions",
+      "status": 200,
+      "bytes": 7776,
+      "content_type": "text/html; charset=utf-8",
+      "cache_control": "no-store"
+    },
+    {
+      "path": "/console/lineage",
+      "status": 200,
+      "bytes": 7776,
+      "content_type": "text/html; charset=utf-8",
+      "cache_control": "no-store"
+    },
+    {
+      "path": "/console/incidents",
+      "status": 200,
+      "bytes": 7776,
+      "content_type": "text/html; charset=utf-8",
+      "cache_control": "no-store"
+    },
+    {
+      "path": "/console/recovery",
+      "status": 200,
+      "bytes": 7776,
+      "content_type": "text/html; charset=utf-8",
+      "cache_control": "no-store"
+    },
+    {
+      "path": "/console/agent",
+      "status": 200,
+      "bytes": 7776,
+      "content_type": "text/html; charset=utf-8",
+      "cache_control": "no-store"
+    },
+    {
+      "path": "/console/connections",
+      "status": 200,
+      "bytes": 7776,
+      "content_type": "text/html; charset=utf-8",
+      "cache_control": "no-store"
+    },
+    {
+      "path": "/console/settings",
+      "status": 200,
+      "bytes": 7776,
+      "content_type": "text/html; charset=utf-8",
+      "cache_control": "no-store"
+    },
+    {
+      "path": "/console.css",
+      "status": 200,
+      "bytes": 61217,
+      "content_type": "text/css; charset=utf-8",
+      "cache_control": "no-store"
+    },
+    {
+      "path": "/dashboard.js",
+      "status": 200,
+      "bytes": 66487,
+      "content_type": "text/javascript; charset=utf-8",
+      "cache_control": "no-store",
+      "editorial_build": true
+    },
+    {
+      "path": "/ui-core.js",
+      "status": 200,
+      "bytes": 7648,
+      "content_type": "text/javascript; charset=utf-8",
+      "cache_control": "no-store"
+    },
+    {
+      "path": "/fonts/instrument-serif.woff2",
+      "status": 200,
+      "bytes": 21032,
+      "content_type": "font/woff2",
+      "cache_control": "no-store",
+      "woff2_magic": true
+    },
+    {
+      "path": "/fonts/manrope.woff2",
+      "status": 200,
+      "bytes": 24532,
+      "content_type": "font/woff2",
+      "cache_control": "no-store",
+      "woff2_magic": true
+    },
+    {
+      "path": "/api/quality/workspace",
+      "status": 200,
+      "bytes": 12755,
+      "content_type": "application/json",
+      "cache_control": "no-store",
+      "storage": "PostgreSQL",
+      "capture_count": 2,
+      "record_count": 8,
+      "digest": "54d89c05d727cef779eaf4148dd570d2fb21a3f3714cefab86621d44fdf71bd0",
+      "capture_id": "71623033-6147-4fa0-a5b6-2d0019ca5f7a"
+    },
+    {
+      "path": "/api/quality/provider",
+      "status": 200,
+      "bytes": 1040,
+      "content_type": "application/json",
+      "cache_control": "no-store",
+      "provider_status": {
+        "configured": true,
+        "provider": "Google Gemini",
+        "model": "gemini-3.5-flash-lite",
+        "public_data_only": true,
+        "billing_mode": "Gemini free tier; project billing disabled at setup",
+        "max_turns": 4,
+        "max_tools": 6,
+        "max_provider_requests": 5,
+        "max_quota_retries": 1,
+        "permissions": "Public GitHub captures only. Private uploads and notes are excluded. No writes, shell, or arbitrary network.",
+        "data_notice": "Google's unpaid API may use submitted questions and public evidence to improve its models. Ask only about public repository data; do not enter private or sensitive information.",
+        "quota_notice": "Free quotas are shared per Google project, can change, and return explicit HTTP 429 when exhausted.",
+        "public_demo": {
+          "endpoint": "/api/quality/public-investigate",
+          "requires_authentication": false,
+          "configured": true,
+          "question_max_characters": 600,
+          "limits": {
+            "per_client": {
+              "limit": 3,
+              "seconds": 600
+            },
+            "global_minute": {
+              "limit": 2,
+              "seconds": 60
+            },
+            "global_day": {
+              "limit": 30,
+              "seconds": 86400
+            }
+          },
+          "limiter_backend": "postgresql",
+          "proxy_identity_source": "vercel-single-forwarded-ip"
+        }
+      }
+    },
+    {
+      "path": "/ready",
+      "status": 200,
+      "bytes": 18,
+      "content_type": "application/json",
+      "cache_control": "no-store"
+    },
+    {
+      "path": "/fonts/unknown.woff2",
+      "status": 404,
+      "bytes": 27,
+      "content_type": "application/json",
+      "cache_control": "no-store"
+    },
+    {
+      "path": "/api/quality/notes",
+      "method": "POST without bearer",
+      "status": 401
+    }
+  ],
+  "final_build": {
+    "verified_utc": "2026-11-01T20:29:24.097158+00:00",
+    "deployment_id": "dpl_4YGyraZe5CMWkBfwsJjv2y8rXWo6",
+    "source_commit": "b37d183d40ca0871a60966698f62f322eb652893",
+    "ready_http": 200,
+    "css_sha256": "23da90095386922b794a92aab0282e9c231621152b4e1a6dfe7b608b3aa69eb4",
+    "css_cache_control": "no-store",
+    "contrast_and_target_update_present": true,
+    "ui_core_sha256": "c6eb0f3d0483d2738fc751091a1b2a062fe8c94fcb0c1a536a2156b04a3b0288",
+    "nested_inline_code_fix_present": true,
+    "storage": "PostgreSQL",
+    "capture_count": 2,
+    "record_count": 8,
+    "digest_unchanged": true,
+    "inference_calls": 0,
+    "sr_only_anchor_fix_present": true
+  },
+  "formatting_build": {
+    "verified_utc": "2026-11-01T20:20:52.497882+00:00",
+    "deployment_id": "dpl_8izntK2bq8vFn1Jh57aPEYXD2mHo",
+    "source_commit": "26a0d9c3776d6ceac502fde24e4daee1c8eac41c",
+    "ready_http": 200,
+    "ui_core_http": 200,
+    "ui_core_cache_control": "no-store",
+    "ui_core_sha256": "c6eb0f3d0483d2738fc751091a1b2a062fe8c94fcb0c1a536a2156b04a3b0288",
+    "nested_inline_code_fix_present": true,
+    "capture_count": 2,
+    "record_count": 8,
+    "digest_unchanged": true,
+    "inference_calls": 0
+  },
+  "contrast_build": {
+    "verified_utc": "2026-11-01T20:25:51.400593+00:00",
+    "deployment_id": "dpl_2FSxjMxbQniomjPbYLan34pJqaJJ",
+    "source_commit": "4216b40941252e70d853646881c1df62afd666a4",
+    "ready_http": 200,
+    "css_sha256": "9d94f28fd5cdd98ff32316d8105ebe4613c52e12af832d6bbe8c76837afc0c8c",
+    "css_cache_control": "no-store",
+    "contrast_and_target_update_present": true,
+    "ui_core_sha256": "c6eb0f3d0483d2738fc751091a1b2a062fe8c94fcb0c1a536a2156b04a3b0288",
+    "nested_inline_code_fix_present": true,
+    "storage": "PostgreSQL",
+    "capture_count": 2,
+    "record_count": 8,
+    "digest_unchanged": true,
+    "inference_calls": 0
+  }
+}

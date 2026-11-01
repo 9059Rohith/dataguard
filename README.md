@@ -4,11 +4,13 @@
 
 [Live workspace](https://rohith-dataguard.vercel.app) · [Live API docs](https://rohith-dataguard.vercel.app/docs) · [Source](https://github.com/9059Rohith/dataguard) · [Workspace verification](evidence/quality-verification.md)
 
-![DataGuard repository quality workspace](evidence/quality-desktop.png)
+![DataGuard editorial audit workspace](evidence/design/redesign-overview-live.jpg)
 
 ## Repository quality workspace
 
 The public workspace has 13 separate routes: overview, datasets, contracts, quality checks, capture history, quarantine, version comparison, data lineage, incidents, recovery, AI investigator, connections, and settings. Every visible repository count is sourced from actual GitHub REST responses. The bundled capture was collected on 1 November 2026; capture and evaluation timestamps are displayed, and freshness is re-evaluated explicitly rather than presented as continuously live.
+
+The editorial interface uses self-hosted Instrument Serif and Manrope, an ivory-and-forest audit ledger, thin-rule source tables, and a visible provenance trail. Search and sort actual records, open a source detail drawer, then follow that record into its stored checks or prepare a public-data investigation. Capture history supports text and status filters. AI findings support safe Markdown, source links, and capture citations that open the corresponding evidence drawer. Mobile navigation supports Escape, focus containment, and reduced motion. The [design concepts and verification](evidence/design/IMPLEMENTATION.md) document the visual system and its checks.
 
 The source is a fixed, bounded collection of eight public repositories: FastAPI, Pydantic, SQLAlchemy, Starlette, Uvicorn, Prometheus Python client, Psycopg, and Pytest. The collection is an intentional Python infrastructure sample, not a representative ecosystem survey. GitHub open issue counts include pull requests. The normalized source records and provenance are committed in `dataguard/source_capture.json`. See the [GitHub repository API](https://docs.github.com/en/rest/repos/repos#get-a-repository).
 
@@ -26,7 +28,7 @@ The server selects the fixed Gemini OpenAI-compatible endpoint when `GEMINI_API_
 
 ## Public recruiter demo
 
-Open [AI investigator](https://rohith-dataguard.vercel.app/console/agent), enter a public-repository question, and select **Investigate**. No account, operator token, upload, or provider key is required from the visitor. This is actual Gemini inference over the eight public GitHub repositories; private uploads and notes are excluded.
+Open [AI investigator](https://rohith-dataguard.vercel.app/console/agent), enter a public-repository question, and select **Investigate public data**. No account, operator token, upload, or provider key is required from the visitor. This is actual Gemini inference over the eight public GitHub repositories; private uploads and notes are excluded.
 
 `POST /api/quality/public-investigate` accepts only `{ "question": "..." }` with 5–600 characters and an 8 KiB body cap. Model, tools, data-source and provider overrides are rejected. The answer is capped at 6,000 characters and the full response at 64,000 bytes; evidence traces identify the actual records read through bounded summaries. Public requests never fall back to a paid provider.
 
@@ -42,6 +44,8 @@ Local verification:
 .\.venv\Scripts\python.exe -m pytest -q
 .\.venv\Scripts\ruff.exe check dataguard tests
 node --check dataguard/dashboard.js
+node --check dataguard/ui-core.js
+node tests/test_ui_core.cjs
 ```
 
 The production deployment disables `DATAGUARD_PUBLIC_DEMO` and `DATAGUARD_SEED_DEMO`. Existing synthetic settlement fixtures are retained for the authenticated legacy pipeline and tests; the public repository workspace does not display them as real transactions.
