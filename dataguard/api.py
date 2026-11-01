@@ -326,6 +326,22 @@ def create_app(url=None):
             media_type="text/javascript",
         )
 
+    @app.get("/ui-core.js")
+    def ui_core():
+        return Response(
+            Path(__file__).with_name("ui-core.js").read_text(encoding="utf-8"),
+            media_type="text/javascript",
+        )
+
+    @app.get("/fonts/{font_name}")
+    def font(font_name: str):
+        if font_name not in {"instrument-serif.woff2", "manrope.woff2"}:
+            raise HTTPException(404, "Font not found")
+        return Response(
+            Path(__file__).with_name("fonts").joinpath(font_name).read_bytes(),
+            media_type="font/woff2",
+        )
+
     app.add_middleware(RequestGuard, state=app.state, authorize=authorize, default_csp=DEFAULT_CSP)
     return app
 

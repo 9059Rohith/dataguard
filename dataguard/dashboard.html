@@ -11,21 +11,53 @@
     <title>DataGuard — Data reliability workspace</title>
     <link
       rel="icon"
-      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='10' fill='%23173e31'/%3E%3Cpath d='M10 12h10a9 9 0 0 1 0 18H10V12m6 6v6h4a3 3 0 0 0 0-6h-4' fill='%23dbe9b2'/%3E%3C/svg%3E"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='7' fill='%23143d32'/%3E%3Cpath d='m20 5 12 5v10c0 8-12 15-12 15S8 28 8 20V10L20 5Zm-6 14 4 5 9-11' fill='none' stroke='%23d7e78a' stroke-width='1.6'/%3E%3C/svg%3E"
     />
     <link rel="stylesheet" href="/console.css" />
+    <script defer src="/ui-core.js"></script>
     <script defer src="/dashboard.js"></script>
   </head>
   <body>
+    <a class="skip-link" href="#main">Skip to workspace</a>
+    <button
+      id="nav-backdrop"
+      class="nav-backdrop"
+      aria-label="Close navigation"
+      hidden
+    ></button>
     <div class="app">
-      <aside class="sidebar">
+      <aside
+        class="sidebar"
+        id="workspace-navigation"
+        aria-label="DataGuard workspace"
+      >
         <a class="brand" href="/console/overview"
-          ><span class="brandmark">d<span>g</span></span
-          >DataGuard<span class="brand-dot"></span></a
-        ><button class="workspace-switch" id="workspace-open">
-          <span class="workspace-avatar">P</span
-          ><span>Python ecosystem<small>Public source workspace</small></span
-          ><span class="switch-icon">⌄</span>
+          ><svg
+            width="31"
+            height="37"
+            viewBox="0 0 32 40"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            aria-hidden="true"
+          >
+            <path d="m16 2 13 5v14c0 9-13 17-13 17S3 30 3 21V7l13-5Z" />
+            <path d="m9 19 5 5 9-12" /></svg
+          ><span>DataGuard</span></a
+        >
+        <button class="workspace-switch" id="workspace-open">
+          <span>Python ecosystem<small>Public source workspace</small></span
+          ><svg
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            aria-hidden="true"
+          >
+            <path d="m6 9 6 6 6-6" />
+          </svg>
         </button>
         <div class="nav-caption">WORKSPACE</div>
         <nav id="navigation" aria-label="Workspace navigation"></nav>
@@ -35,8 +67,18 @@
           </div>
           <p>Every number has a source.<br />Every change leaves a trail.</p>
           <a href="/docs" target="_blank" rel="noopener"
-            >API documentation <span>↗</span></a
-          >
+            >API documentation
+            <svg
+              width="15"
+              height="15"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.5"
+              aria-hidden="true"
+            >
+              <path d="M14 3h7v7M21 3 10 14M10 3H3v18h18v-7" /></svg
+          ></a>
           <div class="profile">
             <span class="profile-avatar">DG</span
             ><span id="profile-label"
@@ -46,7 +88,19 @@
               title="Manage operator access"
               aria-label="Manage operator access"
             >
-              ⌘
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.5"
+                aria-hidden="true"
+              >
+                <path
+                  d="M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8M9 3h6l1 3 3 1 2 5-2 5-3 1-1 3H9l-1-3-3-1-2-5 2-5 3-1Z"
+                />
+              </svg>
             </button>
           </div>
         </div>
@@ -56,9 +110,21 @@
           <button
             class="mobile-menu"
             id="mobile-menu"
-            aria-label="Toggle navigation"
+            aria-label="Open navigation"
+            aria-expanded="false"
+            aria-controls="workspace-navigation"
           >
-            ☰
+            <svg
+              width="22"
+              height="22"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.6"
+              aria-hidden="true"
+            >
+              <path d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
           </button>
           <div class="breadcrumb">
             Workspace <span>/</span> <strong id="breadcrumb">Overview</strong>
@@ -73,7 +139,18 @@
               title="Refresh workspace"
             ></button
             ><button class="button small" id="connect-button">
-              Connect operator <span>↗</span>
+              Connect operator
+              <svg
+                width="15"
+                height="15"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.5"
+                aria-hidden="true"
+              >
+                <path d="M14 3h7v7M21 3 10 14M10 3H3v18h18v-7" />
+              </svg>
             </button>
           </div>
         </header>
@@ -100,13 +177,23 @@
           data-close="access-dialog"
           aria-label="Close dialog"
         >
-          ×</button
-        ><span class="dialog-symbol">↗</span>
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            aria-hidden="true"
+          >
+            <path d="m6 6 12 12M6 18 18 6" />
+          </svg></button
+        ><span class="dialog-symbol" aria-hidden="true">DG</span>
         <h2>Connect your operator.</h2>
         <p>
           Use your existing DataGuard bearer token to import data, change
-          contracts, and run investigations. The token stays in memory for this
-          tab and clears on reload.
+          contracts, and manage private records. Public AI investigations need
+          no token. The token stays in memory for this tab and clears on reload.
         </p>
         <label for="operator-token">Operator token</label
         ><input
@@ -118,19 +205,31 @@
           placeholder="Paste your bearer token"
         />
         <p class="form-error" id="access-error" role="alert"></p>
-        <button class="button primary" type="submit">
-          Connect securely <span>→</span>
-        </button>
+        <button class="button primary" type="submit">Connect securely</button>
       </form>
     </dialog>
-    <dialog id="detail-dialog">
+    <dialog
+      id="detail-dialog"
+      class="detail-drawer"
+      aria-labelledby="detail-title"
+    >
       <button
         class="dialog-close"
         type="button"
         data-close="detail-dialog"
         aria-label="Close details"
       >
-        ×
+        <svg
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.5"
+          aria-hidden="true"
+        >
+          <path d="m6 6 12 12M6 18 18 6" />
+        </svg>
       </button>
       <div id="detail-content"></div>
     </dialog>

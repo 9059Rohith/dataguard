@@ -1,5 +1,6 @@
 "use strict";
 const $ = (s, root = document) => root.querySelector(s);
+const UI = globalThis.DataGuardUI;
 const escape = (value) =>
   String(value ?? "").replace(
     /[&<>"']/g,
@@ -9,7 +10,15 @@ const escape = (value) =>
       ],
   );
 const paths = {
-  overview: "M3 3h7v7H3z M14 3h7v7h-7z M3 14h7v7H3z M14 14h7v7h-7z",
+  overview: "m3 10 9-7 9 7v11h-6v-7H9v7H3Z",
+  shield: "m12 2 9 4v7c0 5-9 9-9 9s-9-4-9-9V6l9-4 m-4 10 3 3 5-6",
+  copy: "M8 8h12v13H8z M4 16H2V2h13v2",
+  eye: "M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12 M12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6",
+  chevron: "m7 10 5 5 5-5",
+  menu: "M4 6h16M4 12h16M4 18h16",
+  filter: "M3 5h18M6 12h12M10 19h4",
+  code: "m8 6-6 6 6 6m8-12 6 6-6 6m-3-15-2 18",
+  branch: "M6 3v12a4 4 0 0 0 4 4h8M6 7h8a4 4 0 0 0 4-4M3 3h6M15 19h6",
   datasets:
     "M20 6c0 2-16 2-16 0s16-2 16 0v12c0 3-16 3-16 0V6 M4 12c0 3 16 3 16 0",
   contracts: "M8 3H5v18h14V3h-3 M9 2h6v4H9z M8 11h8 M8 15h6",
@@ -60,6 +69,9 @@ let workspace,
   selectedId = "",
   page = location.pathname.split("/")[2] || "overview",
   lastAgent = null;
+let pendingQuestion = "";
+const recordView = { query: "", sort: "repository", filter: "all" };
+const historyView = { query: "", status: "all" };
 let toastTimer;
 let publicCooldownUntil = 0;
 let publicCooldownTimer;
@@ -125,16 +137,87 @@ const chart = (c) => {
   const max = Math.max(1, ...rows.map((r) => r.open_issues_count));
   return `<div class="panel chart-panel"><h3>Open issues by repository <span class="section-count">Source values</span></h3>${rows.map((r) => `<div class="bar-row"><span>${escape(r.full_name)}</span><div class="bar-track"><span style="width:${(r.open_issues_count / max) * 100}%"></span></div><span>${number(r.open_issues_count)}</span></div>`).join("")}<p class="form-hint">GitHub's open_issues_count includes open pull requests. Captured ${date(c.captured_at)}.</p></div>`;
 };
-function recordTable(c, limit = 500, query = "") {
-  const rows = c.records
-    .map((r, i) => ({ r, i }))
-    .filter(({ r }) =>
-      String(r.full_name || "")
-        .toLowerCase()
-        .includes(query.toLowerCase()),
+function recordTable(c, limit = 500, query = recordView.query) {
+  const rows = UI.selectRecords(
+    c.records,
+    query,
+    recordView.sort,
+    recordView.filter,
+  ).slice(0, limit);
+  return `<div class="table-wrap"><table class="source-table"><thead><tr><th>Repository</th><th><button data-action="sort-records" data-sort="stars">Stars ${icon("chevron", 12)}</button></th><th><button data-action="sort-records" data-sort="issues">Open issues ${icon("chevron", 12)}</button></th><th>Updated</th><th><span class="sr-only">Inspect</span></th></tr></thead><tbody>${rows.map(({ record: r, index: i }) => `<tr><td><div class="repo-cell"><span class="repo-emblem">${icon("github", 20)}</span><div><button class="record-name" data-action="record" data-id="${c.id}" data-index="${i}">${escape(r.full_name || "Unnamed record")}</button><span class="sub repo-description">${escape(r.description || r.language || "No description metadata")}</span></div></div></td><td class="numeric">${number(r.stargazers_count)}</td><td class="numeric">${number(r.open_issues_count)}</td><td><time datetime="${escape(r.updated_at)}">${date(r.updated_at).split(",")[0]}</time><span class="sub">${escape(r.language || "Not specified")}</span></td><td><button class="table-action" data-action="record" data-id="${c.id}" data-index="${i}" aria-label="Inspect record ${i + 1}" title="Inspect source record">${icon("arrow", 17)}</button></td></tr>`).join("") || `<tr><td colspan="5"><div class="table-empty">No source records match these filters. ${button("Clear filters", "clear-record-filters", "small")}</div></td></tr>`}</tbody></table></div><div class="data-table-footer"><span>${rows.length} of ${c.row_count} source records</span>${limit < 500 ? link("datasets", "View all records") : `<span class="mono">SHA-256 ${c.digest.slice(0, 12)}…</span>`}</div>`;
+}
+function recordToolbar(compact = false) {
+  return `<div class="record-toolbar"><div class="search-input">${icon("search", 16)}<input id="record-search" aria-label="Search repository records" placeholder="Search repositories…" value="${escape(recordView.query)}"></div><label class="sr-only" for="record-sort">Sort records</label><select id="record-sort" aria-label="Sort records">${[
+    ["repository", "Repository A–Z"],
+    ["stars", "Most stars"],
+    ["issues", "Most open issues"],
+    ["updated", "Recently updated"],
+  ]
+    .map(
+      ([value, label]) =>
+        `<option value="${value}" ${recordView.sort === value ? "selected" : ""}>${label}</option>`,
     )
-    .slice(0, limit);
-  return `<div class="table-wrap"><table><thead><tr><th>Repository</th><th>Stars</th><th>Open issues</th><th>Source updated</th><th></th></tr></thead><tbody>${rows.map(({ r, i }) => `<tr><td><span class="table-icon">${icon("datasets", 14)}</span><strong>${escape(r.full_name || "Unnamed record")}</strong><span class="sub">${escape(r.language || "No language metadata")} · ID ${escape(r.id)}</span></td><td>${number(r.stargazers_count)}</td><td>${number(r.open_issues_count)}</td><td>${date(r.updated_at).split(" 202")[0]}<span class="sub">${age(r.updated_at)}</span></td><td><button data-action="record" data-id="${c.id}" data-index="${i}" title="Inspect record ${i + 1}" aria-label="Inspect record ${i + 1}">${icon("external", 14)}</button></td></tr>`).join("") || '<tr><td colspan="5">No records match your search.</td></tr>'}</tbody></table></div><div class="data-table-footer"><span>${rows.length} of ${c.row_count} records</span><span>SHA-256 ${c.digest.slice(0, 12)}…</span></div>`;
+    .join("")}</select>${
+    compact
+      ? ""
+      : `<label class="sr-only" for="record-filter">Filter records</label><select id="record-filter" aria-label="Filter records">${[
+          ["all", "All records"],
+          ["active", "Active repositories"],
+          ["licensed", "License metadata present"],
+          ["issues", "With open issues"],
+        ]
+          .map(
+            ([value, label]) =>
+              `<option value="${value}" ${recordView.filter === value ? "selected" : ""}>${label}</option>`,
+          )
+          .join("")}</select>`
+  }</div>`;
+}
+function updateRecords() {
+  const target = $("#records-table");
+  if (target)
+    target.innerHTML = recordTable(capture(), page === "overview" ? 4 : 500);
+}
+function auditChain(c) {
+  return `<div class="audit-chain">${[
+    [
+      "github",
+      "Source",
+      c.visibility === "public" ? "GitHub REST API" : "Operator upload",
+      "datasets",
+    ],
+    ["contracts", "Immutable capture", "Versioned records", "lineage"],
+    [
+      "checks",
+      "Contract checks",
+      `${c.checks.filter((x) => !x.failed).length}/${c.checks.length} passed`,
+      "checks",
+    ],
+    [
+      "versions",
+      c.status === "published" ? "Published" : "Quarantined",
+      "Inspectable results",
+      c.status === "published" ? "versions" : "quarantine",
+    ],
+  ]
+    .map(
+      ([ic, title, detail, to]) =>
+        `<a href="/console/${to}" class="chain-stage"><span class="chain-icon">${icon(ic, 24)}</span><span><strong>${title}</strong><small>${detail}</small></span></a>`,
+    )
+    .join("")}</div>`;
+}
+function sourceRail(c) {
+  return `<aside class="evidence-rail"><h2>Every result has a source.</h2><dl class="rail-facts"><div><dt>Source</dt><dd>${c.visibility === "public" ? "GitHub REST API" : "Operator upload"}</dd></div><div><dt>Captured</dt><dd>${date(c.captured_at)}</dd></div><div><dt>SHA-256</dt><dd><code>${c.digest.slice(0, 14)}…</code>${button(icon("copy", 15), "copy-digest", "icon-button", `data-id="${c.id}" aria-label="Copy source digest"`)}</dd></div></dl>${button(`Inspect capture ${icon("arrow", 15)}`, "details", "text-button", `data-id="${c.id}"`)}<div class="rail-history"><h3>Evidence trail</h3>${[
+    ["Source captured", c.captured_at],
+    ["Contract evaluated", c.evaluated_at],
+  ]
+    .map(
+      ([title, time]) =>
+        `<div class="rail-event"><span></span><div><strong>${title}</strong><time>${date(time)}</time></div></div>`,
+    )
+    .join(
+      "",
+    )}</div><p class="source-note">Captured state, not live GitHub counters.</p></aside>`;
 }
 async function api(path, method = "GET", body) {
   const headers = {};
@@ -197,74 +280,64 @@ function navigate(next) {
   history.pushState({}, "", "/console/" + page);
   render();
   window.scrollTo(0, 0);
-  $(".sidebar").classList.remove("open");
+  setMenu(false);
   $("#main").focus({ preventScroll: true });
 }
 function overview() {
   const c = capture();
   if (!c)
     return (
-      heading("Your reliability overview.", "Connect a real source to begin.") +
+      heading("Trust is built on evidence.", "Connect a source to begin.") +
       empty(
         "No captured data.",
-        "Import operator data or connect the GitHub source.",
+        "An operator can connect the source or import actual records.",
       )
     );
   const passed = c.checks.filter((x) => !x.failed).length,
-    score = Math.round((passed / c.checks.length) * 100),
     bad = workspace.captures.filter((c) => c.status === "quarantined").length;
   return (
     heading(
-      "Good data. Clear evidence.",
-      "A quieter place to understand the health of your data.",
+      "Trust is built on evidence.",
+      c.visibility === "public" && c.row_count === 8
+        ? "Eight public repositories. One inspectable chain of trust."
+        : `${number(c.row_count)} captured records. One inspectable chain of trust.`,
       button(
-        `${icon("download", 14)} Export evidence`,
+        `${icon("download", 16)} Export evidence`,
         "download",
         "",
         `data-id="${c.id}"`,
       ) +
-        `<a class="button primary" href="/console/batches">${icon("plus", 14)} Import data</a>`,
+        `<a class="button primary" href="/console/agent">Investigate data ${icon("arrow", 18)}</a>`,
     ) +
-    `<div class="overview-hero"><div class="hero-score"><div class="quality-orbit"><svg viewBox="0 0 180 180"><circle cx="90" cy="90" r="76" fill="none" stroke="#e8eddf" stroke-width="7"/><circle cx="90" cy="90" r="76" fill="none" stroke="#829d62" stroke-width="7" stroke-linecap="round" stroke-dasharray="${score * 4.775} 477.5"/></svg><div class="score-number"><strong>${score}<span style="font-size:20px">%</span></strong><span>checks passed</span></div></div><div class="hero-copy"><div class="status-line">${icon(c.status === "published" ? "check" : "incidents", 12)} ${passed} of ${c.checks.length} checks passed</div><h2>${c.status === "published" ? "Trust starts with<br>the details." : "A closer look<br>is needed."}</h2><p>Quality results from the selected capture. Every check includes its rule, record count, and evaluation time.</p>${link("checks", "Explore quality checks")}</div></div><div class="hero-evidence"><div><span class="mini-label">The source behind the numbers</span><h3>${escape(c.name)}</h3><p>${escape(c.scope)}</p></div><div class="source-footer"><span>${icon("github", 14)} ${c.visibility === "public" ? "GitHub REST API" : "Operator upload"}</span><span>${age(c.captured_at)}</span></div></div></div><div class="metrics-strip">${[
-      ["Records in capture", c.row_count, "Actual source records", "datasets"],
-      [
-        "Checks evaluated",
-        c.checks.length,
-        "Against the captured contract",
-        "checks",
-      ],
-      [
-        "Capture versions",
-        workspace.captures.length,
-        "Immutable evidence history",
-        "versions",
-      ],
-      ["Quarantined captures", bad, "Held for operator review", "quarantine"],
+    `<section class="audit-ledger" aria-label="Recorded quality evaluation"><div class="ledger-figures"><div class="ledger-lead"><strong>${passed}<span>/${c.checks.length}</span></strong><span>Checks passed</span></div>${[
+      [c.row_count, "Records"],
+      [workspace.captures.length, "Captures"],
+      [bad, "Quarantined"],
     ]
       .map(
-        ([label, value, hint, ic]) =>
-          `<div class="metric"><div class="metric-label">${label}${icon(ic, 14)}</div><strong>${number(value)}</strong><small>${hint}</small></div>`,
+        ([value, label]) =>
+          `<div class="ledger-stat"><strong>${number(value)}</strong><span>${label}</span></div>`,
       )
       .join(
         "",
-      )}</div><div class="split"><div>${section("The data behind your workspace", link("datasets", "View dataset"))}<div class="panel">${recordTable(c, 5)}</div></div><div>${section("Evidence trail", link("lineage", "View lineage"))}<div class="overview-aside"><div class="panel"><div class="activity-row"><span class="activity-icon">${icon("datasets", 13)}</span><div class="activity-copy"><strong>Source records captured</strong><p>${number(c.row_count)} records · ${c.visibility === "public" ? "GitHub public metadata" : "Private operator input"}</p><small>${date(c.captured_at)}</small></div></div><div class="activity-row"><span class="activity-icon">${icon("checks", 13)}</span><div class="activity-copy"><strong>Contract evaluation completed</strong><p>${passed} checks passed · ${c.checks.length - passed} checks failed</p><small>${date(c.evaluated_at)}</small></div></div></div><div class="forest-note"><h3>A little more context.<br>A lot more confidence.</h3><p>Trace a quality result all the way back to the exact source records and contract that produced it.</p>${link("lineage", "Follow the evidence")}</div></div></div></div>`
+      )}</div>${auditChain(c)}</section><div class="register-layout"><section class="source-register"><div class="register-heading"><h2>Source register</h2>${recordToolbar(true)}</div><div id="records-table">${recordTable(c, 4)}</div></section>${sourceRail(c)}</div>`
   );
 }
 function datasets() {
   const c = capture();
   return (
     heading(
-      "Know what flows in.",
-      "Explore the real records, metadata, and provenance of each capture.",
+      "Source register.",
+      "Read the exact records. Inspect the evidence behind every value.",
       button(
-        `${icon("download", 14)} Export JSON`,
+        `${icon("download", 16)} Export JSON`,
         "download",
         "",
         `data-id="${c.id}"`,
       ),
     ) +
     selector() +
-    `<div class="panel"><div class="dataset-heading"><div><h2>${escape(c.name)}</h2><p>${escape(c.scope)}</p></div>${status(c)}</div><div class="dataset-info"><div><span>Source</span><strong>${c.visibility === "public" ? "GitHub REST API" : "Private operator upload"}</strong></div><div><span>Captured</span><strong>${date(c.captured_at)}</strong></div><div><span>Content fingerprint</span><strong class="mono">${c.digest.slice(0, 24)}…</strong></div></div><div style="padding:20px 20px 0"><div class="toolbar"><div class="search-input">${icon("search", 14)}<input id="record-search" aria-label="Search repository records" placeholder="Search repositories…"></div><div class="right"><span>${c.row_count} records in this capture</span>${pill(c.visibility, "neutral")}</div></div></div><div id="records-table">${recordTable(c)}</div></div>${section("Source distribution")}<div class="split">${chart(c)}<div class="panel panel-pad"><h3 class="note-title">Read the source, too.</h3><p class="explain">These records describe a small, intentional set of Python infrastructure repositories. They reflect the capture time, and should not be treated as a live count or a complete ecosystem survey.</p>${link("lineage", "Inspect full provenance")}<div class="privacy-stamp">${icon("lock", 13)} Operator uploads remain private.</div></div></div>`
+    `<section class="source-register"><div class="dataset-heading"><div><h2>${escape(c.name)}</h2><p>${escape(c.scope)}</p></div>${status(c)}</div><div class="dataset-info"><div><span>Source</span><strong>${c.visibility === "public" ? "GitHub REST API" : "Private operator upload"}</strong></div><div><span>Captured</span><strong>${date(c.captured_at)}</strong></div><div><span>Content fingerprint</span><strong class="mono">${c.digest.slice(0, 24)}…</strong></div></div><div class="register-heading">${recordToolbar()}</div><div id="records-table">${recordTable(c)}</div></section>${section("A view of the source", link("checks", "Review quality checks"))}<div class="split">${chart(c)}<aside class="editorial-note"><span class="note-line"></span><h3>Context belongs<br>with the data.</h3><p>These eight repositories are a deliberate infrastructure sample. Their counters describe the capture time, not a complete ecosystem or a live GitHub feed.</p>${button(`Inspect provenance ${icon("arrow", 15)}`, "details", "text-button", `data-id="${c.id}"`)}<div class="privacy-stamp">${icon("lock", 14)} Private operator uploads remain private.</div></aside></div>`
   );
 }
 function contracts() {
@@ -302,19 +375,37 @@ function checks() {
       ),
     ) +
     selector() +
-    `<div class="toolbar"><div class="right"><span>Evaluated ${date(c.evaluated_at)}</span></div><select id="check-filter" aria-label="Filter quality checks"><option value="all">All checks</option><option value="failed">Failed only</option><option value="passed">Passed only</option></select></div><div id="check-list" class="check-list">${checkRows(c)}</div><div class="privacy-stamp">${icon("info", 13)} Historical results are frozen at evaluation time. Re-evaluate to check current freshness.</div>`
+    `<div class="check-summary"><div><strong>${c.checks.filter((check) => !check.failed).length}<span>/${c.checks.length}</span></strong><p>Recorded checks passed</p></div><div class="check-matrix">${c.checks.map((check) => `<a href="#check-${check.key}" class="${check.failed ? "failed" : ""}">${icon(check.failed ? "close" : "check", 15)}<span>${escape(check.title)}</span></a>`).join("")}</div></div><div class="toolbar"><div class="right"><span>Evaluated ${date(c.evaluated_at)}</span></div><select id="check-filter" aria-label="Filter quality checks"><option value="all">All checks</option><option value="failed">Failed only</option><option value="passed">Passed only</option></select></div><div id="check-list" class="check-list">${checkRows(c)}</div><div class="privacy-stamp">${icon("info", 13)} Historical results are frozen at evaluation time. Re-evaluate to check current freshness.</div>`
   );
 }
-function checkRows(c, filter = "all") {
+function checkRows(c, filter = "all", prefix = "") {
   const rows = c.checks.filter((x) => filter === "all" || x.status === filter);
   return (
     rows
       .map(
         (x) =>
-          `<article class="check-row"><span class="check-glyph ${x.failed ? "bad" : ""}">${icon(x.failed ? "close" : "check", 17)}</span><div><h3>${escape(x.title)}</h3><p>${escape(x.detail)}</p><small>${x.tested} ${["volume", "freshness"].includes(x.key) ? "capture" : "record"} checks · ${x.failed} failed${x.indices.length ? " · affected zero-based indices: " + x.indices.join(", ") : ""}</small></div>${pill(x.failed ? "Failed" : "Passed", x.failed ? "bad" : "")}</article>`,
+          `<article class="check-row" id="${prefix}check-${x.key}"><span class="check-glyph ${x.failed ? "bad" : ""}">${icon(x.failed ? "close" : "check", 17)}</span><div><h3>${escape(x.title)}</h3><p>${escape(x.detail)}</p><small>${x.tested} ${["volume", "freshness"].includes(x.key) ? "capture" : "record"} checks · ${x.failed} failed${x.indices.length ? " · affected zero-based indices: " + x.indices.join(", ") : ""}</small></div>${pill(x.failed ? "Failed" : "Passed", x.failed ? "bad" : "")}</article>`,
       )
       .join("") ||
     `<div class="panel">${empty("No " + filter + " checks.", "Choose All checks to inspect every evaluation.", "checks")}</div>`
+  );
+}
+function captureEvents() {
+  const visible = workspace.captures.filter(
+    (c) =>
+      (historyView.status === "all" || c.status === historyView.status) &&
+      [c.name, c.id, c.digest].some((value) =>
+        String(value).toLowerCase().includes(historyView.query.toLowerCase()),
+      ),
+  );
+  return (
+    visible
+      .map(
+        (c) =>
+          `<article class="capture-event"><h3><span>${escape(c.name)}</span>${status(c)}</h3><p>Captured ${date(c.captured_at)} · evaluated ${date(c.evaluated_at)}</p><div class="capture-meta"><span>${c.row_count} source records</span><span>${c.checks.filter((x) => !x.failed).length}/${c.checks.length} checks passed</span><span>${pill(c.visibility, "neutral")}</span></div><p class="mono">${escape(c.id)}</p><div class="capture-actions">${button("Inspect evidence", "details", "small", `data-id="${c.id}"`)}${button("Re-evaluate", "recheck", "small", `data-id="${c.id}"`)}${button(icon("download", 13), "download", "small", `data-id="${c.id}" aria-label="Download capture ${c.id}"`)}</div></article>`,
+      )
+      .join("") ||
+    `<div class="panel">${empty("No matching capture versions.", "Adjust the search or status filter to see the stored history.", "batches")}</div>`
   );
 }
 function batches() {
@@ -324,7 +415,7 @@ function batches() {
       "Import actual repository metadata or refresh the fixed public GitHub source.",
       button("Sync GitHub " + icon("recovery", 14), "sync", "primary"),
     ) +
-    `<div class="split"><div><div class="capture-timeline">${workspace.captures.map((c) => `<article class="capture-event"><h3><span>${escape(c.name)}</span>${status(c)}</h3><p>Captured ${date(c.captured_at)} · evaluated ${date(c.evaluated_at)}</p><div class="capture-meta"><span>${c.row_count} source records</span><span>${c.checks.filter((x) => !x.failed).length}/${c.checks.length} checks passed</span><span>${pill(c.visibility, "neutral")}</span></div><p class="mono">${escape(c.id)}</p><div class="capture-actions">${button("Inspect evidence", "details", "small", `data-id="${c.id}"`)}${button("Re-evaluate", "recheck", "small", `data-id="${c.id}"`)}${button(icon("download", 13), "download", "small", `data-id="${c.id}" aria-label="Download capture ${c.id}"`)}</div></article>`).join("")}</div></div><div><div class="panel panel-pad"><h2 class="upload-title">Bring your own evidence.</h2><p class="explain">Import an actual JSON array of repository metadata. The server evaluates it immediately; uploads stay private.</p><form id="upload-form"><div class="form-field"><label for="upload-name">Capture name</label><input id="upload-name" required maxlength="100" placeholder="Name this source capture"></div><div class="drop-area"><label for="upload-file">Choose a JSON file</label><input id="upload-file" type="file" accept=".json,application/json"><p>Up to 500 records. Required fields: id, full_name, updated_at, stargazers_count, open_issues_count.</p></div><div class="form-field"><label for="upload-json">Or paste your JSON records</label><textarea id="upload-json" placeholder="Paste your actual JSON array here" required></textarea></div><button class="button primary" type="submit">Import & evaluate ${icon("arrow", 14)}</button><p id="upload-error" class="form-error" role="alert"></p></form><div class="privacy-stamp">${icon("lock", 12)} Private upload · operator authentication required</div></div><div class="forest-note"><h3>No silent overwrites.</h3><p>Each import gets a new capture ID. The original records, source time, content hash, and contract stay together.</p>${link("versions", "Compare versions")}</div></div></div>`
+    `<div class="toolbar"><div class="search-input">${icon("search", 16)}<input id="history-search" aria-label="Search capture history" placeholder="Search captures or fingerprints…" value="${escape(historyView.query)}"></div><select id="history-filter" aria-label="Filter capture status"><option value="all">All capture states</option><option value="published" ${historyView.status === "published" ? "selected" : ""}>Passed contract</option><option value="quarantined" ${historyView.status === "quarantined" ? "selected" : ""}>Quarantined</option></select></div><div class="split"><div><div class="capture-timeline" id="history-timeline">${captureEvents()}</div></div><div><div class="panel panel-pad"><h2 class="upload-title">Bring your own evidence.</h2><p class="explain">Import an actual JSON array of repository metadata. The server evaluates it immediately; uploads stay private.</p><form id="upload-form"><div class="form-field"><label for="upload-name">Capture name</label><input id="upload-name" required maxlength="100" placeholder="Name this source capture"></div><div class="drop-area"><label for="upload-file">Choose a JSON file</label><input id="upload-file" type="file" accept=".json,application/json"><p>Up to 500 records. Required fields: id, full_name, updated_at, stargazers_count, open_issues_count.</p></div><div class="form-field"><label for="upload-json">Or paste your JSON records</label><textarea id="upload-json" placeholder="Paste your actual JSON array here" required></textarea></div><button class="button primary" type="submit">Import & evaluate ${icon("arrow", 14)}</button><p id="upload-error" class="form-error" role="alert"></p></form><div class="privacy-stamp">${icon("lock", 12)} Private upload · operator authentication required</div></div><div class="forest-note"><h3>No silent overwrites.</h3><p>Each import gets a new capture ID. The original records, source time, content hash, and contract stay together.</p>${link("versions", "Compare versions")}</div></div></div>`
   );
 }
 function quarantine() {
@@ -376,19 +467,7 @@ function compare() {
   for (const id of new Set([...before.keys(), ...after.keys()])) {
     const left = before.get(id),
       right = after.get(id);
-    const same =
-      left &&
-      right &&
-      JSON.stringify(
-        Object.keys(left)
-          .sort()
-          .map((k) => [k, left[k]]),
-      ) ===
-        JSON.stringify(
-          Object.keys(right)
-            .sort()
-            .map((k) => [k, right[k]]),
-        );
+    const same = left && right && UI.canonical(left) === UI.canonical(right);
     const type = !left
       ? "Added"
       : !right
@@ -401,7 +480,7 @@ function compare() {
       left && right
         ? Array.from(
             new Set([...Object.keys(left), ...Object.keys(right)]),
-          ).filter((k) => JSON.stringify(left[k]) !== JSON.stringify(right[k]))
+          ).filter((k) => UI.canonical(left[k]) !== UI.canonical(right[k]))
         : [];
     rows.push(
       `<tr><td><strong>${escape((right || left).full_name || id)}</strong><span class="sub">ID ${escape(id)}</span></td><td>${pill(type, type === "Removed" ? "bad" : type === "Unchanged" ? "neutral" : "")}</td><td>${escape(changed.join(", ") || "—")}</td></tr>`,
@@ -527,16 +606,84 @@ function recovery() {
   );
 }
 function agent() {
+  const c = workspace.captures.find((item) => item.visibility === "public"),
+    has = Boolean(lastAgent);
   return (
     heading(
-      "Investigate, with evidence.",
-      "Try a real public-data investigation. No account or operator token is needed.",
+      "Ask the evidence.",
+      "Real questions. Public GitHub records. A visible trail of reasoning.",
     ) +
-    `<div class="agent-layout"><div class="agent-start"><span class="agent-symbol">${icon("agent", 24)}</span><h2>Ask a better question<br>of your data.</h2><p>${provider.public_data_only ? "Gemini inspects only the public GitHub captures. Private uploads and operator notes are excluded from its tools." : "The investigator can list authorized captures and inspect their records, contracts, and checks."} Its actual evidence tool trace stays visible alongside the answer.</p><p><strong>Public demo · no token required.</strong> Ask about the eight real GitHub repositories below.</p><div class="suggestions">${["Which captures need attention?", "Explain the freshness evidence.", "What should I verify before recovery?"].map((q) => `<button data-action="suggest" data-question="${q}">${q}</button>`).join("")}</div><div class="info-band"><span>${escape(provider.data_notice || "Ask only about the source evidence.")} ${provider.public_data_only ? "This connection uses the free tier; no billing was enabled." : ""}</span></div><form id="agent-form"><label for="agent-question">Your investigation</label><textarea id="agent-question" required minlength="5" maxlength="600" placeholder="Ask about source freshness, a failed check, or capture provenance…"></textarea><div class="form-actions"><button class="button primary" type="submit">Investigate ${icon("agent", 14)}</button><p>Read-only public demo · 600 character question limit</p></div><p class="form-hint">3 investigations per visitor in 10 minutes. Shared allowance: 2 per minute and 30 per day, in fixed UTC windows. A reserved attempt counts even when the provider is unavailable.</p><p id="public-quota-state" class="form-hint" role="status"></p><p class="form-error" id="agent-error" role="alert"></p></form><div id="agent-result">${lastAgent ? agentResult(lastAgent) : ""}</div></div><div><div class="panel panel-pad"><h3 class="note-title">Every claim needs a source.</h3><p class="explain">A response is accepted only after the model calls at least one evidence tool. The agent cannot change a contract, publish a capture, or execute arbitrary code.</p><ol class="rule-list"><li><span class="rule-num">01</span>List available captures</li><li><span class="rule-num">02</span>Inspect exact evidence</li><li><span class="rule-num">03</span>Explain findings with IDs</li></ol><div class="provider-state">${pill(provider.configured ? "Provider configured" : "Provider not configured", provider.configured ? "" : "warn")}<p>${provider.configured ? `${escape(provider.provider)} · ${escape(provider.model)}` : "This deployment has no AI provider credential. Configure GEMINI_API_KEY or OPENAI_API_KEY to enable investigations."}</p><p>${escape(provider.billing_mode || "")}</p><p>${escape(provider.quota_notice || "")}</p></div></div><div class="forest-note"><h3>Judgment stays<br>with your operator.</h3><p>Use the findings to inform a decision. All data and policy changes remain explicit, authenticated actions.</p>${link("checks", "Read the checks yourself")}</div></div></div>`
+    `<nav class="investigation-steps" aria-label="Investigation stages"><a href="#question-panel" class="${has ? "complete" : "active"}"><span>01</span>Question</a><a href="#findings-panel" ${has ? 'class="complete"' : 'aria-disabled="true"'}><span>02</span>Findings</a><a href="#evidence-panel" ${has ? 'class="active"' : 'aria-disabled="true"'}><span>03</span>Evidence</a></nav><div class="agent-layout"><section class="question-sheet" id="question-panel"><div class="question-title">${icon("agent", 32)}<h2>What would you like to investigate?</h2></div><form id="agent-form"><label class="sr-only" for="agent-question">Your investigation</label><textarea id="agent-question" required minlength="5" maxlength="600" placeholder="Ask about repository quality, freshness, or the captured source records…">${escape(pendingQuestion)}</textarea><div class="suggestions">${[
+      [
+        "recovery",
+        "Check source freshness",
+        "Check the latest public capture freshness. Cite its capture and evaluation times, distinguish historical checks from current freshness.",
+      ],
+      [
+        "agent",
+        "Find the most-starred repository",
+        "Inspect the latest public source records. Which repository has the most stars? Give its exact captured count and cite the capture ID.",
+      ],
+      [
+        "contracts",
+        "Explain the quality checks",
+        "Explain the actual quality checks and their recorded outcomes for the latest public capture. Cite the evidence.",
+      ],
+      [
+        "quarantine",
+        "Review recovery evidence",
+        "What source evidence and quality checks should an operator verify before selecting a recovery reference? Use the actual public capture.",
+      ],
+    ]
+      .map(
+        ([ic, label, q]) =>
+          `<button type="button" data-action="suggest" data-question="${escape(q)}">${icon(ic, 20)}<span>${label}</span></button>`,
+      )
+      .join(
+        "",
+      )}</div><div class="form-actions"><button class="button primary" type="submit">Investigate public data ${icon("arrow", 20)}</button><span class="no-account">No account or token required</span></div><div class="public-limits"><span>3 per visitor / 10 min</span><span>2 shared / min</span><span>30 shared / day</span></div><p class="form-hint">Public GitHub evidence only. Private uploads and notes are excluded.</p><p id="public-quota-state" class="form-hint" role="status"></p><p class="form-error" id="agent-error" role="alert"></p><p class="data-notice">${icon("info", 16)}<span>Google may use unpaid API questions and public evidence to improve its models. Enter public information only. Reserved attempts count even if the provider is unavailable.</span></p></form><div id="agent-result">${has ? agentResult(lastAgent) : ""}</div></section><aside class="agent-rail"><section class="evidence-rail"><h2>Your source material</h2>${c ? `<dl class="rail-facts"><div><dt>Source</dt><dd>GitHub REST API</dd></div><div><dt>Repository records</dt><dd>${c.row_count} repository records</dd></div><div><dt>Quality checks</dt><dd>${c.checks.length} quality checks</dd></div><div><dt>Captured</dt><dd>${date(c.captured_at)}</dd></div><div><dt>Source fingerprint</dt><dd><code>${c.digest.slice(0, 14)}…</code></dd></div></dl>${button(`Inspect source records ${icon("arrow", 15)}`, "go-capture", "text-button", `data-page="datasets" data-id="${c.id}"`)}` : empty("No public source.", "The source has not been captured.")}</section><section class="grounding-panel"><h2>Grounded, step by step.</h2><ol>${[
+      [
+        "Read the captures",
+        "Analyze the captured repository records and quality checks.",
+      ],
+      [
+        "Inspect exact evidence",
+        "Trace each finding to source values you can verify.",
+      ],
+      [
+        "Return a cited answer",
+        "Read the findings alongside the actual executed tools.",
+      ],
+    ]
+      .map(
+        ([title, copy], index) =>
+          `<li><span>${index + 1}</span><div><h3>${title}</h3><p>${copy}</p></div></li>`,
+      )
+      .join(
+        "",
+      )}</ol></section><div class="provider-strip">${icon("agent", 18)}<span>${escape(provider.provider)} · Public data only</span>${icon("info", 16)}</div></aside></div>`
   );
 }
 function agentResult(r) {
-  return `<div class="agent-response"><h3>Investigation findings</h3><div class="agent-answer">${escape(r.answer)}</div><p class="form-hint">${escape(r.provider || "AI provider")} · ${escape(r.model)} · ${date(r.created_at)}${r.public_data_only ? " · Public GitHub evidence only" : ""}</p><h3>Evidence tool trace · ${r.trace.length} calls</h3>${r.trace.map((t, i) => `<details class="tool-trace"><summary>${i + 1}. ${escape(t.tool)} ${escape(JSON.stringify(t.arguments))}</summary><pre>${escape(JSON.stringify(t.result, null, 2))}</pre></details>`).join("")}</div>`;
+  const ids = [
+    ...new Set(
+      r.trace
+        .flatMap((t) =>
+          Array.isArray(t.result) ? t.result.map((c) => c.id) : [t.result?.id],
+        )
+        .filter(Boolean),
+    ),
+  ];
+  return `<section class="agent-response" id="findings-panel" tabindex="-1"><div class="finding-heading"><div><span class="mini-label">MODEL FINDINGS</span><h2>A conclusion you can inspect.</h2></div>${icon("checks", 26)}</div><div class="answer-prose" id="answer-content"></div><p class="answer-provenance">${escape(r.provider || "AI provider")} · ${escape(r.model)} · ${date(r.created_at)} · Public GitHub evidence</p>${ids.length ? `<div class="source-citations">${ids.map((id, i) => button(`Source ${String(i + 1).padStart(2, "0")} ${icon("external", 13)}`, "details", "citation-button", `data-id="${escape(id)}"`)).join("")}</div>` : ""}<div id="evidence-panel" class="agent-evidence"><div class="section-title"><h3>Executed evidence tools</h3><span>${r.trace.length} calls · read only</span></div>${r.trace.map((t, i) => `<details class="tool-trace"><summary><span class="tool-number">${String(i + 1).padStart(2, "0")}</span><strong>${escape(t.tool)}</strong><span class="tool-args">${escape(t.arguments?.capture_id || "Public capture register")}</span>${icon("chevron", 15)}</summary><div class="tool-result"><p>Actual tool result${r.evidence_notice ? " · bounded source summary" : ""}</p><pre>${escape(JSON.stringify(t.result, null, 2))}</pre></div></details>`).join("")}</div></section>`;
+}
+function hydrateFindings() {
+  const target = $("#answer-content");
+  if (target && lastAgent) {
+    const ids = workspace.captures
+      .filter((c) => c.visibility === "public")
+      .map((c) => c.id);
+    UI.renderMarkdown(target, lastAgent.answer, ids);
+  }
 }
 function connections() {
   const c = workspace.captures.find((c) => c.visibility === "public");
@@ -554,7 +701,7 @@ function settings() {
       "A workspace you can account for.",
       "Clear access, explicit source scope, and no hidden background activity.",
     ) +
-    `<div class="settings-layout"><div class="settings-nav"><span>Workspace & access</span><a href="/console/contracts">Data contract</a><a href="/console/connections">Connections</a><a href="/docs">API documentation ↗</a></div><div class="panel settings-section"><h2>Workspace details</h2>${[
+    `<div class="settings-layout"><div class="settings-nav"><span>Workspace & access</span><a href="/console/contracts">Data contract</a><a href="/console/connections">Connections</a><a href="/docs">API documentation ${icon("external", 13)}</a></div><div class="panel settings-section"><h2>Workspace details</h2>${[
       [
         "Name",
         "Python ecosystem",
@@ -617,6 +764,43 @@ const renderers = {
   connections,
   settings,
 };
+function setMenu(open, restoreFocus = false) {
+  $(".sidebar").classList.toggle("open", open);
+  $("#mobile-menu").setAttribute("aria-expanded", String(open));
+  $("#nav-backdrop").hidden = !open;
+  $(".workspace").inert = open;
+  document.body.classList.toggle("nav-open", open);
+  if (open) $("#navigation a")?.focus();
+  else if (restoreFocus) $("#mobile-menu").focus();
+}
+function showRecord(c, index) {
+  const row = c.records[index];
+  if (!row) {
+    toast("This record is unavailable.", true);
+    return;
+  }
+  const source = UI.safeHref(row.html_url);
+  const known = c.visibility === "public";
+  $("#detail-content").innerHTML =
+    `<div class="drawer-kicker">${icon("github", 20)} Exact source record <span>${index + 1} / ${c.row_count}</span></div><h2 id="detail-title">${escape(row.full_name || "Source record")}</h2><p class="drawer-description">${escape(row.description || "No description was provided by the source.")}</p><div class="record-stat-grid">${[
+      ["Stars", row.stargazers_count],
+      ["Open issues", row.open_issues_count],
+      ["Forks", row.forks_count],
+    ]
+      .map(
+        ([label, value]) =>
+          `<div><span>${label}</span><strong>${number(value)}</strong></div>`,
+      )
+      .join(
+        "",
+      )}</div><dl class="evidence-list"><div><dt>Repository ID</dt><dd class="mono">${escape(row.id)}</dd></div><div><dt>Source language</dt><dd>${escape(row.language || "Not specified")}</dd></div><div><dt>License metadata</dt><dd>${escape(row.license?.spdx_id || row.license?.name || "Not present")}</dd></div><div><dt>Default branch</dt><dd>${escape(row.default_branch || "Not specified")}</dd></div><div><dt>Source updated</dt><dd>${date(row.updated_at)}</dd></div><div><dt>Captured</dt><dd>${date(c.captured_at)}</dd></div><div><dt>Source capture</dt><dd class="mono">${escape(c.id)}</dd></div></dl><div class="drawer-actions">${source ? `<a class="button" href="${escape(source)}" target="_blank" rel="noopener noreferrer">Open source ${icon("external", 15)}</a>` : ""}${button(`Review checks ${icon("arrow", 15)}`, "go-capture", "", `data-page="checks" data-id="${c.id}"`)}${known ? button(`Investigate this record ${icon("agent", 15)}`, "prepare-investigation", "primary", `data-question="${escape(`Inspect ${row.full_name} in public capture ${c.id}. Explain its recorded source values and quality evidence, citing the capture.`)}"`) : ""}</div><details class="raw-source"><summary>${icon("code", 17)} Raw source JSON ${icon("chevron", 15)}</summary><pre class="record-json">${escape(JSON.stringify(row, null, 2))}</pre></details><p class="source-note">These are captured source values, not live GitHub counters. The capture's quality contract validates specific fields; source metadata presence is not a quality guarantee.</p>`;
+  $("#detail-dialog").showModal();
+}
+function showCapture(c) {
+  $("#detail-content").innerHTML =
+    `<div class="drawer-kicker">${icon("lineage", 20)} Immutable capture evidence</div><h2 id="detail-title">The source behind<br>the result.</h2><p class="drawer-description">${escape(c.name)} · ${c.row_count} actual records</p>${evidence(c)}<div class="drawer-actions">${button(`Browse records ${icon("arrow", 15)}`, "go-capture", "primary", `data-page="datasets" data-id="${c.id}"`)}${button("Review checks", "go-capture", "", `data-page="checks" data-id="${c.id}"`)}</div><h3>Stored contract</h3><pre class="record-json">${escape(JSON.stringify(c.contract, null, 2))}</pre><h3>Recorded quality results</h3>${checkRows(c, "all", "drawer-")}`;
+  $("#detail-dialog").showModal();
+}
 function render() {
   if (!workspace) return;
   const known = pages.find((p) => p[0] === page);
@@ -628,7 +812,9 @@ function render() {
   $("#navigation").innerHTML = pages
     .map(
       ([key, label], i) =>
-        (i === 10 ? '<div class="nav-divider"></div>' : "") +
+        (i === 8
+          ? '<div class="nav-divider"></div><div class="nav-caption">TOOLS</div>'
+          : "") +
         `<a href="/console/${key}" ${key === page ? 'class="active" aria-current="page"' : ""}>${icon(key, 15)}<span>${label}</span>${key === "quarantine" && workspace.captures.some((c) => c.status === "quarantined") ? `<span class="nav-number">${workspace.captures.filter((c) => c.status === "quarantined").length}</span>` : ""}</a>`,
     )
     .join("");
@@ -636,12 +822,14 @@ function render() {
     ? "Connected operator<small>Authenticated access</small>"
     : "Public observer<small>Read-only access</small>";
   $("#access-state").innerHTML =
-    `<span class="live-dot"></span> ${token ? "Operator connected" : "Public view"}`;
+    `${icon("eye", 16)} ${token ? "Operator connected" : "Public view"}`;
   $("#connect-button").innerHTML = token
     ? "Disconnect operator"
-    : "Connect operator <span>↗</span>";
+    : `Connect operator ${icon("connections", 15)}`;
   $("#refresh").innerHTML = icon("recovery", 16);
+  document.body.dataset.page = page;
   $("#main").innerHTML = renderers[page]();
+  hydrateFindings();
   $("#footer-time").textContent =
     "Workspace read " + date(workspace.generated_at);
   if (page === "versions") compare();
@@ -662,7 +850,7 @@ function updatePublicCooldown() {
       state.textContent = `The public allowance is cooling down. Retry in ${seconds} seconds; the shared allowance may also be in use by other visitors.`;
   } else if (publicCooldownUntil) {
     submit.disabled = false;
-    submit.innerHTML = `Investigate ${icon("agent", 14)}`;
+    submit.innerHTML = `Investigate public data ${icon("arrow", 20)}`;
     publicCooldownUntil = 0;
     clearInterval(publicCooldownTimer);
   }
@@ -697,6 +885,9 @@ function access() {
   if (token) {
     token = "";
     lastAgent = null;
+    pendingQuestion = "";
+    Object.assign(recordView, { query: "", sort: "repository", filter: "all" });
+    Object.assign(historyView, { query: "", status: "all" });
     selectedId = "";
     $("#operator-token").value = "";
     refresh();
@@ -718,28 +909,61 @@ document.addEventListener("click", async (event) => {
   const el = event.target.closest("[data-action]");
   if (!el) return;
   const action = el.dataset.action;
-  const c = workspace?.captures.find((c) => c.id === el.dataset.id);
+  let c = workspace?.captures.find((c) => c.id === el.dataset.id);
   try {
     if (action === "access") {
       access();
       return;
     }
     if (action === "suggest") {
-      $("#agent-question").value = el.dataset.question;
+      pendingQuestion = el.dataset.question;
+      $("#agent-question").value = pendingQuestion;
       $("#agent-question").focus();
       return;
     }
+    if (
+      el.dataset.id &&
+      !c &&
+      ["details", "record", "download"].includes(action)
+    )
+      c = await api("/captures/" + encodeURIComponent(el.dataset.id));
+    if (action === "copy-digest") {
+      await navigator.clipboard.writeText(c.digest);
+      toast("Source SHA-256 copied.");
+      return;
+    }
+    if (action === "go-capture") {
+      selectedId = el.dataset.id;
+      $("#detail-dialog").close();
+      navigate(el.dataset.page);
+      return;
+    }
+    if (action === "prepare-investigation") {
+      pendingQuestion = el.dataset.question;
+      $("#detail-dialog").close();
+      navigate("agent");
+      $("#agent-question").focus();
+      return;
+    }
+    if (action === "sort-records") {
+      recordView.sort = el.dataset.sort;
+      const sort = $("#record-sort");
+      if (sort) sort.value = recordView.sort;
+      updateRecords();
+      return;
+    }
+    if (action === "clear-record-filters") {
+      recordView.query = "";
+      recordView.filter = "all";
+      render();
+      return;
+    }
     if (action === "record") {
-      const row = c.records[Number(el.dataset.index)];
-      $("#detail-content").innerHTML =
-        `<h2>${escape(row.full_name || "Source record")}</h2><p>Exact record ${Number(el.dataset.index) + 1} from capture <span class="mono">${escape(c.id)}</span>.</p><pre class="record-json">${escape(JSON.stringify(row, null, 2))}</pre><p>Captured ${date(c.captured_at)} · SHA-256 ${c.digest.slice(0, 24)}…</p>`;
-      $("#detail-dialog").showModal();
+      showRecord(c, Number(el.dataset.index));
       return;
     }
     if (action === "details") {
-      $("#detail-content").innerHTML =
-        `<h2>Capture evidence.</h2><p>${escape(c.name)} · ${c.row_count} records</p>${evidence(c)}<h3>Stored contract</h3><pre class="record-json">${escape(JSON.stringify(c.contract, null, 2))}</pre><h3>Quality results</h3>${checkRows(c)}`;
-      $("#detail-dialog").showModal();
+      showCapture(c);
       return;
     }
     if (action === "download") {
@@ -856,10 +1080,24 @@ document.addEventListener("submit", async (event) => {
       }
       if (form.id === "agent-form") {
         $("#agent-error").textContent = "";
+        pendingQuestion = $("#agent-question").value.trim();
         lastAgent = await api("/public-investigate", "POST", {
           question: $("#agent-question").value.trim(),
         });
         $("#agent-result").innerHTML = agentResult(lastAgent);
+        hydrateFindings();
+        document.querySelectorAll(".investigation-steps a").forEach((link) => {
+          link.removeAttribute("aria-disabled");
+          link.classList.add("complete");
+        });
+        $("#findings-panel").focus({ preventScroll: true });
+        $("#findings-panel").scrollIntoView({
+          behavior: window.matchMedia("(prefers-reduced-motion: reduce)")
+            .matches
+            ? "instant"
+            : "smooth",
+          block: "start",
+        });
         const allowance = lastAgent.quota?.remaining;
         if (allowance)
           $("#public-quota-state").textContent =
@@ -889,6 +1127,18 @@ document.addEventListener("change", async (event) => {
     selectedId = el.value;
     render();
   }
+  if (el.id === "history-filter") {
+    historyView.status = el.value;
+    $("#history-timeline").innerHTML = captureEvents();
+  }
+  if (el.id === "record-sort") {
+    recordView.sort = el.value;
+    updateRecords();
+  }
+  if (el.id === "record-filter") {
+    recordView.filter = el.value;
+    updateRecords();
+  }
   if (el.id === "check-filter")
     $("#check-list").innerHTML = checkRows(capture(), el.value);
   if (["compare-from", "compare-to"].includes(el.id)) compare();
@@ -912,12 +1162,19 @@ document.addEventListener("change", async (event) => {
   }
 });
 document.addEventListener("input", (event) => {
-  if (event.target.id === "record-search")
-    $("#records-table").innerHTML = recordTable(
-      capture(),
-      500,
-      event.target.value,
-    );
+  if (event.target.id === "record-search") {
+    recordView.query = event.target.value;
+    updateRecords();
+  }
+  if (event.target.id === "history-search") {
+    historyView.query = event.target.value;
+    $("#history-timeline").innerHTML = captureEvents();
+  }
+  if (event.target.id === "agent-question")
+    pendingQuestion = event.target.value;
+});
+document.addEventListener("click", (event) => {
+  if (event.target.closest('[aria-disabled="true"]')) event.preventDefault();
 });
 $("#access-open").addEventListener("click", access);
 $("#connect-button").addEventListener("click", access);
@@ -927,8 +1184,33 @@ $("#refresh").addEventListener("click", async () => {
 });
 $("#workspace-open").addEventListener("click", () => navigate("connections"));
 $("#mobile-menu").addEventListener("click", () =>
-  $(".sidebar").classList.toggle("open"),
+  setMenu(!$(".sidebar").classList.contains("open")),
 );
+$("#nav-backdrop").addEventListener("click", () => setMenu(false, true));
+document.addEventListener("keydown", (event) => {
+  if (!$(".sidebar").classList.contains("open")) return;
+  if (event.key === "Escape") {
+    event.preventDefault();
+    setMenu(false, true);
+  }
+  if (event.key === "Tab") {
+    const items = [...$(".sidebar").querySelectorAll("a,button")].filter(
+      (el) => el.offsetParent !== null,
+    );
+    const first = items[0],
+      last = items.at(-1);
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first.focus();
+    }
+  }
+});
+window.matchMedia("(max-width: 900px)").addEventListener("change", (event) => {
+  if (!event.matches) setMenu(false);
+});
 window.addEventListener("popstate", () => {
   page = location.pathname.split("/")[2] || "overview";
   render();
