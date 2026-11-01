@@ -1,3 +1,139 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>DataGuard | Reliability console</title><style>
-:root{color-scheme:dark;font-family:Inter,system-ui,sans-serif;background:#09111c;color:#e4edf7}body{margin:0}header{padding:24px 7%;border-bottom:1px solid #263449;display:flex;justify-content:space-between;align-items:center}header b{font-size:24px;letter-spacing:-1px}.badge{color:#77d7ad;font:12px monospace;border:1px solid #315c52;padding:7px 12px;border-radius:20px}main{max-width:1100px;margin:60px auto;padding:0 25px}h1{font-size:46px;letter-spacing:-2px;margin-bottom:12px}p{color:#9dafc4;line-height:1.6}.eyebrow{color:#77d7ad;font:12px monospace;letter-spacing:2px}.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin:35px 0}.card,section{background:#101d2d;border:1px solid #263449;border-radius:12px;padding:24px}.card strong{display:block;font-size:36px;margin-top:14px}.card span{color:#9dafc4}table{width:100%;border-collapse:collapse;text-align:left}th,td{padding:15px 10px;border-bottom:1px solid #263449}th{font-size:12px;color:#9dafc4;text-transform:uppercase}button{border:1px solid #77d7ad;background:transparent;color:#77d7ad;border-radius:6px;padding:9px 16px;cursor:pointer}footer{margin-top:32px;color:#9dafc4;font-size:12px}#error{color:#ffb6a8}@media(max-width:650px){.cards{grid-template-columns:1fr}h1{font-size:34px}}
-</style><script defer src="/dashboard.js"></script></head><body><header><b>◈ DataGuard</b><span class="badge" id="health">Connecting</span></header><main><div class="eyebrow">PIPELINE RELIABILITY / CONTROL PLANE</div><h1>Trust the published data.</h1><p>Live SQL-backed publication state. Invalid batches stay quarantined; the last valid partition remains available.</p><div class="cards"><div class="card"><span>Published attempts</span><strong id="published">—</strong></div><div class="card"><span>Quarantined batches</span><strong id="rejected">—</strong></div><div class="card"><span>Interrupted / failed attempts</span><strong id="failed">—</strong></div></div><section><h2>Active partition snapshots</h2><table><thead><tr><th>Period</th><th>Batch version</th><th>Published UTC</th></tr></thead><tbody id="rows"></tbody></table><p id="empty" hidden>No snapshots. Stage a fixture with the CLI to begin.</p><p id="error" role="alert"></p><button id="refresh">Refresh state</button></section><footer>Refreshes every 10 seconds · Aggregate metadata is public inside the private deployment · Raw records require an operator token</footer></main></body></html>
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#173e31" />
+    <meta
+      name="description"
+      content="DataGuard: inspect real source data, evaluate contracts, and keep quality evidence traceable."
+    />
+    <title>DataGuard — Data reliability workspace</title>
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='10' fill='%23173e31'/%3E%3Cpath d='M10 12h10a9 9 0 0 1 0 18H10V12m6 6v6h4a3 3 0 0 0 0-6h-4' fill='%23dbe9b2'/%3E%3C/svg%3E"
+    />
+    <link rel="stylesheet" href="/console.css" />
+    <script defer src="/dashboard.js"></script>
+  </head>
+  <body>
+    <div class="app">
+      <aside class="sidebar">
+        <a class="brand" href="/console/overview"
+          ><span class="brandmark">d<span>g</span></span
+          >DataGuard<span class="brand-dot"></span></a
+        ><button class="workspace-switch" id="workspace-open">
+          <span class="workspace-avatar">P</span
+          ><span>Python ecosystem<small>Public source workspace</small></span
+          ><span class="switch-icon">⌄</span>
+        </button>
+        <div class="nav-caption">WORKSPACE</div>
+        <nav id="navigation" aria-label="Workspace navigation"></nav>
+        <div class="sidebar-bottom">
+          <div class="source-connected">
+            <span class="live-dot"></span>Source evidence available
+          </div>
+          <p>Every number has a source.<br />Every change leaves a trail.</p>
+          <a href="/docs" target="_blank" rel="noopener"
+            >API documentation <span>↗</span></a
+          >
+          <div class="profile">
+            <span class="profile-avatar">DG</span
+            ><span id="profile-label"
+              >Public observer<small>Read-only access</small></span
+            ><button
+              id="access-open"
+              title="Manage operator access"
+              aria-label="Manage operator access"
+            >
+              ⌘
+            </button>
+          </div>
+        </div>
+      </aside>
+      <div class="workspace">
+        <header class="topbar">
+          <button
+            class="mobile-menu"
+            id="mobile-menu"
+            aria-label="Toggle navigation"
+          >
+            ☰
+          </button>
+          <div class="breadcrumb">
+            Workspace <span>/</span> <strong id="breadcrumb">Overview</strong>
+          </div>
+          <div class="top-actions">
+            <span id="access-state"
+              ><span class="live-dot"></span> Public view</span
+            ><button
+              class="icon-button"
+              id="refresh"
+              aria-label="Refresh workspace"
+              title="Refresh workspace"
+            ></button
+            ><button class="button small" id="connect-button">
+              Connect operator <span>↗</span>
+            </button>
+          </div>
+        </header>
+        <main id="main" tabindex="-1">
+          <div class="loading">
+            <span class="spinner"></span>
+            <h1>Opening the evidence.</h1>
+            <p>Reading the quality workspace…</p>
+          </div>
+        </main>
+        <footer class="footer">
+          <span
+            >DataGuard <span class="muted">/</span> Reliability, by
+            evidence.</span
+          ><span id="footer-time">Connecting to workspace</span>
+        </footer>
+      </div>
+    </div>
+    <dialog id="access-dialog">
+      <form id="access-form">
+        <button
+          class="dialog-close"
+          type="button"
+          data-close="access-dialog"
+          aria-label="Close dialog"
+        >
+          ×</button
+        ><span class="dialog-symbol">↗</span>
+        <h2>Connect your operator.</h2>
+        <p>
+          Use your existing DataGuard bearer token to import data, change
+          contracts, and run investigations. The token stays in memory for this
+          tab and clears on reload.
+        </p>
+        <label for="operator-token">Operator token</label
+        ><input
+          type="password"
+          id="operator-token"
+          autocomplete="off"
+          required
+          minlength="32"
+          placeholder="Paste your bearer token"
+        />
+        <p class="form-error" id="access-error" role="alert"></p>
+        <button class="button primary" type="submit">
+          Connect securely <span>→</span>
+        </button>
+      </form>
+    </dialog>
+    <dialog id="detail-dialog">
+      <button
+        class="dialog-close"
+        type="button"
+        data-close="detail-dialog"
+        aria-label="Close details"
+      >
+        ×
+      </button>
+      <div id="detail-content"></div>
+    </dialog>
+    <div id="toast" class="toast" role="status" hidden></div>
+  </body>
+</html>

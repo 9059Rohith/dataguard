@@ -1,0 +1,27 @@
+{
+  "base_url": "https://rohith-dataguard.vercel.app",
+  "sync_status": 201,
+  "capture_id": "71623033-6147-4fa0-a5b6-2d0019ca5f7a",
+  "source": "https://api.github.com/repos/{owner}/{repo}",
+  "record_count": 8,
+  "digest": "54d89c05d727cef779eaf4148dd570d2fb21a3f3714cefab86621d44fdf71bd0",
+  "captured_at": "2026-11-01T18:16:18.944038+00:00",
+  "evaluation_status": "published",
+  "provider": {
+    "configured": false,
+    "provider": "OpenAI",
+    "model": "gpt-4.1-mini",
+    "max_turns": 4,
+    "max_tools": 6,
+    "permissions": "Read-only capture inspection. No writes, shell, or arbitrary network."
+  },
+  "boundaries": {
+    "/summary": 401,
+    "/snapshots": 401,
+    "/metrics": 401,
+    "/api/quality/sync": 401,
+    "/api/quality/uploads": 401
+  },
+  "provider_investigation_status": 503,
+  "provider_message": "AI provider is not configured. Add OPENAI_API_KEY to enable real investigations."
+}

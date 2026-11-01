@@ -1,0 +1,184 @@
+{
+  "source": "https://api.github.com/repos/{owner}/{repo}",
+  "captured_at": "2026-11-01T18:03:26.631312+00:00",
+  "publisher": "GitHub REST API",
+  "scope": "Eight public dependencies in the DataGuard Python ecosystem. Not a representative sample of all repositories.",
+  "records": [
+    {
+      "id": 160919119,
+      "full_name": "fastapi/fastapi",
+      "html_url": "https://github.com/fastapi/fastapi",
+      "description": "FastAPI framework, high performance, easy to learn, fast to code, ready for production",
+      "language": "Python",
+      "stargazers_count": 104531,
+      "forks_count": 10167,
+      "open_issues_count": 77,
+      "archived": false,
+      "default_branch": "master",
+      "created_at": "2018-12-08T08:21:47Z",
+      "updated_at": "2026-11-01T16:35:30Z",
+      "pushed_at": "2026-11-01T12:15:51Z",
+      "license": {
+        "key": "mit",
+        "name": "MIT License",
+        "spdx_id": "MIT",
+        "url": "https://api.github.com/licenses/mit",
+        "node_id": "MDc6TGljZW5zZTEz"
+      }
+    },
+    {
+      "id": 90194616,
+      "full_name": "pydantic/pydantic",
+      "html_url": "https://github.com/pydantic/pydantic",
+      "description": "Data validation using Python type hints",
+      "language": "Python",
+      "stargazers_count": 29260,
+      "forks_count": 3112,
+      "open_issues_count": 597,
+      "archived": false,
+      "default_branch": "main",
+      "created_at": "2017-05-03T21:23:58Z",
+      "updated_at": "2026-11-01T14:36:35Z",
+      "pushed_at": "2026-11-01T18:02:22Z",
+      "license": {
+        "key": "mit",
+        "name": "MIT License",
+        "spdx_id": "MIT",
+        "url": "https://api.github.com/licenses/mit",
+        "node_id": "MDc6TGljZW5zZTEz"
+      }
+    },
+    {
+      "id": 159271175,
+      "full_name": "sqlalchemy/sqlalchemy",
+      "html_url": "https://github.com/sqlalchemy/sqlalchemy",
+      "description": "The Database Toolkit for Python",
+      "language": "Python",
+      "stargazers_count": 12276,
+      "forks_count": 1839,
+      "open_issues_count": 214,
+      "archived": false,
+      "default_branch": "main",
+      "created_at": "2018-11-27T03:35:03Z",
+      "updated_at": "2026-11-01T15:19:55Z",
+      "pushed_at": "2026-11-01T15:19:46Z",
+      "license": {
+        "key": "mit",
+        "name": "MIT License",
+        "spdx_id": "MIT",
+        "url": "https://api.github.com/licenses/mit",
+        "node_id": "MDc6TGljZW5zZTEz"
+      }
+    },
+    {
+      "id": 138597372,
+      "full_name": "Kludex/starlette",
+      "html_url": "https://github.com/Kludex/starlette",
+      "description": "The little ASGI framework that shines. \ud83c\udf1f",
+      "language": "Python",
+      "stargazers_count": 12699,
+      "forks_count": 1427,
+      "open_issues_count": 44,
+      "archived": false,
+      "default_branch": "main",
+      "created_at": "2018-06-25T13:16:21Z",
+      "updated_at": "2026-11-01T13:45:29Z",
+      "pushed_at": "2026-11-01T13:45:26Z",
+      "license": {
+        "key": "bsd-3-clause",
+        "name": "BSD 3-Clause \"New\" or \"Revised\" License",
+        "spdx_id": "BSD-3-Clause",
+        "url": "https://api.github.com/licenses/bsd-3-clause",
+        "node_id": "MDc6TGljZW5zZTU="
+      }
+    },
+    {
+      "id": 92946971,
+      "full_name": "Kludex/uvicorn",
+      "html_url": "https://github.com/Kludex/uvicorn",
+      "description": "An ASGI web server, for Python. \ud83e\udd84",
+      "language": "Python",
+      "stargazers_count": 11061,
+      "forks_count": 1084,
+      "open_issues_count": 106,
+      "archived": false,
+      "default_branch": "main",
+      "created_at": "2017-05-31T13:13:43Z",
+      "updated_at": "2026-11-01T13:09:04Z",
+      "pushed_at": "2026-11-01T07:08:10Z",
+      "license": {
+        "key": "bsd-3-clause",
+        "name": "BSD 3-Clause \"New\" or \"Revised\" License",
+        "spdx_id": "BSD-3-Clause",
+        "url": "https://api.github.com/licenses/bsd-3-clause",
+        "node_id": "MDc6TGljZW5zZTU="
+      }
+    },
+    {
+      "id": 30618733,
+      "full_name": "prometheus/client_python",
+      "html_url": "https://github.com/prometheus/client_python",
+      "description": "Prometheus instrumentation library for Python applications",
+      "language": "Python",
+      "stargazers_count": 4385,
+      "forks_count": 905,
+      "open_issues_count": 161,
+      "archived": false,
+      "default_branch": "master",
+      "created_at": "2015-02-10T22:47:25Z",
+      "updated_at": "2026-10-30T18:56:47Z",
+      "pushed_at": "2026-10-30T18:56:39Z",
+      "license": {
+        "key": "apache-2.0",
+        "name": "Apache License 2.0",
+        "spdx_id": "Apache-2.0",
+        "url": "https://api.github.com/licenses/apache-2.0",
+        "node_id": "MDc6TGljZW5zZTI="
+      }
+    },
+    {
+      "id": 247399816,
+      "full_name": "psycopg/psycopg",
+      "html_url": "https://github.com/psycopg/psycopg",
+      "description": "New generation PostgreSQL database adapter for the Python programming language ",
+      "language": "Python",
+      "stargazers_count": 2520,
+      "forks_count": 299,
+      "open_issues_count": 74,
+      "archived": false,
+      "default_branch": "master",
+      "created_at": "2020-03-15T04:15:53Z",
+      "updated_at": "2026-11-01T09:13:40Z",
+      "pushed_at": "2026-11-01T07:53:26Z",
+      "license": {
+        "key": "lgpl-3.0",
+        "name": "GNU Lesser General Public License v3.0",
+        "spdx_id": "LGPL-3.0",
+        "url": "https://api.github.com/licenses/lgpl-3.0",
+        "node_id": "MDc6TGljZW5zZTEy"
+      }
+    },
+    {
+      "id": 37489525,
+      "full_name": "pytest-dev/pytest",
+      "html_url": "https://github.com/pytest-dev/pytest",
+      "description": "The pytest framework makes it easy to write small tests, yet scales to support complex functional testing",
+      "language": "Python",
+      "stargazers_count": 14660,
+      "forks_count": 3587,
+      "open_issues_count": 915,
+      "archived": false,
+      "default_branch": "main",
+      "created_at": "2015-06-15T20:28:27Z",
+      "updated_at": "2026-11-01T09:02:03Z",
+      "pushed_at": "2026-11-01T00:30:53Z",
+      "license": {
+        "key": "mit",
+        "name": "MIT License",
+        "spdx_id": "MIT",
+        "url": "https://api.github.com/licenses/mit",
+        "node_id": "MDc6TGljZW5zZTEz"
+      }
+    }
+  ]
+}

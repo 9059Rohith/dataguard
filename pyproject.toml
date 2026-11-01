@@ -20,7 +20,7 @@ dataguard = "dataguard.cli:main"
 include = ["dataguard*"]
 
 [tool.setuptools.package-data]
-dataguard = ["*.html", "*.js"]
+dataguard = ["*.html", "*.js", "*.css", "source_capture.json"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

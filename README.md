@@ -1,12 +1,40 @@
 # DataGuard
 
-**Keep the last reconciled settlement dataset available when the next export is wrong or a worker dies.** DataGuard stages immutable inputs, checks a cross-table financial data contract, and atomically publishes complete date partitions in SQL. Rejected exports stay quarantined; accepted historical versions remain available for authenticated change analysis.
+**A data reliability workspace with real source evidence.** Inspect public GitHub repository metadata, define quality contracts, investigate failed checks, compare immutable captures, and trace every result to its source and SHA-256 digest.
 
-[Live synthetic dashboard](https://rohith-dataguard.vercel.app) · [Live API docs](https://rohith-dataguard.vercel.app/docs) · [Source](https://github.com/9059Rohith/dataguard) · [Verification evidence](evidence/verification.md)
+[Live workspace](https://rohith-dataguard.vercel.app) · [Live API docs](https://rohith-dataguard.vercel.app/docs) · [Source](https://github.com/9059Rohith/dataguard) · [Workspace verification](evidence/quality-verification.md)
 
-Built as an independent portfolio project for data engineering and DevOps work, including OpenFX internship roles: exact financial totals, deterministic reprocessing, SQL consistency, incident recovery and deployment operations. All demonstration records are synthetic; this is not an OpenFX integration or production financial service.
+![DataGuard repository quality workspace](evidence/quality-desktop.png)
 
-![DataGuard dashboard with real SQL publication state](evidence/public-dashboard.jpg)
+## Repository quality workspace
+
+The public workspace has 13 separate routes: overview, datasets, contracts, quality checks, capture history, quarantine, version comparison, data lineage, incidents, recovery, AI investigator, connections, and settings. Every visible repository count is sourced from actual GitHub REST responses. The bundled capture was collected on 1 November 2026; capture and evaluation timestamps are displayed, and freshness is re-evaluated explicitly rather than presented as continuously live.
+
+The source is a fixed, bounded collection of eight public repositories: FastAPI, Pydantic, SQLAlchemy, Starlette, Uvicorn, Prometheus Python client, Psycopg, and Pytest. The collection is an intentional Python infrastructure sample, not a representative ecosystem survey. GitHub open issue counts include pull requests. The normalized source records and provenance are committed in `dataguard/source_capture.json`. See the [GitHub repository API](https://docs.github.com/en/rest/repos/repos#get-a-repository).
+
+- Public visitors can inspect source records, filter them, inspect check evidence, compare versions, trace lineage, and export actual JSON evidence.
+- Operators connect using the existing `DATAGUARD_TOKEN` bearer credential. It stays in tab memory and clears on reload.
+- Operators can sync all eight actual GitHub sources, import up to 500 actual repository records, change a typed contract, re-evaluate captures, add private investigation notes, and select a recovery reference after current-contract validation.
+- Uploads and notes are always private. Public captures contain only the fixed GitHub source collection. All mutation requests are authenticated before body parsing.
+- A separate SQL schema stores immutable capture documents, contract settings, and audit actions. The existing settlement tables and security boundary are retained. PostgreSQL is used in the hosted deployment.
+- Quality checks cover minimum volume, required fields, uniqueness, nonnegative integer counters, valid timezone-aware timestamps, capture freshness, and optional license/archived rules. Stored evaluations retain their exact contract and evaluation time; rechecking creates another capture with a parent reference.
+- Recovery selects a repository-quality reference after validation. It does not replay financial transactions or claim to recover another production system.
+
+The AI investigator is a real OpenAI tool loop with `list_captures` and `inspect_capture`, limited to four turns and six read-only evidence calls. It rejects answers that have not inspected real evidence. Set `OPENAI_API_KEY` and optionally `OPENAI_MODEL` (default `gpt-4.1-mini`) on the server to enable it. **The current deployment has no AI provider credential, so it reports an explicit unavailable state; no generated investigation has been represented as real.**
+
+Local verification:
+
+```powershell
+.\.venv\Scripts\python.exe -m pytest -q
+.\.venv\Scripts\ruff.exe check dataguard tests
+node --check dataguard/dashboard.js
+```
+
+The production deployment disables `DATAGUARD_PUBLIC_DEMO` and `DATAGUARD_SEED_DEMO`. Existing synthetic settlement fixtures are retained for the authenticated legacy pipeline and tests; the public repository workspace does not display them as real transactions.
+
+## Existing settlement pipeline
+
+DataGuard also stages immutable settlement inputs, checks a cross-table financial data contract, and atomically publishes complete date partitions in SQL. Rejected exports stay quarantined; accepted historical versions remain available for authenticated change analysis. The settlement demonstration records discussed below are synthetic. This is not an OpenFX integration or a production financial service.
 
 ## PolicyLab signature: test quality policy against immutable evidence
 

@@ -22,12 +22,13 @@ from sqlalchemy.exc import SQLAlchemyError
 from dataguard.guard import RequestGuard
 from dataguard.policy_engine import PolicyBudgetExceeded, PolicyLab
 from dataguard.policy_models import ImpactReport, ImpactRequest
+from dataguard.quality import QualityStore, quality_router
 from dataguard.service import Busy, Conflict, Pipeline
 
 BatchId = Annotated[int, PathParameter(ge=1, le=2_147_483_647)]
 ComparisonId = Annotated[int, Query(ge=1, le=2_147_483_647)]
 
-DEFAULT_CSP = "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; frame-ancestors 'none'"
+DEFAULT_CSP = "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; frame-ancestors 'none'"
 DOCUMENTATION_ASSETS = {
     "/docs": "https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/",
     "/redoc": "https://cdn.jsdelivr.net/npm/redoc@2/",
@@ -119,6 +120,7 @@ def metadata_access(authorization: str | None = Header(default=None)):
 
 def create_app(url=None):
     pipeline = Pipeline(url or os.getenv("DATABASE_URL", "sqlite:///dataguard.db"))
+    quality = QualityStore(pipeline.engine)
     registry = CollectorRegistry()
     counter = Counter(
         "dataguard_process_total", "Worker invocation outcomes", ["status"], registry=registry
@@ -133,6 +135,7 @@ def create_app(url=None):
     async def lifespan(app):
         if os.getenv("DATAGUARD_AUTO_INIT", "true").lower() == "true":
             pipeline.initialize()
+        quality.initialize()
         if os.getenv("DATAGUARD_SEED_DEMO", "").lower() == "true":
             from dataguard.demo import seed_synthetic_demo
 
@@ -147,6 +150,8 @@ def create_app(url=None):
         swagger_ui_parameters={"validatorUrl": None},
     )
     app.state.pipeline = pipeline
+    app.state.quality = quality
+    app.include_router(quality_router(quality, authorize))
     app.state.request_limiter = anyio.CapacityLimiter(4)
     app.state.body_timeout_seconds = 10.0
 
@@ -287,8 +292,32 @@ def create_app(url=None):
         return {"results": pipeline.recover()}
 
     @app.get("/", response_class=HTMLResponse)
-    def dashboard():
+    @app.get("/console/{page}", response_class=HTMLResponse)
+    def dashboard(page: str = "overview"):
+        if page not in {
+            "overview",
+            "datasets",
+            "contracts",
+            "checks",
+            "batches",
+            "quarantine",
+            "versions",
+            "lineage",
+            "incidents",
+            "recovery",
+            "agent",
+            "connections",
+            "settings",
+        }:
+            raise HTTPException(404, "Console page not found")
         return Path(__file__).with_name("dashboard.html").read_text(encoding="utf-8")
+
+    @app.get("/console.css")
+    def stylesheet():
+        return Response(
+            Path(__file__).with_name("console.css").read_text(encoding="utf-8"),
+            media_type="text/css",
+        )
 
     @app.get("/dashboard.js")
     def script():
