@@ -217,7 +217,7 @@ Hosted GitHub Actions are currently blocked by an account-level runner restricti
 
 | Scope | Status and boundary |
 |---|---|
-| Vercel synthetic API/dashboard + durable PostgreSQL | Live; [HTTP checks](evidence/public-deployment-http.json) and [release verification](evidence/public-release-verification.json). Anonymous visitors see aggregates; operator data/actions stay private. |
+| Vercel repository workspace + durable PostgreSQL + free Gemini investigator | Live; [workspace verification](evidence/quality-verification.md) and [real Gemini verification](evidence/quality-gemini-verification.md). Public visitors inspect actual GitHub captures; private uploads and authenticated operator actions remain protected. |
 | Published-version comparison | Deployed and verified over public HTTPS; operator token required. [Live feature proof](evidence/review-public-feature.json) checks accepted-version counts, provenance and denied access. Local tests exercise changed versions and recovery. |
 | SQLite/PostgreSQL publication, rejection, killed-worker recovery | Executed locally with committed tests and measurements |
 | Digest-pinned Python 3.15.1 image, Compose, HTTP/browser checks | Executed locally; UID 10001, no installer in runtime, restricted Compose service |

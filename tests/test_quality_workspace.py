@@ -445,6 +445,7 @@ def test_gemini_quota_is_explicit_and_retry_is_bounded(client, monkeypatch):
     import dataguard.quality as module
 
     monkeypatch.setenv("GEMINI_API_KEY", "unit-gemini-key-never-sent-to-network")
+    monkeypatch.setenv("OPENAI_API_KEY", "unit-openai-key-must-not-be-used-as-paid-failover")
     calls = []
 
     def fail(request, timeout):
@@ -466,6 +467,9 @@ def test_gemini_quota_is_explicit_and_retry_is_bounded(client, monkeypatch):
     )
     assert response.status_code == 429
     assert len(calls) == 2
+    assert set(calls) == {
+        "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions"
+    }
     assert response.headers["Retry-After"] == "60"
     assert "quota" in response.json()["detail"].lower()
     assert "provider diagnostic" not in response.text

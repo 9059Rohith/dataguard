@@ -2188,3 +2188,8 @@ nav a:hover {
 .profile button {
   color: #92ac88;
 }
+.agent-answer,
+.tool-trace summary {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}

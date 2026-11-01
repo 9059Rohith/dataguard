@@ -1,0 +1,187 @@
+{
+  "verified_at": "2026-11-01T18:42:56Z",
+  "base_url": "https://rohith-dataguard.vercel.app",
+  "http_status": 200,
+  "duration_seconds": 2.55,
+  "provider_status": {
+    "configured": true,
+    "provider": "Google Gemini",
+    "model": "gemini-3.5-flash-lite",
+    "public_data_only": true,
+    "billing_mode": "Gemini free tier; project billing disabled at setup",
+    "max_turns": 4,
+    "max_tools": 6,
+    "max_provider_requests": 5,
+    "max_quota_retries": 1,
+    "permissions": "Public GitHub captures only. Private uploads and notes are excluded. No writes, shell, or arbitrary network.",
+    "data_notice": "Google's unpaid API may use submitted questions and public evidence to improve its models. Ask only about public repository data; do not enter private or sensitive information.",
+    "quota_notice": "Free quotas are shared per Google project, can change, and return explicit HTTP 429 when exhausted."
+  },
+  "question": "Use your tools to inspect the latest public GitHub capture. In plain text, give its full capture ID, exact record count, complete SHA-256 digest, and each recorded check key with status. Distinguish recorded check results from current freshness. Do not extend any rule beyond its recorded detail.",
+  "result": {
+    "answer": "Full Capture ID: 71623033-6147-4fa0-a5b6-2d0019ca5f7a\n\nExact Record Count: 8\n\nComplete SHA-256 Digest: 54d89c05d727cef779eaf4148dd570d2fb21a3f3714cefab86621d44fdf71bd0\n\nRecorded Check Keys with Status:\n- volume: passed\n- schema: passed\n- uniqueness: passed\n- counters: passed\n- timestamps: passed\n- freshness: passed\n\nDistinction of Freshness:\nThe recorded freshness check passed at the stored evaluation time (`2026-11-01T18:16:18.993091+00:00`), noting a capture age of 0.00h against a 72h limit. However, a historical passed freshness check does not prove current freshness at the current time (`2026-11-01T18:42:55.295642+00:00`).",
+    "trace": [
+      {
+        "tool": "list_captures",
+        "arguments": {},
+        "result": [
+          {
+            "id": "71623033-6147-4fa0-a5b6-2d0019ca5f7a",
+            "name": "GitHub \u00b7 Python dependency ecosystem",
+            "source": "https://api.github.com/repos/{owner}/{repo}",
+            "visibility": "public",
+            "captured_at": "2026-11-01T18:16:18.944038+00:00",
+            "evaluated_at": "2026-11-01T18:16:18.993139+00:00",
+            "digest": "54d89c05d727cef779eaf4148dd570d2fb21a3f3714cefab86621d44fdf71bd0",
+            "row_count": 8,
+            "contract": {
+              "min_rows": 1,
+              "max_age_hours": 72,
+              "require_license": false,
+              "reject_archived": false
+            },
+            "checks": [
+              {
+                "key": "volume",
+                "title": "Minimum volume",
+                "failed": 0,
+                "tested": 1,
+                "indices": [],
+                "detail": "8 records; minimum 1.",
+                "status": "passed"
+              },
+              {
+                "key": "schema",
+                "title": "Required fields",
+                "failed": 0,
+                "tested": 8,
+                "indices": [],
+                "detail": "id, full_name, updated_at, stargazers_count, open_issues_count",
+                "status": "passed"
+              },
+              {
+                "key": "uniqueness",
+                "title": "Unique repository IDs",
+                "failed": 0,
+                "tested": 8,
+                "indices": [],
+                "detail": "IDs must be unique within a capture.",
+                "status": "passed"
+              },
+              {
+                "key": "counters",
+                "title": "Nonnegative integer counters",
+                "failed": 0,
+                "tested": 8,
+                "indices": [],
+                "detail": "Stars and open issues must be nonnegative integers; booleans are rejected.",
+                "status": "passed"
+              },
+              {
+                "key": "timestamps",
+                "title": "Valid source timestamps",
+                "failed": 0,
+                "tested": 8,
+                "indices": [],
+                "detail": "updated_at must be timezone-aware and no more than five minutes in the future.",
+                "status": "passed"
+              },
+              {
+                "key": "freshness",
+                "title": "Capture freshness",
+                "failed": 0,
+                "tested": 1,
+                "indices": [],
+                "detail": "Capture age 0.00h; limit 72h. Evaluated at 2026-11-01T18:16:18.993091+00:00.",
+                "status": "passed"
+              }
+            ],
+            "status": "published",
+            "parent_id": null,
+            "scope": "Eight public DataGuard ecosystem repositories; not a representative sample."
+          },
+          {
+            "id": "github-6aff80ef4224c08b68054c4f",
+            "name": "GitHub \u00b7 Python dependency ecosystem",
+            "source": "https://api.github.com/repos/{owner}/{repo}",
+            "visibility": "public",
+            "captured_at": "2026-11-01T18:03:26.631312+00:00",
+            "evaluated_at": "2026-11-01T18:14:10.666664+00:00",
+            "digest": "4b0ef1068f5dd661382c1614477aedcb4f874fb5a7fc7e9211e17a03d42ad6f8",
+            "row_count": 8,
+            "contract": {
+              "min_rows": 1,
+              "max_age_hours": 72,
+              "require_license": false,
+              "reject_archived": false
+            },
+            "checks": [
+              {
+                "key": "volume",
+                "title": "Minimum volume",
+                "failed": 0,
+                "tested": 1,
+                "indices": [],
+                "detail": "8 records; minimum 1.",
+                "status": "passed"
+              },
+              {
+                "key": "schema",
+                "title": "Required fields",
+                "failed": 0,
+                "tested": 8,
+                "indices": [],
+                "detail": "id, full_name, updated_at, stargazers_count, open_issues_count",
+                "status": "passed"
+              },
+              {
+                "key": "uniqueness",
+                "title": "Unique repository IDs",
+                "failed": 0,
+                "tested": 8,
+                "indices": [],
+                "detail": "IDs must be unique within a capture.",
+                "status": "passed"
+              },
+              {
+                "key": "counters",
+                "title": "Nonnegative integer counters",
+                "failed": 0,
+                "tested": 8,
+                "indices": [],
+                "detail": "Stars and open issues must be nonnegative integers; booleans are rejected.",
+                "status": "passed"
+              },
+              {
+                "key": "timestamps",
+                "title": "Valid source timestamps",
+                "failed": 0,
+                "tested": 8,
+                "indices": [],
+                "detail": "updated_at must be timezone-aware and no more than five minutes in the future.",
+                "status": "passed"
+              },
+              {
+                "key": "freshness",
+                "title": "Capture freshness",
+                "failed": 0,
+                "tested": 1,
+                "indices": [],
+                "detail": "Capture age 0.18h; limit 72h. Evaluated at 2026-11-01T18:14:10.666648+00:00.",
+                "status": "passed"
+              }
+            ],
+            "status": "published",
+            "parent_id": null,
+            "scope": "Eight public dependencies in the DataGuard Python ecosystem. Not a representative sample of all repositories."
+          }
+        ]
+      }
+    ],
+    "model": "gemini-3.5-flash-lite",
+    "provider": "Google Gemini",
+    "public_data_only": true,
+    "provider_requests": 2,
+    "created_at": "2026-11-01T18:42:57.439195+00:00"
+  }
+}
