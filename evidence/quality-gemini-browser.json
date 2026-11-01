@@ -1,0 +1,433 @@
+{
+  "verified_at": "2026-11-01T18:47:44.204Z",
+  "base_url": "https://rohith-dataguard.vercel.app",
+  "http_status": 200,
+  "workflow": "Connect authenticated operator → ask about public GitHub records → actual Gemini evidence tools → cited model answer",
+  "question": "Inspect actual records in the latest public GitHub capture using inspect_capture. In concise plain text, identify the repository with the most stars and the repository with the most open issues, with exact counts, full capture ID, record count and SHA-256. Cite only observed evidence.",
+  "result": {
+    "answer": "Based on the latest public GitHub capture (`71623033-6147-4fa0-a5b6-2d0019ca5f7a`), which contains 8 records and SHA-256 digest `54d89c05d727cef779eaf4148dd570d2fb21a3f3714cefab86621d44fdf71bd0`:\n\n* **Most stars:** `fastapi/fastapi` with **104,531** stars (`stargazers_count`).\n* **Most open issues:** `pytest-dev/pytest` with **915** open issues (`open_issues_count`).",
+    "trace": [
+      {
+        "tool": "list_captures",
+        "arguments": {},
+        "result": [
+          {
+            "id": "71623033-6147-4fa0-a5b6-2d0019ca5f7a",
+            "name": "GitHub · Python dependency ecosystem",
+            "source": "https://api.github.com/repos/{owner}/{repo}",
+            "visibility": "public",
+            "captured_at": "2026-11-01T18:16:18.944038+00:00",
+            "evaluated_at": "2026-11-01T18:16:18.993139+00:00",
+            "digest": "54d89c05d727cef779eaf4148dd570d2fb21a3f3714cefab86621d44fdf71bd0",
+            "row_count": 8,
+            "contract": {
+              "min_rows": 1,
+              "max_age_hours": 72,
+              "require_license": false,
+              "reject_archived": false
+            },
+            "checks": [
+              {
+                "key": "volume",
+                "title": "Minimum volume",
+                "failed": 0,
+                "tested": 1,
+                "indices": [],
+                "detail": "8 records; minimum 1.",
+                "status": "passed"
+              },
+              {
+                "key": "schema",
+                "title": "Required fields",
+                "failed": 0,
+                "tested": 8,
+                "indices": [],
+                "detail": "id, full_name, updated_at, stargazers_count, open_issues_count",
+                "status": "passed"
+              },
+              {
+                "key": "uniqueness",
+                "title": "Unique repository IDs",
+                "failed": 0,
+                "tested": 8,
+                "indices": [],
+                "detail": "IDs must be unique within a capture.",
+                "status": "passed"
+              },
+              {
+                "key": "counters",
+                "title": "Nonnegative integer counters",
+                "failed": 0,
+                "tested": 8,
+                "indices": [],
+                "detail": "Stars and open issues must be nonnegative integers; booleans are rejected.",
+                "status": "passed"
+              },
+              {
+                "key": "timestamps",
+                "title": "Valid source timestamps",
+                "failed": 0,
+                "tested": 8,
+                "indices": [],
+                "detail": "updated_at must be timezone-aware and no more than five minutes in the future.",
+                "status": "passed"
+              },
+              {
+                "key": "freshness",
+                "title": "Capture freshness",
+                "failed": 0,
+                "tested": 1,
+                "indices": [],
+                "detail": "Capture age 0.00h; limit 72h. Evaluated at 2026-11-01T18:16:18.993091+00:00.",
+                "status": "passed"
+              }
+            ],
+            "status": "published",
+            "parent_id": null,
+            "scope": "Eight public DataGuard ecosystem repositories; not a representative sample."
+          },
+          {
+            "id": "github-6aff80ef4224c08b68054c4f",
+            "name": "GitHub · Python dependency ecosystem",
+            "source": "https://api.github.com/repos/{owner}/{repo}",
+            "visibility": "public",
+            "captured_at": "2026-11-01T18:03:26.631312+00:00",
+            "evaluated_at": "2026-11-01T18:14:10.666664+00:00",
+            "digest": "4b0ef1068f5dd661382c1614477aedcb4f874fb5a7fc7e9211e17a03d42ad6f8",
+            "row_count": 8,
+            "contract": {
+              "min_rows": 1,
+              "max_age_hours": 72,
+              "require_license": false,
+              "reject_archived": false
+            },
+            "checks": [
+              {
+                "key": "volume",
+                "title": "Minimum volume",
+                "failed": 0,
+                "tested": 1,
+                "indices": [],
+                "detail": "8 records; minimum 1.",
+                "status": "passed"
+              },
+              {
+                "key": "schema",
+                "title": "Required fields",
+                "failed": 0,
+                "tested": 8,
+                "indices": [],
+                "detail": "id, full_name, updated_at, stargazers_count, open_issues_count",
+                "status": "passed"
+              },
+              {
+                "key": "uniqueness",
+                "title": "Unique repository IDs",
+                "failed": 0,
+                "tested": 8,
+                "indices": [],
+                "detail": "IDs must be unique within a capture.",
+                "status": "passed"
+              },
+              {
+                "key": "counters",
+                "title": "Nonnegative integer counters",
+                "failed": 0,
+                "tested": 8,
+                "indices": [],
+                "detail": "Stars and open issues must be nonnegative integers; booleans are rejected.",
+                "status": "passed"
+              },
+              {
+                "key": "timestamps",
+                "title": "Valid source timestamps",
+                "failed": 0,
+                "tested": 8,
+                "indices": [],
+                "detail": "updated_at must be timezone-aware and no more than five minutes in the future.",
+                "status": "passed"
+              },
+              {
+                "key": "freshness",
+                "title": "Capture freshness",
+                "failed": 0,
+                "tested": 1,
+                "indices": [],
+                "detail": "Capture age 0.18h; limit 72h. Evaluated at 2026-11-01T18:14:10.666648+00:00.",
+                "status": "passed"
+              }
+            ],
+            "status": "published",
+            "parent_id": null,
+            "scope": "Eight public dependencies in the DataGuard Python ecosystem. Not a representative sample of all repositories."
+          }
+        ]
+      },
+      {
+        "tool": "inspect_capture",
+        "arguments": {
+          "capture_id": "71623033-6147-4fa0-a5b6-2d0019ca5f7a"
+        },
+        "result": {
+          "id": "71623033-6147-4fa0-a5b6-2d0019ca5f7a",
+          "name": "GitHub · Python dependency ecosystem",
+          "source": "https://api.github.com/repos/{owner}/{repo}",
+          "visibility": "public",
+          "captured_at": "2026-11-01T18:16:18.944038+00:00",
+          "evaluated_at": "2026-11-01T18:16:18.993139+00:00",
+          "digest": "54d89c05d727cef779eaf4148dd570d2fb21a3f3714cefab86621d44fdf71bd0",
+          "records": [
+            {
+              "id": 160919119,
+              "full_name": "fastapi/fastapi",
+              "html_url": "https://github.com/fastapi/fastapi",
+              "description": "FastAPI framework, high performance, easy to learn, fast to code, ready for production",
+              "language": "Python",
+              "stargazers_count": 104531,
+              "forks_count": 10167,
+              "open_issues_count": 77,
+              "archived": false,
+              "default_branch": "master",
+              "created_at": "2018-12-08T08:21:47Z",
+              "updated_at": "2026-11-01T16:35:30Z",
+              "pushed_at": "2026-11-01T12:15:51Z",
+              "license": {
+                "key": "mit",
+                "name": "MIT License",
+                "spdx_id": "MIT",
+                "url": "https://api.github.com/licenses/mit",
+                "node_id": "MDc6TGljZW5zZTEz"
+              }
+            },
+            {
+              "id": 90194616,
+              "full_name": "pydantic/pydantic",
+              "html_url": "https://github.com/pydantic/pydantic",
+              "description": "Data validation using Python type hints",
+              "language": "Python",
+              "stargazers_count": 29260,
+              "forks_count": 3112,
+              "open_issues_count": 598,
+              "archived": false,
+              "default_branch": "main",
+              "created_at": "2017-05-03T21:23:58Z",
+              "updated_at": "2026-11-01T14:36:35Z",
+              "pushed_at": "2026-11-01T18:13:29Z",
+              "license": {
+                "key": "mit",
+                "name": "MIT License",
+                "spdx_id": "MIT",
+                "url": "https://api.github.com/licenses/mit",
+                "node_id": "MDc6TGljZW5zZTEz"
+              }
+            },
+            {
+              "id": 159271175,
+              "full_name": "sqlalchemy/sqlalchemy",
+              "html_url": "https://github.com/sqlalchemy/sqlalchemy",
+              "description": "The Database Toolkit for Python",
+              "language": "Python",
+              "stargazers_count": 12276,
+              "forks_count": 1839,
+              "open_issues_count": 214,
+              "archived": false,
+              "default_branch": "main",
+              "created_at": "2018-11-27T03:35:03Z",
+              "updated_at": "2026-11-01T15:19:55Z",
+              "pushed_at": "2026-11-01T15:19:46Z",
+              "license": {
+                "key": "mit",
+                "name": "MIT License",
+                "spdx_id": "MIT",
+                "url": "https://api.github.com/licenses/mit",
+                "node_id": "MDc6TGljZW5zZTEz"
+              }
+            },
+            {
+              "id": 138597372,
+              "full_name": "Kludex/starlette",
+              "html_url": "https://github.com/Kludex/starlette",
+              "description": "The little ASGI framework that shines. 🌟",
+              "language": "Python",
+              "stargazers_count": 12699,
+              "forks_count": 1427,
+              "open_issues_count": 44,
+              "archived": false,
+              "default_branch": "main",
+              "created_at": "2018-06-25T13:16:21Z",
+              "updated_at": "2026-11-01T13:45:29Z",
+              "pushed_at": "2026-11-01T13:45:26Z",
+              "license": {
+                "key": "bsd-3-clause",
+                "name": "BSD 3-Clause \"New\" or \"Revised\" License",
+                "spdx_id": "BSD-3-Clause",
+                "url": "https://api.github.com/licenses/bsd-3-clause",
+                "node_id": "MDc6TGljZW5zZTU="
+              }
+            },
+            {
+              "id": 92946971,
+              "full_name": "Kludex/uvicorn",
+              "html_url": "https://github.com/Kludex/uvicorn",
+              "description": "An ASGI web server, for Python. 🦄",
+              "language": "Python",
+              "stargazers_count": 11061,
+              "forks_count": 1084,
+              "open_issues_count": 106,
+              "archived": false,
+              "default_branch": "main",
+              "created_at": "2017-05-31T13:13:43Z",
+              "updated_at": "2026-11-01T13:09:04Z",
+              "pushed_at": "2026-11-01T07:08:10Z",
+              "license": {
+                "key": "bsd-3-clause",
+                "name": "BSD 3-Clause \"New\" or \"Revised\" License",
+                "spdx_id": "BSD-3-Clause",
+                "url": "https://api.github.com/licenses/bsd-3-clause",
+                "node_id": "MDc6TGljZW5zZTU="
+              }
+            },
+            {
+              "id": 30618733,
+              "full_name": "prometheus/client_python",
+              "html_url": "https://github.com/prometheus/client_python",
+              "description": "Prometheus instrumentation library for Python applications",
+              "language": "Python",
+              "stargazers_count": 4385,
+              "forks_count": 905,
+              "open_issues_count": 161,
+              "archived": false,
+              "default_branch": "master",
+              "created_at": "2015-02-10T22:47:25Z",
+              "updated_at": "2026-10-30T18:56:47Z",
+              "pushed_at": "2026-10-30T18:56:39Z",
+              "license": {
+                "key": "apache-2.0",
+                "name": "Apache License 2.0",
+                "spdx_id": "Apache-2.0",
+                "url": "https://api.github.com/licenses/apache-2.0",
+                "node_id": "MDc6TGljZW5zZTI="
+              }
+            },
+            {
+              "id": 247399816,
+              "full_name": "psycopg/psycopg",
+              "html_url": "https://github.com/psycopg/psycopg",
+              "description": "New generation PostgreSQL database adapter for the Python programming language ",
+              "language": "Python",
+              "stargazers_count": 2520,
+              "forks_count": 299,
+              "open_issues_count": 74,
+              "archived": false,
+              "default_branch": "master",
+              "created_at": "2020-03-15T04:15:53Z",
+              "updated_at": "2026-11-01T09:13:40Z",
+              "pushed_at": "2026-11-01T07:53:26Z",
+              "license": {
+                "key": "lgpl-3.0",
+                "name": "GNU Lesser General Public License v3.0",
+                "spdx_id": "LGPL-3.0",
+                "url": "https://api.github.com/licenses/lgpl-3.0",
+                "node_id": "MDc6TGljZW5zZTEy"
+              }
+            },
+            {
+              "id": 37489525,
+              "full_name": "pytest-dev/pytest",
+              "html_url": "https://github.com/pytest-dev/pytest",
+              "description": "The pytest framework makes it easy to write small tests, yet scales to support complex functional testing",
+              "language": "Python",
+              "stargazers_count": 14660,
+              "forks_count": 3587,
+              "open_issues_count": 915,
+              "archived": false,
+              "default_branch": "main",
+              "created_at": "2015-06-15T20:28:27Z",
+              "updated_at": "2026-11-01T09:02:03Z",
+              "pushed_at": "2026-11-01T00:30:53Z",
+              "license": {
+                "key": "mit",
+                "name": "MIT License",
+                "spdx_id": "MIT",
+                "url": "https://api.github.com/licenses/mit",
+                "node_id": "MDc6TGljZW5zZTEz"
+              }
+            }
+          ],
+          "row_count": 8,
+          "contract": {
+            "min_rows": 1,
+            "max_age_hours": 72,
+            "require_license": false,
+            "reject_archived": false
+          },
+          "checks": [
+            {
+              "key": "volume",
+              "title": "Minimum volume",
+              "failed": 0,
+              "tested": 1,
+              "indices": [],
+              "detail": "8 records; minimum 1.",
+              "status": "passed"
+            },
+            {
+              "key": "schema",
+              "title": "Required fields",
+              "failed": 0,
+              "tested": 8,
+              "indices": [],
+              "detail": "id, full_name, updated_at, stargazers_count, open_issues_count",
+              "status": "passed"
+            },
+            {
+              "key": "uniqueness",
+              "title": "Unique repository IDs",
+              "failed": 0,
+              "tested": 8,
+              "indices": [],
+              "detail": "IDs must be unique within a capture.",
+              "status": "passed"
+            },
+            {
+              "key": "counters",
+              "title": "Nonnegative integer counters",
+              "failed": 0,
+              "tested": 8,
+              "indices": [],
+              "detail": "Stars and open issues must be nonnegative integers; booleans are rejected.",
+              "status": "passed"
+            },
+            {
+              "key": "timestamps",
+              "title": "Valid source timestamps",
+              "failed": 0,
+              "tested": 8,
+              "indices": [],
+              "detail": "updated_at must be timezone-aware and no more than five minutes in the future.",
+              "status": "passed"
+            },
+            {
+              "key": "freshness",
+              "title": "Capture freshness",
+              "failed": 0,
+              "tested": 1,
+              "indices": [],
+              "detail": "Capture age 0.00h; limit 72h. Evaluated at 2026-11-01T18:16:18.993091+00:00.",
+              "status": "passed"
+            }
+          ],
+          "status": "published",
+          "parent_id": null,
+          "scope": "Eight public DataGuard ecosystem repositories; not a representative sample."
+        }
+      }
+    ],
+    "model": "gemini-3.5-flash-lite",
+    "provider": "Google Gemini",
+    "public_data_only": true,
+    "provider_requests": 3,
+    "created_at": "2026-11-01T18:47:38.221504+00:00"
+  },
+  "browser_errors": []
+}
