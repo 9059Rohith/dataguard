@@ -109,7 +109,7 @@ const doc = {
 const output = doc.createElement("div");
 renderMarkdown(
   output,
-  "# Findings\n\n**Verified** `capture-1` [source](https://github.com/fastapi/fastapi) [unsafe](javascript:alert)\n\n<img src=x onerror=alert(1)>\n\n- First finding\n- Second finding\n\n| Key | Value |\n| --- | --- |\n| records | 8 |",
+  "# Findings\n\n**Verified** `capture-1` [source](https://github.com/fastapi/fastapi) [unsafe](javascript:alert)\n\n**`fastapi/fastapi`** has the highest **`stargazers_count`**.\n\n<img src=x onerror=alert(1)>\n\n- First finding\n- Second finding\n\n| Key | Value |\n| --- | --- |\n| records | 8 |",
   ["capture-1"],
 );
 const descendants = (node) => [node, ...node.children.flatMap(descendants)];
@@ -132,6 +132,18 @@ assert.ok(
   ),
 );
 assert.ok(tree.some((node) => node.tagName === "TABLE"));
+for (const value of ["fastapi/fastapi", "stargazers_count"]) {
+  assert.ok(
+    tree.some(
+      (node) =>
+        node.tagName === "STRONG" &&
+        node.children.some(
+          (child) => child.tagName === "CODE" && child.textContent === value,
+        ),
+    ),
+  );
+}
+assert.equal(output.textContent.includes("`fastapi/fastapi`"), false);
 assert.ok(output.textContent.includes("<img src=x onerror=alert(1)>"));
 assert.ok(
   tree

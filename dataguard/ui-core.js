@@ -108,7 +108,8 @@
           link: "a",
         }[token.type];
         const node = doc.createElement(tag);
-        node.textContent = token.text;
+        if (token.type === "strong") inline(node, token.text);
+        else node.textContent = token.text;
         if (token.type === "capture") {
           node.type = "button";
           node.className = "citation-inline";
