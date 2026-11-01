@@ -1,0 +1,57 @@
+{
+  "verified_at": "2026-11-01T19:12:23Z",
+  "base_url": "https://rohith-dataguard.vercel.app",
+  "cases": {
+    "cross_origin": {
+      "status": 403,
+      "cache_control": "no-store"
+    },
+    "oversized_question": {
+      "status": 422,
+      "cache_control": "no-store"
+    },
+    "model_override": {
+      "status": 422,
+      "cache_control": "no-store"
+    },
+    "private_investigator": {
+      "status": 401,
+      "cache_control": "no-store"
+    },
+    "private_upload": {
+      "status": 401,
+      "cache_control": "no-store"
+    },
+    "private_sync": {
+      "status": 401,
+      "cache_control": "no-store"
+    },
+    "private_recovery": {
+      "status": 401,
+      "cache_control": "no-store"
+    },
+    "runtime_public_configuration": {
+      "endpoint": "/api/quality/public-investigate",
+      "requires_authentication": false,
+      "configured": true,
+      "question_max_characters": 600,
+      "limits": {
+        "per_client": {
+          "limit": 3,
+          "seconds": 600
+        },
+        "global_minute": {
+          "limit": 2,
+          "seconds": 60
+        },
+        "global_day": {
+          "limit": 30,
+          "seconds": 86400
+        }
+      },
+      "limiter_backend": "postgresql",
+      "proxy_identity_source": "vercel-single-forwarded-ip"
+    }
+  },
+  "note": "All POST checks were rejected before model invocation; no additional successful model calls were made."
+}

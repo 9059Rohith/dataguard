@@ -1,0 +1,125 @@
+- complementary:
+  - link "d g DataGuard":
+    - /url: /console/overview
+    - text: d
+    - generic: g
+    - text: DataGuard
+  - button "P Python ecosystem Public source workspace ⌄":
+    - generic: P
+    - text: Python ecosystem
+    - generic: Public source workspace
+    - generic: ⌄
+  - generic: WORKSPACE
+  - navigation "Workspace navigation":
+    - link "Overview":
+      - /url: /console/overview
+      - generic: Overview
+    - link "Datasets":
+      - /url: /console/datasets
+      - generic: Datasets
+    - link "Contracts":
+      - /url: /console/contracts
+      - generic: Contracts
+    - link "Quality checks":
+      - /url: /console/checks
+      - generic: Quality checks
+    - link "Capture history":
+      - /url: /console/batches
+      - generic: Capture history
+    - link "Quarantine":
+      - /url: /console/quarantine
+      - generic: Quarantine
+    - link "Version comparison":
+      - /url: /console/versions
+      - generic: Version comparison
+    - link "Data lineage":
+      - /url: /console/lineage
+      - generic: Data lineage
+    - link "Incidents":
+      - /url: /console/incidents
+      - generic: Incidents
+    - link "Recovery":
+      - /url: /console/recovery
+      - generic: Recovery
+    - link "AI investigator":
+      - /url: /console/agent
+      - generic: AI investigator
+    - link "Connections":
+      - /url: /console/connections
+      - generic: Connections
+    - link "Settings":
+      - /url: /console/settings
+      - generic: Settings
+  - generic: Source evidence available
+  - paragraph:
+    - text: Every number has a source.
+    - text: Every change leaves a trail.
+  - link "API documentation ↗":
+    - /url: /docs
+    - text: API documentation
+    - generic: ↗
+  - generic: DG
+  - text: Public observer
+  - generic: Read-only access
+  - button "Manage operator access": ⌘
+- banner:
+  - text: Workspace /
+  - strong: AI investigator
+  - generic: Public view
+  - button "Refresh workspace":
+  - button "Connect operator ↗":
+    - text: Connect operator
+    - generic: ↗
+- main:
+  - heading "Investigate, with evidence." [level=1]
+  - paragraph: Try a real public-data investigation. No account or operator token is needed.
+  - heading "Ask a better question of your data." [level=2]:
+    - text: Ask a better question
+    - text: of your data.
+  - paragraph: Gemini inspects only the public GitHub captures. Private uploads and operator notes are excluded from its tools. Its actual evidence tool trace stays visible alongside the answer.
+  - paragraph:
+    - strong: Public demo · no token required.
+    - text: Ask about the eight real GitHub repositories below.
+  - button "Which captures need attention?"
+  - button "Explain the freshness evidence."
+  - button "What should I verify before recovery?"
+  - generic: Google's unpaid API may use submitted questions and public evidence to improve its models. Ask only about public repository data; do not enter private or sensitive information. This connection uses the free tier; no billing was enabled.
+  - generic: Your investigation
+  - textbox "Your investigation":
+    - /placeholder: Ask about source freshness, a failed check, or capture provenance…
+    - text: Inspect the latest public GitHub capture using list_captures and inspect_capture. Give the exact record count, repository with most stars, source timestamp and capture digest. Cite the evidence.
+  - button "Try again in 414s" [disabled]
+  - paragraph: Read-only public demo · 600 character question limit
+  - paragraph: "3 investigations per visitor in 10 minutes. Shared allowance: 2 per minute and 30 per day, in fixed UTC windows. A reserved attempt counts even when the provider is unavailable."
+  - status: The public allowance is cooling down. Retry in 414 seconds; the shared allowance may also be in use by other visitors.
+  - alert: Public investigation limit reached. Please retry after the cooldown.
+  - heading "Investigation findings" [level=3]
+  - generic: "Based on inspection of the latest public GitHub capture (`71623033-6147-4fa0-a5b6-2d0019ca5f7a`), here are the details: * **Record count:** 8 records (confirmed by `row_count` and `inspect_capture` records array length). * **Repository with most stars:** `fastapi/fastapi` with 104,531 stargazers (`stargazers_count`). * **Source timestamp (`captured_at`):** `2026-11-01T18:16:18.944038+00:00`. * **Capture digest:** `54d89c05d727cef779eaf4148dd570d2fb21a3f3714cefab86621d44fdf71bd0`."
+  - paragraph: Google Gemini · gemini-3.5-flash-lite · 01 Nov 2026, 19:12 UTC · Public GitHub evidence only
+  - heading "Evidence tool trace · 2 calls" [level=3]
+  - 'generic "1. list_captures {}"'
+  - 'generic "2. inspect_capture {\"capture_id\":\"71623033-6147-4fa0-a5b6-2d0019ca5f7a\"}"'
+  - heading "Every claim needs a source." [level=3]
+  - paragraph: A response is accepted only after the model calls at least one evidence tool. The agent cannot change a contract, publish a capture, or execute arbitrary code.
+  - list:
+    - generic: "01"
+    - text: List available captures
+    - generic: "02"
+    - text: Inspect exact evidence
+    - generic: "03"
+    - text: Explain findings with IDs
+  - generic: Provider configured
+  - paragraph: Google Gemini · gemini-3.5-flash-lite
+  - paragraph: Gemini free tier; project billing disabled at setup
+  - paragraph: Free quotas are shared per Google project, can change, and return explicit HTTP 429 when exhausted.
+  - heading "Judgment stays with your operator." [level=3]:
+    - text: Judgment stays
+    - text: with your operator.
+  - paragraph: Use the findings to inform a decision. All data and policy changes remain explicit, authenticated actions.
+  - link "Read the checks yourself":
+    - /url: /console/checks
+    - text: Read the checks yourself
+  - text: ◎
+- contentinfo:
+  - generic: DataGuard / Reliability, by evidence.
+  - generic: Workspace read 01 Nov 2026, 19:10 UTC

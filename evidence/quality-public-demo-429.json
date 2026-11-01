@@ -1,0 +1,12 @@
+{
+  "verified_at": "2026-11-01T19:11:37Z",
+  "anonymous": true,
+  "authorization_header_sent": false,
+  "status": 429,
+  "retry_after": "23",
+  "cache_control": "no-store",
+  "response": {
+    "detail": "Public investigation limit reached. Please retry after the cooldown."
+  },
+  "sequence": "Third public request after one successful anonymous HTTP investigation and one successful root-owned anonymous CUA browser investigation."
+}
