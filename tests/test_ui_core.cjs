@@ -200,4 +200,8 @@ for (const selector of [
 }
 assert.match(css, /\.dialog-close\s*\{\s*min-width: 44px;\s*min-height: 44px;/);
 assert.match(css, /\.mobile-menu\s*\{\s*min-width: 44px;\s*min-height: 44px;/);
+assert.match(
+  css,
+  /\.sr-only\s*\{\s*position: absolute !important;\s*left: 0;\s*top: 0;/,
+);
 console.log("Small-text contrast and mobile/menu close target checks passed.");
