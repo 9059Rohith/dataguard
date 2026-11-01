@@ -1,3 +1,7 @@
+import json
+from datetime import datetime, timedelta
+from pathlib import Path
+
 import pytest
 from fastapi.testclient import TestClient
 
@@ -9,6 +13,18 @@ HEADERS = {"Authorization": "Bearer " + TOKEN}
 
 @pytest.fixture
 def client(tmp_path, monkeypatch):
+    import dataguard.quality as quality
+
+    # Historical real source data must not make the test suite expire after 72 hours.
+    source = json.loads(Path(quality.__file__).with_name("source_capture.json").read_text("utf8"))
+    evaluated_at = datetime.fromisoformat(source["captured_at"]) + timedelta(minutes=1)
+
+    class EvaluationClock(datetime):
+        @classmethod
+        def now(cls, tz=None):
+            return evaluated_at.astimezone(tz)
+
+    monkeypatch.setattr(quality, "datetime", EvaluationClock)
     monkeypatch.setenv("DATAGUARD_TOKEN", TOKEN)
     with TestClient(create_app(f"sqlite:///{tmp_path / 'quality.db'}")) as c:
         yield c
