@@ -40,6 +40,12 @@ const { chromium } = require(process.env.PLAYWRIGHT_MODULE || "playwright");
     );
     await page.locator(".page-heading h1").waitFor();
     if (
+      /[\u00c2]|\u00e2[\u20ac\u2020]/.test(
+        await page.locator("body").innerText(),
+      )
+    )
+      throw Error("Text encoding regression on " + route);
+    if (
       await page.locator("body").evaluate((e) => e.scrollWidth > innerWidth + 1)
     )
       throw Error("Desktop overflow: " + route);
@@ -75,6 +81,12 @@ const { chromium } = require(process.env.PLAYWRIGHT_MODULE || "playwright");
         route,
     );
     await page.locator(".page-heading h1").waitFor();
+    if (
+      /[\u00c2]|\u00e2[\u20ac\u2020]/.test(
+        await page.locator("body").innerText(),
+      )
+    )
+      throw Error("Text encoding regression on " + route);
     if (
       await page.locator("body").evaluate((e) => e.scrollWidth > innerWidth + 1)
     )

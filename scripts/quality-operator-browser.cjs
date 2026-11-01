@@ -25,7 +25,7 @@ const { chromium } = require(process.env.PLAYWRIGHT_MODULE || "playwright");
     ).records;
     await p
       .getByLabel("Capture name", { exact: true })
-      .fill("Browser verification Â· actual GitHub source records");
+      .fill("Browser verification · actual GitHub source records");
     await p
       .getByLabel("Or paste your JSON records")
       .fill(JSON.stringify(records));
