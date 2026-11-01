@@ -15,6 +15,8 @@ HEADERS = {"Authorization": "Bearer " + TOKEN}
 def client(tmp_path, monkeypatch):
     import dataguard.quality as quality
 
+    monkeypatch.delenv("GEMINI_API_KEY", raising=False)
+    monkeypatch.delenv("OPENAI_API_KEY", raising=False)
     # Historical real source data must not make the test suite expire after 72 hours.
     source = json.loads(Path(quality.__file__).with_name("source_capture.json").read_text("utf8"))
     evaluated_at = datetime.fromisoformat(source["captured_at"]) + timedelta(minutes=1)
@@ -307,3 +309,195 @@ def test_agent_enforces_six_call_budget(client, monkeypatch):
 
 def test_unknown_console_route_is_not_a_misleading_success(client):
     assert client.get("/console/nonexistent").status_code == 404
+
+
+def gemini_replies(monkeypatch, replies):
+    import io
+
+    import dataguard.quality as module
+
+    captured = []
+    monkeypatch.setenv("GEMINI_API_KEY", "unit-gemini-key-never-sent-to-network")
+    monkeypatch.setenv("OPENAI_API_KEY", "unit-openai-fallback-key")
+
+    def respond(request, timeout):
+        assert (
+            request.full_url
+            == "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions"
+        )
+        captured.append(json.loads(request.data))
+        return io.BytesIO(json.dumps({"choices": [{"message": replies.pop(0)}]}).encode())
+
+    monkeypatch.setattr(module.urllib.request, "urlopen", respond)
+    return captured
+
+
+def test_gemini_prioritizes_free_provider_and_preserves_thought_signatures(client, monkeypatch):
+    public = client.get("/api/quality/workspace").json()["captures"][0]
+    assistant = {
+        "role": "assistant",
+        "content": None,
+        "tool_calls": [
+            {
+                "id": "call_public",
+                "type": "function",
+                "function": {
+                    "name": "inspect_capture",
+                    "arguments": json.dumps({"capture_id": public["id"]}),
+                },
+                "extra_content": {"google": {"thought_signature": "opaque-provider-signature"}},
+            }
+        ],
+        "extra_content": {"google": {"thought_signature": "message-provider-signature"}},
+    }
+    sent = gemini_replies(
+        monkeypatch,
+        [
+            assistant,
+            {
+                "role": "assistant",
+                "content": "Capture " + public["id"] + " passed its stored checks.",
+            },
+        ],
+    )
+    response = client.post(
+        "/api/quality/investigate",
+        json={"question": "Inspect the public source quality."},
+        headers=HEADERS,
+    )
+    assert response.status_code == 200
+    assert sent[0]["model"] == "gemini-3.5-flash-lite"
+    assert sent[1]["messages"][-2] == assistant
+    assert response.json()["provider"] == "Google Gemini"
+    assert response.json()["public_data_only"] is True
+    assert "opaque-provider-signature" not in response.text
+    assert "unit-gemini-key" not in response.text
+    assert response.json()["trace"][0]["result"]["id"] == public["id"]
+
+
+def test_gemini_tools_never_expose_operator_uploads_or_notes(client, monkeypatch):
+    private = client.post(
+        "/api/quality/uploads",
+        headers=HEADERS,
+        json={
+            "name": "PRIVATE-SOURCE-MARKER",
+            "records": [
+                {
+                    "id": 123,
+                    "full_name": "PRIVATE-RECORD-MARKER",
+                    "stargazers_count": 1,
+                    "open_issues_count": 0,
+                    "updated_at": "2026-01-01T00:00:00Z",
+                }
+            ],
+        },
+    ).json()
+    client.post(
+        "/api/quality/notes",
+        headers=HEADERS,
+        json={"capture_id": private["id"], "note": "PRIVATE-NOTE-MARKER"},
+    )
+    public = client.get("/api/quality/workspace").json()["captures"][0]
+    calls = [
+        {
+            "id": "list",
+            "type": "function",
+            "function": {"name": "list_captures", "arguments": "{}"},
+        },
+        {
+            "id": "private",
+            "type": "function",
+            "function": {
+                "name": "inspect_capture",
+                "arguments": json.dumps({"capture_id": private["id"]}),
+            },
+        },
+    ]
+    sent = gemini_replies(
+        monkeypatch,
+        [
+            {"role": "assistant", "tool_calls": calls},
+            {
+                "role": "assistant",
+                "content": "Public capture " + public["id"] + " has auditable evidence.",
+            },
+        ],
+    )
+    response = client.post(
+        "/api/quality/investigate",
+        headers=HEADERS,
+        json={"question": "Check available repository evidence."},
+    )
+    assert response.status_code == 200
+    outgoing = json.dumps(sent)
+    assert "PRIVATE-SOURCE-MARKER" not in outgoing
+    assert "PRIVATE-RECORD-MARKER" not in outgoing
+    assert "PRIVATE-NOTE-MARKER" not in outgoing
+    assert response.json()["trace"][1]["result"] == {
+        "error": "Capture is outside public GitHub evidence scope"
+    }
+
+
+def test_gemini_quota_is_explicit_and_retry_is_bounded(client, monkeypatch):
+    import io
+    import urllib.error
+
+    import dataguard.quality as module
+
+    monkeypatch.setenv("GEMINI_API_KEY", "unit-gemini-key-never-sent-to-network")
+    calls = []
+
+    def fail(request, timeout):
+        calls.append(request.full_url)
+        raise urllib.error.HTTPError(
+            request.full_url,
+            429,
+            "quota",
+            {"Retry-After": "120"},
+            io.BytesIO(b'{"secret":"provider diagnostic"}'),
+        )
+
+    monkeypatch.setattr(module.urllib.request, "urlopen", fail)
+    monkeypatch.setattr(module.time, "sleep", lambda seconds: None)
+    response = client.post(
+        "/api/quality/investigate",
+        headers=HEADERS,
+        json={"question": "Investigate public evidence."},
+    )
+    assert response.status_code == 429
+    assert len(calls) == 2
+    assert response.headers["Retry-After"] == "60"
+    assert "quota" in response.json()["detail"].lower()
+    assert "provider diagnostic" not in response.text
+
+
+def test_gemini_rejects_known_credentials_in_questions_before_network(client, monkeypatch):
+    import dataguard.quality as module
+
+    monkeypatch.setenv("GEMINI_API_KEY", "unit-gemini-key-never-sent-to-network")
+
+    def forbidden(*args, **kwargs):
+        pytest.fail("No credential-bearing question may be sent to the provider")
+
+    monkeypatch.setattr(module.urllib.request, "urlopen", forbidden)
+    response = client.post(
+        "/api/quality/investigate", headers=HEADERS, json={"question": "Inspect token " + TOKEN}
+    )
+    assert response.status_code == 422
+    assert TOKEN not in response.text
+
+
+def test_gemini_status_and_authentication_boundary(client, monkeypatch):
+    monkeypatch.setenv("GEMINI_API_KEY", "unit-gemini-key-never-sent-to-network")
+    status = client.get("/api/quality/provider").json()
+    assert status["provider"] == "Google Gemini"
+    assert status["public_data_only"] is True
+    assert status["max_provider_requests"] == 5
+    assert status["configured"] is True
+    assert "unit-gemini" not in json.dumps(status)
+    assert (
+        client.post(
+            "/api/quality/investigate", json={"question": "Inspect public evidence."}
+        ).status_code
+        == 401
+    )
