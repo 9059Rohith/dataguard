@@ -3,10 +3,12 @@
 import anyio
 from starlette.datastructures import Headers, MutableHeaders
 from starlette.exceptions import HTTPException
+from starlette.requests import Request
 from starlette.responses import JSONResponse
 
 from dataguard.limits import MAX_BODY_BYTES, check_json_structure
 from dataguard.policy_io import POLICY_MAX_BYTES, decode_policy_json
+from dataguard.public_demo import PUBLIC_BODY_BYTES, PUBLIC_INVESTIGATE_PATH, check_origin
 
 
 class RequestGuard:
@@ -49,13 +51,24 @@ class RequestGuard:
                 await reject(413, "Body exceeds 8 MB")
                 return
         mutation = method in {"POST", "PUT", "PATCH", "DELETE"}
+        public_investigation = method == "POST" and path == PUBLIC_INVESTIGATE_PATH
         policy_request = path == "/policies/impact"
         if mutation:
-            try:
-                self.authorize(headers.get("authorization"))
-            except HTTPException as error:
-                await reject(error.status_code, error.detail, error.headers)
-                return
+            if not public_investigation:
+                try:
+                    self.authorize(headers.get("authorization"))
+                except HTTPException as error:
+                    await reject(error.status_code, error.detail, error.headers)
+                    return
+            else:
+                try:
+                    check_origin(Request(scope))
+                except HTTPException as error:
+                    await reject(error.status_code, error.detail, error.headers)
+                    return
+                if length is not None and int(length) > PUBLIC_BODY_BYTES:
+                    await reject(413, "Public investigation body exceeds 8 KiB")
+                    return
             if policy_request and length is not None and int(length) > POLICY_MAX_BYTES:
                 await reject(413, "Policy document exceeds 64 KiB")
                 return
@@ -82,7 +95,11 @@ class RequestGuard:
                             if message["type"] == "http.disconnect":
                                 return
                             chunk = message.get("body", b"")
-                            body_limit = POLICY_MAX_BYTES if policy_request else MAX_BODY_BYTES
+                            body_limit = (
+                                PUBLIC_BODY_BYTES
+                                if public_investigation
+                                else (POLICY_MAX_BYTES if policy_request else MAX_BODY_BYTES)
+                            )
                             if len(chunk) > body_limit - len(body):
                                 await reject(413, "Body exceeds request limit")
                                 return

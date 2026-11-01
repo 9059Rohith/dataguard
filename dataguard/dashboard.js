@@ -61,6 +61,8 @@ let workspace,
   page = location.pathname.split("/")[2] || "overview",
   lastAgent = null;
 let toastTimer;
+let publicCooldownUntil = 0;
+let publicCooldownTimer;
 const number = (n) =>
   typeof n === "number" && Number.isFinite(n) ? n.toLocaleString("en-US") : "—";
 const date = (t) => {
@@ -136,7 +138,8 @@ function recordTable(c, limit = 500, query = "") {
 }
 async function api(path, method = "GET", body) {
   const headers = {};
-  if (token) headers.Authorization = "Bearer " + token;
+  if (token && path !== "/public-investigate")
+    headers.Authorization = "Bearer " + token;
   if (body !== undefined) headers["Content-Type"] = "application/json";
   const r = await fetch("/api/quality" + path, {
     method,
@@ -149,12 +152,16 @@ async function api(path, method = "GET", body) {
   } catch {
     throw Error("The service returned an unreadable response. Try refreshing.");
   }
-  if (!r.ok)
-    throw Error(
+  if (!r.ok) {
+    const error = new Error(
       typeof result.detail === "string"
         ? result.detail
         : "Request validation failed. Check the form values.",
     );
+    error.status = r.status;
+    error.retryAfter = Number(r.headers.get("Retry-After") || 0);
+    throw error;
+  }
   return result;
 }
 function toast(message, error = false) {
@@ -523,9 +530,9 @@ function agent() {
   return (
     heading(
       "Investigate, with evidence.",
-      "A real model investigation grounded in source records and visible evidence tools.",
+      "Try a real public-data investigation. No account or operator token is needed.",
     ) +
-    `<div class="agent-layout"><div class="agent-start"><span class="agent-symbol">${icon("agent", 24)}</span><h2>Ask a better question<br>of your data.</h2><p>${provider.public_data_only ? "Gemini inspects only the public GitHub captures. Private uploads and operator notes are excluded from its tools." : "The investigator can list authorized captures and inspect their records, contracts, and checks."} Its actual evidence tool trace stays visible alongside the answer.</p><div class="suggestions">${["Which captures need attention?", "Explain the freshness evidence.", "What should I verify before recovery?"].map((q) => `<button data-action="suggest" data-question="${q}">${q}</button>`).join("")}</div><div class="info-band"><span>${escape(provider.data_notice || "Ask only about the source evidence.")} ${provider.public_data_only ? "This connection uses the free tier; no billing was enabled." : ""}</span></div><form id="agent-form"><label for="agent-question">Your investigation</label><textarea id="agent-question" required minlength="5" maxlength="1500" placeholder="Ask about source freshness, a failed check, or capture provenance…"></textarea><div class="form-actions"><button class="button primary" type="submit">Investigate ${icon("agent", 14)}</button><p>Read-only · 4 turns · 6 tools · 1 quota retry</p></div><p class="form-error" id="agent-error" role="alert"></p></form><div id="agent-result">${lastAgent ? agentResult(lastAgent) : ""}</div></div><div><div class="panel panel-pad"><h3 class="note-title">Every claim needs a source.</h3><p class="explain">A response is accepted only after the model calls at least one evidence tool. The agent cannot change a contract, publish a capture, or execute arbitrary code.</p><ol class="rule-list"><li><span class="rule-num">01</span>List available captures</li><li><span class="rule-num">02</span>Inspect exact evidence</li><li><span class="rule-num">03</span>Explain findings with IDs</li></ol><div class="provider-state">${pill(provider.configured ? "Provider configured" : "Provider not configured", provider.configured ? "" : "warn")}<p>${provider.configured ? `${escape(provider.provider)} · ${escape(provider.model)}` : "This deployment has no AI provider credential. Configure GEMINI_API_KEY or OPENAI_API_KEY to enable investigations."}</p><p>${escape(provider.billing_mode || "")}</p><p>${escape(provider.quota_notice || "")}</p></div></div><div class="forest-note"><h3>Judgment stays<br>with your operator.</h3><p>Use the findings to inform a decision. All data and policy changes remain explicit, authenticated actions.</p>${link("checks", "Read the checks yourself")}</div></div></div>`
+    `<div class="agent-layout"><div class="agent-start"><span class="agent-symbol">${icon("agent", 24)}</span><h2>Ask a better question<br>of your data.</h2><p>${provider.public_data_only ? "Gemini inspects only the public GitHub captures. Private uploads and operator notes are excluded from its tools." : "The investigator can list authorized captures and inspect their records, contracts, and checks."} Its actual evidence tool trace stays visible alongside the answer.</p><p><strong>Public demo · no token required.</strong> Ask about the eight real GitHub repositories below.</p><div class="suggestions">${["Which captures need attention?", "Explain the freshness evidence.", "What should I verify before recovery?"].map((q) => `<button data-action="suggest" data-question="${q}">${q}</button>`).join("")}</div><div class="info-band"><span>${escape(provider.data_notice || "Ask only about the source evidence.")} ${provider.public_data_only ? "This connection uses the free tier; no billing was enabled." : ""}</span></div><form id="agent-form"><label for="agent-question">Your investigation</label><textarea id="agent-question" required minlength="5" maxlength="600" placeholder="Ask about source freshness, a failed check, or capture provenance…"></textarea><div class="form-actions"><button class="button primary" type="submit">Investigate ${icon("agent", 14)}</button><p>Read-only public demo · 600 character question limit</p></div><p class="form-hint">3 investigations per visitor in 10 minutes. Shared allowance: 2 per minute and 30 per day, in fixed UTC windows. A reserved attempt counts even when the provider is unavailable.</p><p id="public-quota-state" class="form-hint" role="status"></p><p class="form-error" id="agent-error" role="alert"></p></form><div id="agent-result">${lastAgent ? agentResult(lastAgent) : ""}</div></div><div><div class="panel panel-pad"><h3 class="note-title">Every claim needs a source.</h3><p class="explain">A response is accepted only after the model calls at least one evidence tool. The agent cannot change a contract, publish a capture, or execute arbitrary code.</p><ol class="rule-list"><li><span class="rule-num">01</span>List available captures</li><li><span class="rule-num">02</span>Inspect exact evidence</li><li><span class="rule-num">03</span>Explain findings with IDs</li></ol><div class="provider-state">${pill(provider.configured ? "Provider configured" : "Provider not configured", provider.configured ? "" : "warn")}<p>${provider.configured ? `${escape(provider.provider)} · ${escape(provider.model)}` : "This deployment has no AI provider credential. Configure GEMINI_API_KEY or OPENAI_API_KEY to enable investigations."}</p><p>${escape(provider.billing_mode || "")}</p><p>${escape(provider.quota_notice || "")}</p></div></div><div class="forest-note"><h3>Judgment stays<br>with your operator.</h3><p>Use the findings to inform a decision. All data and policy changes remain explicit, authenticated actions.</p>${link("checks", "Read the checks yourself")}</div></div></div>`
   );
 }
 function agentResult(r) {
@@ -638,6 +645,34 @@ function render() {
   $("#footer-time").textContent =
     "Workspace read " + date(workspace.generated_at);
   if (page === "versions") compare();
+  if (page === "agent") updatePublicCooldown();
+}
+function updatePublicCooldown() {
+  const seconds = Math.max(
+    0,
+    Math.ceil((publicCooldownUntil - Date.now()) / 1000),
+  );
+  const submit = document.querySelector('#agent-form button[type="submit"]');
+  if (!submit) return;
+  if (seconds) {
+    submit.disabled = true;
+    submit.textContent = `Try again in ${seconds}s`;
+    const state = document.querySelector("#public-quota-state");
+    if (state)
+      state.textContent = `The public allowance is cooling down. Retry in ${seconds} seconds; the shared allowance may also be in use by other visitors.`;
+  } else if (publicCooldownUntil) {
+    submit.disabled = false;
+    submit.innerHTML = `Investigate ${icon("agent", 14)}`;
+    publicCooldownUntil = 0;
+    clearInterval(publicCooldownTimer);
+  }
+}
+function startPublicCooldown(seconds) {
+  publicCooldownUntil =
+    Date.now() + Math.min(86400, Math.max(1, seconds)) * 1000;
+  clearInterval(publicCooldownTimer);
+  updatePublicCooldown();
+  publicCooldownTimer = setInterval(updatePublicCooldown, 1000);
 }
 async function withWork(element, task) {
   if (element?.disabled) return;
@@ -778,7 +813,7 @@ document.addEventListener("submit", async (event) => {
     }
     return;
   }
-  if (!needOperator()) return;
+  if (form.id !== "agent-form" && !needOperator()) return;
   try {
     await withWork(submit, async () => {
       if (form.id === "upload-form") {
@@ -821,14 +856,20 @@ document.addEventListener("submit", async (event) => {
       }
       if (form.id === "agent-form") {
         $("#agent-error").textContent = "";
-        lastAgent = await api("/investigate", "POST", {
+        lastAgent = await api("/public-investigate", "POST", {
           question: $("#agent-question").value.trim(),
         });
         $("#agent-result").innerHTML = agentResult(lastAgent);
+        const allowance = lastAgent.quota?.remaining;
+        if (allowance)
+          $("#public-quota-state").textContent =
+            `Remaining in current windows: ${allowance.per_client} for this visitor, ${allowance.global_minute} shared this minute, ${allowance.global_day} shared today.`;
         toast("Investigation completed with source evidence.");
       }
     });
   } catch (e) {
+    if (form.id === "agent-form" && e.status === 429)
+      startPublicCooldown(e.retryAfter || 60);
     const id = {
       "upload-form": "upload-error",
       "contract-form": "contract-error",

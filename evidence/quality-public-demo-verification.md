@@ -1,0 +1,13 @@
+# Public investigator verification — 2 November 2026
+
+The default AI investigator now calls `POST /api/quality/public-investigate` without a bearer token. It executes the actual Gemini model with public GitHub capture tools only. The separate original investigator and all data/policy writes remain authenticated.
+
+Questions are strictly 5–600 characters with no extra controls, body size is capped at 8 KiB, answers at 6,000 characters and responses at 64,000 bytes. Tool loops retain the four-turn/six-tool/five-provider-request bounds and one provider-quota retry. Private uploads and notes are outside public tools, and public usage never falls back to a paid provider.
+
+The existing database stores atomic fixed-window quota reservations: 3/client/600 seconds, 2/global/60 seconds and 30/global/86,400 seconds. All buckets commit together; failed reservations roll back every increment. Accepted attempts remain counted when the provider fails. Bucket state persists through worker/app restarts; expired rows are cleaned inside successful transactions. Raw IPs are not stored: the client identifier is a domain-separated HMAC using the existing server secret. Only runtime VERCEL=1 enables a single valid platform-overwritten X-Forwarded-For address; malformed, chained, duplicate or untrusted values fall back to the socket peer.
+
+Explicit cross-origin calls are rejected before body parsing. The exact request origin and the canonical HTTPS deployment origins are allowed, including when the ASGI backend scheme is HTTP. Nonbrowser calls without Origin receive the same quotas. Quota exhaustion returns 429 with Retry-After and a visible UI cooldown. Database or protection failure is closed with 503 before model invocation. Responses and errors use Cache-Control: no-store.
+
+Regression coverage includes anonymous model/tool roundtrip with actual persisted source records, private-upload exclusion, reservation-before-model, global/client/daily caps, restart persistence, eight-way atomic reservation concurrency, spoofed forwarded headers, cross-origin/input rejection, protected private writes, missing-secret and database failures, output budgets, and absence of raw IP storage. Provider replies are mocked only in unit tests; hosted evidence uses real Gemini.
+
+Verification so far: full suite 178 passed / 1 existing PostgreSQL-only skip, targeted public+quality suite 28 passed. Ruff, formatting and JavaScript syntax checks passed; locked runtime dependency audit found no known vulnerabilities. Public modules have no Bandit findings. Production HTTP and root-owned CUA browser evidence are recorded after deployment below.

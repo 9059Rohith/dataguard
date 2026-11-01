@@ -11,10 +11,18 @@ import uuid
 from datetime import UTC, datetime
 from pathlib import Path
 
-from fastapi import APIRouter, Depends, Header, HTTPException
+from fastapi import APIRouter, Depends, Header, HTTPException, Request
 from pydantic import BaseModel, ConfigDict, Field
 from sqlalchemy import JSON, Column, Float, MetaData, String, Table, insert, select
 from sqlalchemy.exc import IntegrityError
+
+from dataguard.public_demo import (
+    PUBLIC_LIMITS,
+    PublicQuota,
+    check_origin,
+    client_hash,
+    public_result,
+)
 
 schema = MetaData()
 captures = Table(
@@ -101,6 +109,11 @@ class IncidentNote(CaptureRef):
 class Investigation(BaseModel):
     model_config = ConfigDict(extra="forbid")
     question: str = Field(min_length=5, max_length=1500)
+
+
+class PublicInvestigation(BaseModel):
+    model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
+    question: str = Field(min_length=5, max_length=600, strict=True)
 
 
 def stamp():
@@ -220,6 +233,7 @@ class QualityStore:
 
     def initialize(self):
         schema.create_all(self.engine)
+        PublicQuota(self.engine).initialize()
         default = Contract().model_dump()
         for key, document in (("contract", default),):
             try:
@@ -419,8 +433,12 @@ def is_public_github_capture(document):
     )
 
 
-def investigate(store, question):
+def investigate(store, question, *, public_demo=False):
     configured = provider_settings()
+    if public_demo and not configured["public_data_only"]:
+        raise HTTPException(
+            503, "The free public investigator is unavailable. No paid provider will be used."
+        )
     public_only = configured["public_data_only"]
     key = os.getenv("GEMINI_API_KEY" if public_only else "OPENAI_API_KEY", "").strip()
     if not configured["configured"]:
@@ -573,7 +591,9 @@ def investigate(store, question):
                 if name == "list_captures" and args == {}:
                     evidence = [
                         {k: v for k, v in d.items() if k != "records"}
-                        for d in store.workspace(private=not public_only)["captures"]
+                        for d in store.workspace(private=not public_only)["captures"][
+                            : 6 if public_demo else 100
+                        ]
                         if not public_only or is_public_github_capture(d)
                     ]
                     inspected_evidence = True
@@ -629,7 +649,30 @@ def quality_router(store, authorize):
 
     @router.get("/provider")
     def provider():
-        return provider_settings()
+        return {
+            **provider_settings(),
+            "public_demo": {
+                "endpoint": "/api/quality/public-investigate",
+                "requires_authentication": False,
+                "configured": bool(os.getenv("GEMINI_API_KEY", "").strip()),
+                "question_max_characters": 600,
+                "limits": PUBLIC_LIMITS,
+                "limiter_backend": store.engine.dialect.name,
+                "proxy_identity_source": "vercel-single-forwarded-ip"
+                if os.getenv("VERCEL") == "1"
+                else "socket-peer",
+            },
+        }
+
+    @router.post("/public-investigate")
+    def public_agent(body: PublicInvestigation, request: Request):
+        check_origin(request)
+        if not os.getenv("GEMINI_API_KEY", "").strip():
+            raise HTTPException(
+                503, "The free public investigator is unavailable. No paid provider will be used."
+            )
+        quota = PublicQuota(store.engine).reserve(client_hash(request))
+        return public_result(investigate(store, body.question, public_demo=True), quota)
 
     @router.post("/uploads", status_code=201, dependencies=[Depends(authorize)])
     def upload(body: Upload):
