@@ -12,4 +12,4 @@ side-effect-free quality route, plus a dedicated page within the existing consol
 - [x] Implement the evaluator and guarded endpoint, verify tests turn green.
 - [x] Build paired accessible policy forms, source selector, evidence results, exports, and mobile CSS.
 - [x] Run complete Python suite, JS checks, lint/format/security, and bounded benchmark.
-- [ ] Deploy, verify ready and canonical public response, commit and push.
+- [x] Deploy, verify ready and canonical public response, commit and push.
