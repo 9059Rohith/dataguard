@@ -1,0 +1,1249 @@
+{
+  "verified_at": "2026-11-02T03:27:17.299757+00:00",
+  "base_url": "https://rohith-dataguard.vercel.app",
+  "checks": {
+    "ready": true,
+    "page_and_module": true,
+    "actual_source_rows": 8,
+    "transition_count_matches_source": true,
+    "reproducible_response": true,
+    "report_fingerprint": true,
+    "cross_origin_rejected": true,
+    "private_write_requires_authentication": true,
+    "stored_state_unchanged": true,
+    "fixed_gemini_model": true,
+    "persistent_ai_limits_unchanged": true,
+    "model_requests_made": 0
+  },
+  "public_captures": 2,
+  "report": {
+    "version": "1.0",
+    "analysis_at": "2026-11-02T03:27:13.827758+00:00",
+    "scope": "Acceptance criteria for this captured sample; not a software quality or security score.",
+    "capture": {
+      "id": "71623033-6147-4fa0-a5b6-2d0019ca5f7a",
+      "sha256": "54d89c05d727cef779eaf4148dd570d2fb21a3f3714cefab86621d44fdf71bd0",
+      "source": "https://api.github.com/repos/{owner}/{repo}",
+      "captured_at": "2026-11-01T18:16:18.944038+00:00",
+      "rows": 8,
+      "age_hours": 9.181912144444444
+    },
+    "baseline": {
+      "policy": {
+        "required_metadata": [
+          "id",
+          "full_name"
+        ],
+        "accepted_languages": [],
+        "reject_archived": false,
+        "max_push_age_hours": null,
+        "min_stars": 0,
+        "max_open_issues": null
+      },
+      "sha256": "f6696e64c0442c346425084ed1184d71da09f6e32ac632ff2f997652ee89aec9",
+      "rules": {
+        "metadata": {
+          "failed": 0,
+          "tested": 8,
+          "witnesses": [],
+          "enabled": true
+        },
+        "language": {
+          "failed": 0,
+          "tested": 8,
+          "witnesses": [],
+          "enabled": false
+        },
+        "archived": {
+          "failed": 0,
+          "tested": 8,
+          "witnesses": [],
+          "enabled": false
+        },
+        "freshness": {
+          "failed": 0,
+          "tested": 8,
+          "witnesses": [],
+          "enabled": false
+        },
+        "min_stars": {
+          "failed": 0,
+          "tested": 8,
+          "witnesses": [],
+          "enabled": true
+        },
+        "max_open_issues": {
+          "failed": 0,
+          "tested": 8,
+          "witnesses": [],
+          "enabled": false
+        }
+      },
+      "accepted": 8,
+      "rejected": 0
+    },
+    "candidate": {
+      "policy": {
+        "required_metadata": [
+          "id",
+          "full_name"
+        ],
+        "accepted_languages": [],
+        "reject_archived": false,
+        "max_push_age_hours": null,
+        "min_stars": 100000,
+        "max_open_issues": null
+      },
+      "sha256": "8d93f3f5b00b886aae20a2c54b187a6602d2fc1f318769236094a99fffc0c9f4",
+      "rules": {
+        "metadata": {
+          "failed": 0,
+          "tested": 8,
+          "witnesses": [],
+          "enabled": true
+        },
+        "language": {
+          "failed": 0,
+          "tested": 8,
+          "witnesses": [],
+          "enabled": false
+        },
+        "archived": {
+          "failed": 0,
+          "tested": 8,
+          "witnesses": [],
+          "enabled": false
+        },
+        "freshness": {
+          "failed": 0,
+          "tested": 8,
+          "witnesses": [],
+          "enabled": false
+        },
+        "min_stars": {
+          "failed": 7,
+          "tested": 8,
+          "witnesses": [
+            "pydantic/pydantic",
+            "sqlalchemy/sqlalchemy",
+            "Kludex/starlette",
+            "Kludex/uvicorn",
+            "prometheus/client_python",
+            "psycopg/psycopg",
+            "pytest-dev/pytest"
+          ],
+          "enabled": true
+        },
+        "max_open_issues": {
+          "failed": 0,
+          "tested": 8,
+          "witnesses": [],
+          "enabled": false
+        }
+      },
+      "accepted": 1,
+      "rejected": 7
+    },
+    "transitions": {
+      "accepted_to_accepted": 1,
+      "accepted_to_rejected": 7,
+      "rejected_to_accepted": 0,
+      "rejected_to_rejected": 0
+    },
+    "records": [
+      {
+        "index": 0,
+        "identity": "fastapi/fastapi",
+        "repository_id": 160919119,
+        "baseline": {
+          "accepted": true,
+          "checks": [
+            {
+              "rule": "metadata",
+              "actual": {
+                "id": 160919119,
+                "full_name": "fastapi/fastapi"
+              },
+              "expected": [
+                "id",
+                "full_name"
+              ],
+              "success": true,
+              "enabled": true,
+              "explanation": "Required metadata is present."
+            },
+            {
+              "rule": "language",
+              "actual": "Python",
+              "expected": [],
+              "success": true,
+              "enabled": false,
+              "explanation": "Any source language accepted."
+            },
+            {
+              "rule": "archived",
+              "actual": false,
+              "expected": "any",
+              "success": true,
+              "enabled": false,
+              "explanation": "Archive restriction disabled."
+            },
+            {
+              "rule": "freshness",
+              "actual": {
+                "pushed_at": "2026-11-01T12:15:51Z",
+                "age_hours": null
+              },
+              "expected": null,
+              "success": true,
+              "enabled": false,
+              "explanation": "Push freshness restriction disabled."
+            },
+            {
+              "rule": "min_stars",
+              "actual": 104531,
+              "expected": 0,
+              "success": true,
+              "enabled": true,
+              "explanation": "Source stars must be an integer \u2265 0."
+            },
+            {
+              "rule": "max_open_issues",
+              "actual": 77,
+              "expected": null,
+              "success": true,
+              "enabled": false,
+              "explanation": "Open issue count restriction disabled."
+            }
+          ]
+        },
+        "candidate": {
+          "accepted": true,
+          "checks": [
+            {
+              "rule": "metadata",
+              "actual": {
+                "id": 160919119,
+                "full_name": "fastapi/fastapi"
+              },
+              "expected": [
+                "id",
+                "full_name"
+              ],
+              "success": true,
+              "enabled": true,
+              "explanation": "Required metadata is present."
+            },
+            {
+              "rule": "language",
+              "actual": "Python",
+              "expected": [],
+              "success": true,
+              "enabled": false,
+              "explanation": "Any source language accepted."
+            },
+            {
+              "rule": "archived",
+              "actual": false,
+              "expected": "any",
+              "success": true,
+              "enabled": false,
+              "explanation": "Archive restriction disabled."
+            },
+            {
+              "rule": "freshness",
+              "actual": {
+                "pushed_at": "2026-11-01T12:15:51Z",
+                "age_hours": null
+              },
+              "expected": null,
+              "success": true,
+              "enabled": false,
+              "explanation": "Push freshness restriction disabled."
+            },
+            {
+              "rule": "min_stars",
+              "actual": 104531,
+              "expected": 100000,
+              "success": true,
+              "enabled": true,
+              "explanation": "Source stars must be an integer \u2265 100000."
+            },
+            {
+              "rule": "max_open_issues",
+              "actual": 77,
+              "expected": null,
+              "success": true,
+              "enabled": false,
+              "explanation": "Open issue count restriction disabled."
+            }
+          ]
+        },
+        "transition": "accepted_to_accepted"
+      },
+      {
+        "index": 1,
+        "identity": "pydantic/pydantic",
+        "repository_id": 90194616,
+        "baseline": {
+          "accepted": true,
+          "checks": [
+            {
+              "rule": "metadata",
+              "actual": {
+                "id": 90194616,
+                "full_name": "pydantic/pydantic"
+              },
+              "expected": [
+                "id",
+                "full_name"
+              ],
+              "success": true,
+              "enabled": true,
+              "explanation": "Required metadata is present."
+            },
+            {
+              "rule": "language",
+              "actual": "Python",
+              "expected": [],
+              "success": true,
+              "enabled": false,
+              "explanation": "Any source language accepted."
+            },
+            {
+              "rule": "archived",
+              "actual": false,
+              "expected": "any",
+              "success": true,
+              "enabled": false,
+              "explanation": "Archive restriction disabled."
+            },
+            {
+              "rule": "freshness",
+              "actual": {
+                "pushed_at": "2026-11-01T18:13:29Z",
+                "age_hours": null
+              },
+              "expected": null,
+              "success": true,
+              "enabled": false,
+              "explanation": "Push freshness restriction disabled."
+            },
+            {
+              "rule": "min_stars",
+              "actual": 29260,
+              "expected": 0,
+              "success": true,
+              "enabled": true,
+              "explanation": "Source stars must be an integer \u2265 0."
+            },
+            {
+              "rule": "max_open_issues",
+              "actual": 598,
+              "expected": null,
+              "success": true,
+              "enabled": false,
+              "explanation": "Open issue count restriction disabled."
+            }
+          ]
+        },
+        "candidate": {
+          "accepted": false,
+          "checks": [
+            {
+              "rule": "metadata",
+              "actual": {
+                "id": 90194616,
+                "full_name": "pydantic/pydantic"
+              },
+              "expected": [
+                "id",
+                "full_name"
+              ],
+              "success": true,
+              "enabled": true,
+              "explanation": "Required metadata is present."
+            },
+            {
+              "rule": "language",
+              "actual": "Python",
+              "expected": [],
+              "success": true,
+              "enabled": false,
+              "explanation": "Any source language accepted."
+            },
+            {
+              "rule": "archived",
+              "actual": false,
+              "expected": "any",
+              "success": true,
+              "enabled": false,
+              "explanation": "Archive restriction disabled."
+            },
+            {
+              "rule": "freshness",
+              "actual": {
+                "pushed_at": "2026-11-01T18:13:29Z",
+                "age_hours": null
+              },
+              "expected": null,
+              "success": true,
+              "enabled": false,
+              "explanation": "Push freshness restriction disabled."
+            },
+            {
+              "rule": "min_stars",
+              "actual": 29260,
+              "expected": 100000,
+              "success": false,
+              "enabled": true,
+              "explanation": "Source stars must be an integer \u2265 100000."
+            },
+            {
+              "rule": "max_open_issues",
+              "actual": 598,
+              "expected": null,
+              "success": true,
+              "enabled": false,
+              "explanation": "Open issue count restriction disabled."
+            }
+          ]
+        },
+        "transition": "accepted_to_rejected"
+      },
+      {
+        "index": 2,
+        "identity": "sqlalchemy/sqlalchemy",
+        "repository_id": 159271175,
+        "baseline": {
+          "accepted": true,
+          "checks": [
+            {
+              "rule": "metadata",
+              "actual": {
+                "id": 159271175,
+                "full_name": "sqlalchemy/sqlalchemy"
+              },
+              "expected": [
+                "id",
+                "full_name"
+              ],
+              "success": true,
+              "enabled": true,
+              "explanation": "Required metadata is present."
+            },
+            {
+              "rule": "language",
+              "actual": "Python",
+              "expected": [],
+              "success": true,
+              "enabled": false,
+              "explanation": "Any source language accepted."
+            },
+            {
+              "rule": "archived",
+              "actual": false,
+              "expected": "any",
+              "success": true,
+              "enabled": false,
+              "explanation": "Archive restriction disabled."
+            },
+            {
+              "rule": "freshness",
+              "actual": {
+                "pushed_at": "2026-11-01T15:19:46Z",
+                "age_hours": null
+              },
+              "expected": null,
+              "success": true,
+              "enabled": false,
+              "explanation": "Push freshness restriction disabled."
+            },
+            {
+              "rule": "min_stars",
+              "actual": 12276,
+              "expected": 0,
+              "success": true,
+              "enabled": true,
+              "explanation": "Source stars must be an integer \u2265 0."
+            },
+            {
+              "rule": "max_open_issues",
+              "actual": 214,
+              "expected": null,
+              "success": true,
+              "enabled": false,
+              "explanation": "Open issue count restriction disabled."
+            }
+          ]
+        },
+        "candidate": {
+          "accepted": false,
+          "checks": [
+            {
+              "rule": "metadata",
+              "actual": {
+                "id": 159271175,
+                "full_name": "sqlalchemy/sqlalchemy"
+              },
+              "expected": [
+                "id",
+                "full_name"
+              ],
+              "success": true,
+              "enabled": true,
+              "explanation": "Required metadata is present."
+            },
+            {
+              "rule": "language",
+              "actual": "Python",
+              "expected": [],
+              "success": true,
+              "enabled": false,
+              "explanation": "Any source language accepted."
+            },
+            {
+              "rule": "archived",
+              "actual": false,
+              "expected": "any",
+              "success": true,
+              "enabled": false,
+              "explanation": "Archive restriction disabled."
+            },
+            {
+              "rule": "freshness",
+              "actual": {
+                "pushed_at": "2026-11-01T15:19:46Z",
+                "age_hours": null
+              },
+              "expected": null,
+              "success": true,
+              "enabled": false,
+              "explanation": "Push freshness restriction disabled."
+            },
+            {
+              "rule": "min_stars",
+              "actual": 12276,
+              "expected": 100000,
+              "success": false,
+              "enabled": true,
+              "explanation": "Source stars must be an integer \u2265 100000."
+            },
+            {
+              "rule": "max_open_issues",
+              "actual": 214,
+              "expected": null,
+              "success": true,
+              "enabled": false,
+              "explanation": "Open issue count restriction disabled."
+            }
+          ]
+        },
+        "transition": "accepted_to_rejected"
+      },
+      {
+        "index": 3,
+        "identity": "Kludex/starlette",
+        "repository_id": 138597372,
+        "baseline": {
+          "accepted": true,
+          "checks": [
+            {
+              "rule": "metadata",
+              "actual": {
+                "id": 138597372,
+                "full_name": "Kludex/starlette"
+              },
+              "expected": [
+                "id",
+                "full_name"
+              ],
+              "success": true,
+              "enabled": true,
+              "explanation": "Required metadata is present."
+            },
+            {
+              "rule": "language",
+              "actual": "Python",
+              "expected": [],
+              "success": true,
+              "enabled": false,
+              "explanation": "Any source language accepted."
+            },
+            {
+              "rule": "archived",
+              "actual": false,
+              "expected": "any",
+              "success": true,
+              "enabled": false,
+              "explanation": "Archive restriction disabled."
+            },
+            {
+              "rule": "freshness",
+              "actual": {
+                "pushed_at": "2026-11-01T13:45:26Z",
+                "age_hours": null
+              },
+              "expected": null,
+              "success": true,
+              "enabled": false,
+              "explanation": "Push freshness restriction disabled."
+            },
+            {
+              "rule": "min_stars",
+              "actual": 12699,
+              "expected": 0,
+              "success": true,
+              "enabled": true,
+              "explanation": "Source stars must be an integer \u2265 0."
+            },
+            {
+              "rule": "max_open_issues",
+              "actual": 44,
+              "expected": null,
+              "success": true,
+              "enabled": false,
+              "explanation": "Open issue count restriction disabled."
+            }
+          ]
+        },
+        "candidate": {
+          "accepted": false,
+          "checks": [
+            {
+              "rule": "metadata",
+              "actual": {
+                "id": 138597372,
+                "full_name": "Kludex/starlette"
+              },
+              "expected": [
+                "id",
+                "full_name"
+              ],
+              "success": true,
+              "enabled": true,
+              "explanation": "Required metadata is present."
+            },
+            {
+              "rule": "language",
+              "actual": "Python",
+              "expected": [],
+              "success": true,
+              "enabled": false,
+              "explanation": "Any source language accepted."
+            },
+            {
+              "rule": "archived",
+              "actual": false,
+              "expected": "any",
+              "success": true,
+              "enabled": false,
+              "explanation": "Archive restriction disabled."
+            },
+            {
+              "rule": "freshness",
+              "actual": {
+                "pushed_at": "2026-11-01T13:45:26Z",
+                "age_hours": null
+              },
+              "expected": null,
+              "success": true,
+              "enabled": false,
+              "explanation": "Push freshness restriction disabled."
+            },
+            {
+              "rule": "min_stars",
+              "actual": 12699,
+              "expected": 100000,
+              "success": false,
+              "enabled": true,
+              "explanation": "Source stars must be an integer \u2265 100000."
+            },
+            {
+              "rule": "max_open_issues",
+              "actual": 44,
+              "expected": null,
+              "success": true,
+              "enabled": false,
+              "explanation": "Open issue count restriction disabled."
+            }
+          ]
+        },
+        "transition": "accepted_to_rejected"
+      },
+      {
+        "index": 4,
+        "identity": "Kludex/uvicorn",
+        "repository_id": 92946971,
+        "baseline": {
+          "accepted": true,
+          "checks": [
+            {
+              "rule": "metadata",
+              "actual": {
+                "id": 92946971,
+                "full_name": "Kludex/uvicorn"
+              },
+              "expected": [
+                "id",
+                "full_name"
+              ],
+              "success": true,
+              "enabled": true,
+              "explanation": "Required metadata is present."
+            },
+            {
+              "rule": "language",
+              "actual": "Python",
+              "expected": [],
+              "success": true,
+              "enabled": false,
+              "explanation": "Any source language accepted."
+            },
+            {
+              "rule": "archived",
+              "actual": false,
+              "expected": "any",
+              "success": true,
+              "enabled": false,
+              "explanation": "Archive restriction disabled."
+            },
+            {
+              "rule": "freshness",
+              "actual": {
+                "pushed_at": "2026-11-01T07:08:10Z",
+                "age_hours": null
+              },
+              "expected": null,
+              "success": true,
+              "enabled": false,
+              "explanation": "Push freshness restriction disabled."
+            },
+            {
+              "rule": "min_stars",
+              "actual": 11061,
+              "expected": 0,
+              "success": true,
+              "enabled": true,
+              "explanation": "Source stars must be an integer \u2265 0."
+            },
+            {
+              "rule": "max_open_issues",
+              "actual": 106,
+              "expected": null,
+              "success": true,
+              "enabled": false,
+              "explanation": "Open issue count restriction disabled."
+            }
+          ]
+        },
+        "candidate": {
+          "accepted": false,
+          "checks": [
+            {
+              "rule": "metadata",
+              "actual": {
+                "id": 92946971,
+                "full_name": "Kludex/uvicorn"
+              },
+              "expected": [
+                "id",
+                "full_name"
+              ],
+              "success": true,
+              "enabled": true,
+              "explanation": "Required metadata is present."
+            },
+            {
+              "rule": "language",
+              "actual": "Python",
+              "expected": [],
+              "success": true,
+              "enabled": false,
+              "explanation": "Any source language accepted."
+            },
+            {
+              "rule": "archived",
+              "actual": false,
+              "expected": "any",
+              "success": true,
+              "enabled": false,
+              "explanation": "Archive restriction disabled."
+            },
+            {
+              "rule": "freshness",
+              "actual": {
+                "pushed_at": "2026-11-01T07:08:10Z",
+                "age_hours": null
+              },
+              "expected": null,
+              "success": true,
+              "enabled": false,
+              "explanation": "Push freshness restriction disabled."
+            },
+            {
+              "rule": "min_stars",
+              "actual": 11061,
+              "expected": 100000,
+              "success": false,
+              "enabled": true,
+              "explanation": "Source stars must be an integer \u2265 100000."
+            },
+            {
+              "rule": "max_open_issues",
+              "actual": 106,
+              "expected": null,
+              "success": true,
+              "enabled": false,
+              "explanation": "Open issue count restriction disabled."
+            }
+          ]
+        },
+        "transition": "accepted_to_rejected"
+      },
+      {
+        "index": 5,
+        "identity": "prometheus/client_python",
+        "repository_id": 30618733,
+        "baseline": {
+          "accepted": true,
+          "checks": [
+            {
+              "rule": "metadata",
+              "actual": {
+                "id": 30618733,
+                "full_name": "prometheus/client_python"
+              },
+              "expected": [
+                "id",
+                "full_name"
+              ],
+              "success": true,
+              "enabled": true,
+              "explanation": "Required metadata is present."
+            },
+            {
+              "rule": "language",
+              "actual": "Python",
+              "expected": [],
+              "success": true,
+              "enabled": false,
+              "explanation": "Any source language accepted."
+            },
+            {
+              "rule": "archived",
+              "actual": false,
+              "expected": "any",
+              "success": true,
+              "enabled": false,
+              "explanation": "Archive restriction disabled."
+            },
+            {
+              "rule": "freshness",
+              "actual": {
+                "pushed_at": "2026-10-30T18:56:39Z",
+                "age_hours": null
+              },
+              "expected": null,
+              "success": true,
+              "enabled": false,
+              "explanation": "Push freshness restriction disabled."
+            },
+            {
+              "rule": "min_stars",
+              "actual": 4385,
+              "expected": 0,
+              "success": true,
+              "enabled": true,
+              "explanation": "Source stars must be an integer \u2265 0."
+            },
+            {
+              "rule": "max_open_issues",
+              "actual": 161,
+              "expected": null,
+              "success": true,
+              "enabled": false,
+              "explanation": "Open issue count restriction disabled."
+            }
+          ]
+        },
+        "candidate": {
+          "accepted": false,
+          "checks": [
+            {
+              "rule": "metadata",
+              "actual": {
+                "id": 30618733,
+                "full_name": "prometheus/client_python"
+              },
+              "expected": [
+                "id",
+                "full_name"
+              ],
+              "success": true,
+              "enabled": true,
+              "explanation": "Required metadata is present."
+            },
+            {
+              "rule": "language",
+              "actual": "Python",
+              "expected": [],
+              "success": true,
+              "enabled": false,
+              "explanation": "Any source language accepted."
+            },
+            {
+              "rule": "archived",
+              "actual": false,
+              "expected": "any",
+              "success": true,
+              "enabled": false,
+              "explanation": "Archive restriction disabled."
+            },
+            {
+              "rule": "freshness",
+              "actual": {
+                "pushed_at": "2026-10-30T18:56:39Z",
+                "age_hours": null
+              },
+              "expected": null,
+              "success": true,
+              "enabled": false,
+              "explanation": "Push freshness restriction disabled."
+            },
+            {
+              "rule": "min_stars",
+              "actual": 4385,
+              "expected": 100000,
+              "success": false,
+              "enabled": true,
+              "explanation": "Source stars must be an integer \u2265 100000."
+            },
+            {
+              "rule": "max_open_issues",
+              "actual": 161,
+              "expected": null,
+              "success": true,
+              "enabled": false,
+              "explanation": "Open issue count restriction disabled."
+            }
+          ]
+        },
+        "transition": "accepted_to_rejected"
+      },
+      {
+        "index": 6,
+        "identity": "psycopg/psycopg",
+        "repository_id": 247399816,
+        "baseline": {
+          "accepted": true,
+          "checks": [
+            {
+              "rule": "metadata",
+              "actual": {
+                "id": 247399816,
+                "full_name": "psycopg/psycopg"
+              },
+              "expected": [
+                "id",
+                "full_name"
+              ],
+              "success": true,
+              "enabled": true,
+              "explanation": "Required metadata is present."
+            },
+            {
+              "rule": "language",
+              "actual": "Python",
+              "expected": [],
+              "success": true,
+              "enabled": false,
+              "explanation": "Any source language accepted."
+            },
+            {
+              "rule": "archived",
+              "actual": false,
+              "expected": "any",
+              "success": true,
+              "enabled": false,
+              "explanation": "Archive restriction disabled."
+            },
+            {
+              "rule": "freshness",
+              "actual": {
+                "pushed_at": "2026-11-01T07:53:26Z",
+                "age_hours": null
+              },
+              "expected": null,
+              "success": true,
+              "enabled": false,
+              "explanation": "Push freshness restriction disabled."
+            },
+            {
+              "rule": "min_stars",
+              "actual": 2520,
+              "expected": 0,
+              "success": true,
+              "enabled": true,
+              "explanation": "Source stars must be an integer \u2265 0."
+            },
+            {
+              "rule": "max_open_issues",
+              "actual": 74,
+              "expected": null,
+              "success": true,
+              "enabled": false,
+              "explanation": "Open issue count restriction disabled."
+            }
+          ]
+        },
+        "candidate": {
+          "accepted": false,
+          "checks": [
+            {
+              "rule": "metadata",
+              "actual": {
+                "id": 247399816,
+                "full_name": "psycopg/psycopg"
+              },
+              "expected": [
+                "id",
+                "full_name"
+              ],
+              "success": true,
+              "enabled": true,
+              "explanation": "Required metadata is present."
+            },
+            {
+              "rule": "language",
+              "actual": "Python",
+              "expected": [],
+              "success": true,
+              "enabled": false,
+              "explanation": "Any source language accepted."
+            },
+            {
+              "rule": "archived",
+              "actual": false,
+              "expected": "any",
+              "success": true,
+              "enabled": false,
+              "explanation": "Archive restriction disabled."
+            },
+            {
+              "rule": "freshness",
+              "actual": {
+                "pushed_at": "2026-11-01T07:53:26Z",
+                "age_hours": null
+              },
+              "expected": null,
+              "success": true,
+              "enabled": false,
+              "explanation": "Push freshness restriction disabled."
+            },
+            {
+              "rule": "min_stars",
+              "actual": 2520,
+              "expected": 100000,
+              "success": false,
+              "enabled": true,
+              "explanation": "Source stars must be an integer \u2265 100000."
+            },
+            {
+              "rule": "max_open_issues",
+              "actual": 74,
+              "expected": null,
+              "success": true,
+              "enabled": false,
+              "explanation": "Open issue count restriction disabled."
+            }
+          ]
+        },
+        "transition": "accepted_to_rejected"
+      },
+      {
+        "index": 7,
+        "identity": "pytest-dev/pytest",
+        "repository_id": 37489525,
+        "baseline": {
+          "accepted": true,
+          "checks": [
+            {
+              "rule": "metadata",
+              "actual": {
+                "id": 37489525,
+                "full_name": "pytest-dev/pytest"
+              },
+              "expected": [
+                "id",
+                "full_name"
+              ],
+              "success": true,
+              "enabled": true,
+              "explanation": "Required metadata is present."
+            },
+            {
+              "rule": "language",
+              "actual": "Python",
+              "expected": [],
+              "success": true,
+              "enabled": false,
+              "explanation": "Any source language accepted."
+            },
+            {
+              "rule": "archived",
+              "actual": false,
+              "expected": "any",
+              "success": true,
+              "enabled": false,
+              "explanation": "Archive restriction disabled."
+            },
+            {
+              "rule": "freshness",
+              "actual": {
+                "pushed_at": "2026-11-01T00:30:53Z",
+                "age_hours": null
+              },
+              "expected": null,
+              "success": true,
+              "enabled": false,
+              "explanation": "Push freshness restriction disabled."
+            },
+            {
+              "rule": "min_stars",
+              "actual": 14660,
+              "expected": 0,
+              "success": true,
+              "enabled": true,
+              "explanation": "Source stars must be an integer \u2265 0."
+            },
+            {
+              "rule": "max_open_issues",
+              "actual": 915,
+              "expected": null,
+              "success": true,
+              "enabled": false,
+              "explanation": "Open issue count restriction disabled."
+            }
+          ]
+        },
+        "candidate": {
+          "accepted": false,
+          "checks": [
+            {
+              "rule": "metadata",
+              "actual": {
+                "id": 37489525,
+                "full_name": "pytest-dev/pytest"
+              },
+              "expected": [
+                "id",
+                "full_name"
+              ],
+              "success": true,
+              "enabled": true,
+              "explanation": "Required metadata is present."
+            },
+            {
+              "rule": "language",
+              "actual": "Python",
+              "expected": [],
+              "success": true,
+              "enabled": false,
+              "explanation": "Any source language accepted."
+            },
+            {
+              "rule": "archived",
+              "actual": false,
+              "expected": "any",
+              "success": true,
+              "enabled": false,
+              "explanation": "Archive restriction disabled."
+            },
+            {
+              "rule": "freshness",
+              "actual": {
+                "pushed_at": "2026-11-01T00:30:53Z",
+                "age_hours": null
+              },
+              "expected": null,
+              "success": true,
+              "enabled": false,
+              "explanation": "Push freshness restriction disabled."
+            },
+            {
+              "rule": "min_stars",
+              "actual": 14660,
+              "expected": 100000,
+              "success": false,
+              "enabled": true,
+              "explanation": "Source stars must be an integer \u2265 100000."
+            },
+            {
+              "rule": "max_open_issues",
+              "actual": 915,
+              "expected": null,
+              "success": true,
+              "enabled": false,
+              "explanation": "Open issue count restriction disabled."
+            }
+          ]
+        },
+        "transition": "accepted_to_rejected"
+      }
+    ],
+    "openlineage_facet": {
+      "_producer": "https://github.com/9059Rohith/dataguard",
+      "_schemaURL": "https://openlineage.io/spec/facets/1-1-0/DataQualityAssertionsDatasetFacet.json",
+      "assertions": [
+        {
+          "assertion": "metadata",
+          "name": "candidate_metadata",
+          "success": true,
+          "severity": "error",
+          "expected": "[\"id\", \"full_name\"]",
+          "actual": "0 of 8 repositories failed",
+          "description": "Candidate metadata acceptance criterion across this immutable capture.",
+          "contentType": "json",
+          "content": "{\"accepted_languages\": [], \"max_open_issues\": null, \"max_push_age_hours\": null, \"min_stars\": 100000, \"reject_archived\": false, \"required_metadata\": [\"id\", \"full_name\"]}",
+          "params": {
+            "capture_id": "71623033-6147-4fa0-a5b6-2d0019ca5f7a",
+            "capture_sha256": "54d89c05d727cef779eaf4148dd570d2fb21a3f3714cefab86621d44fdf71bd0",
+            "analysis_at": "2026-11-02T03:27:13.827758+00:00",
+            "policy_sha256": "8d93f3f5b00b886aae20a2c54b187a6602d2fc1f318769236094a99fffc0c9f4",
+            "enabled": true,
+            "witnesses": []
+          }
+        },
+        {
+          "assertion": "min_stars",
+          "name": "candidate_min_stars",
+          "success": false,
+          "severity": "error",
+          "expected": "100000",
+          "actual": "7 of 8 repositories failed",
+          "description": "Candidate min_stars acceptance criterion across this immutable capture.",
+          "contentType": "json",
+          "content": "{\"accepted_languages\": [], \"max_open_issues\": null, \"max_push_age_hours\": null, \"min_stars\": 100000, \"reject_archived\": false, \"required_metadata\": [\"id\", \"full_name\"]}",
+          "params": {
+            "capture_id": "71623033-6147-4fa0-a5b6-2d0019ca5f7a",
+            "capture_sha256": "54d89c05d727cef779eaf4148dd570d2fb21a3f3714cefab86621d44fdf71bd0",
+            "analysis_at": "2026-11-02T03:27:13.827758+00:00",
+            "policy_sha256": "8d93f3f5b00b886aae20a2c54b187a6602d2fc1f318769236094a99fffc0c9f4",
+            "enabled": true,
+            "witnesses": [
+              "pydantic/pydantic",
+              "sqlalchemy/sqlalchemy",
+              "Kludex/starlette",
+              "Kludex/uvicorn",
+              "prometheus/client_python",
+              "psycopg/psycopg",
+              "pytest-dev/pytest"
+            ]
+          }
+        }
+      ]
+    },
+    "sha256": "da78216d8293a1e5e679ce4418a6e26fb597fd93a0abd39a58b5711013aff62e"
+  }
+}

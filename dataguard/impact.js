@@ -72,7 +72,7 @@ globalThis.DataGuardImpact = (() => {
   function sourceNote() {
     const source = sources.find((c) => c.id === state.capture);
     if (!source) return "";
-    return `<span>CAPTURED ${esc(new Date(source.captured_at).toISOString().replace("T", " ").slice(0, 19))} UTC · ${source.row_count} RECORDS</span><code>${esc(source.digest)}</code><a href="/console/datasets">Browse source evidence →</a>`;
+    return `<span>CAPTURED ${esc(new Date(source.captured_at).toISOString().replace("T", " ").slice(0, 19))} UTC · ${source.row_count} RECORDS</span><code>${esc(source.digest)}</code><button type="button" class="impact-source-link" data-action="go-capture" data-page="datasets" data-id="${esc(source.id)}">Browse source evidence →</button>`;
   }
   function render(workspace, selected) {
     sources = workspace.captures.filter(
