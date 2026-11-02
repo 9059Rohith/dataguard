@@ -16,6 +16,7 @@ from pydantic import BaseModel, ConfigDict, Field
 from sqlalchemy import JSON, Column, Float, MetaData, String, Table, insert, select
 from sqlalchemy.exc import IntegrityError
 
+from dataguard.contract_impact import ContractImpactRequest, compare_contracts
 from dataguard.public_demo import (
     PUBLIC_LIMITS,
     PublicQuota,
@@ -638,6 +639,10 @@ def quality_router(store, authorize):
         if document["visibility"] != "public":
             authorize(authorization)
         return document
+
+    @router.post("/contract-impact")
+    def contract_impact(body: ContractImpactRequest):
+        return compare_contracts(store.get(body.capture_id), body)
 
     @router.get("/workspace")
     def workspace(authorization: str | None = Header(default=None)):

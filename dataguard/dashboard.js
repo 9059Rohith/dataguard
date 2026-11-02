@@ -22,6 +22,7 @@ const paths = {
   datasets:
     "M20 6c0 2-16 2-16 0s16-2 16 0v12c0 3-16 3-16 0V6 M4 12c0 3 16 3 16 0",
   contracts: "M8 3H5v18h14V3h-3 M9 2h6v4H9z M8 11h8 M8 15h6",
+  impact: "M4 4h6v16H4z M14 4h6v16h-6z M10 12h4 m-2-2 2 2-2 2",
   checks: "m4 12 5 5L20 6 M3 3h6 M3 3v6 M21 21h-6 M21 21v-6",
   batches: "M4 3h16v5H4z M4 11h16v10H4z M8 15h8 M8 18h5",
   quarantine: "M12 3 3 7v6c0 5 9 9 9 9s9-4 9-9V7L12 3 M12 8v5 M12 16h.01",
@@ -52,6 +53,7 @@ const pages = [
   ["overview", "Overview"],
   ["datasets", "Datasets"],
   ["contracts", "Contracts"],
+  ["impact", "Contract impact"],
   ["checks", "Quality checks"],
   ["batches", "Capture history"],
   ["quarantine", "Quarantine"],
@@ -346,7 +348,8 @@ function contracts() {
     heading(
       "Define what good looks like.",
       "One explicit contract. Repeatable checks. A permanent record of what was evaluated.",
-      link("checks", "See quality results"),
+      link("impact", "Explore contract impact") +
+        link("checks", "See quality results"),
     ) +
     `<div class="contract-layout"><div class="panel"><div class="contract-intro"><h2>Repository metadata contract</h2><p>Updates apply to new evaluations. Existing capture results retain their original contract.</p></div><form id="contract-form" class="form-body"><div class="form-two"><div class="form-field"><label for="min-rows">Minimum records</label><input type="number" id="min-rows" name="min_rows" value="${r.min_rows}" min="1" max="500" required><p>Quarantine captures below this volume.</p></div><div class="form-field"><label for="max-age">Maximum capture age <small>hours</small></label><input type="number" id="max-age" name="max_age_hours" value="${r.max_age_hours}" min="1" max="8760" required><p>Freshness uses the original source capture time.</p></div></div><div class="checkbox-row"><input type="checkbox" id="require-license" name="require_license" ${r.require_license ? "checked" : ""}><div><label for="require-license">Require license metadata</label><p>Flag records without a source license object. Presence is metadata evidence, not a legal determination.</p></div></div><div class="checkbox-row"><input type="checkbox" id="reject-archived" name="reject_archived" ${r.reject_archived ? "checked" : ""}><div><label for="reject-archived">Allow active repositories only</label><p>Require archived to be explicitly false for every record.</p></div></div><div class="form-actions"><button class="button primary" type="submit">Save contract ${icon("check", 14)}</button><p>${token ? "Connected operator" : "Operator access required to save"}</p></div><p class="form-error" id="contract-error" role="alert"></p></form></div><div><div class="code-panel"><h3>Current contract · JSON</h3><pre>${escape(JSON.stringify(r, null, 2))}</pre><div class="code-note">Contract settings persist in ${escape(workspace.storage)}. Saving a new contract never rewrites previous evidence.</div></div>${section("Always-on checks")}<ol class="rule-list">${[
       ["Required fields", "schema"],
@@ -750,6 +753,7 @@ function settings() {
   );
 }
 const renderers = {
+  impact: () => DataGuardImpact.render(workspace, selectedId),
   overview,
   datasets,
   contracts,
@@ -812,7 +816,7 @@ function render() {
   $("#navigation").innerHTML = pages
     .map(
       ([key, label], i) =>
-        (i === 8
+        (key === "incidents"
           ? '<div class="nav-divider"></div><div class="nav-caption">TOOLS</div>'
           : "") +
         `<a href="/console/${key}" ${key === page ? 'class="active" aria-current="page"' : ""}>${icon(key, 15)}<span>${label}</span>${key === "quarantine" && workspace.captures.some((c) => c.status === "quarantined") ? `<span class="nav-number">${workspace.captures.filter((c) => c.status === "quarantined").length}</span>` : ""}</a>`,

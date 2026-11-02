@@ -6,6 +6,7 @@ from starlette.exceptions import HTTPException
 from starlette.requests import Request
 from starlette.responses import JSONResponse
 
+from dataguard.contract_impact import IMPACT_MAX_BYTES, IMPACT_PATH
 from dataguard.limits import MAX_BODY_BYTES, check_json_structure
 from dataguard.policy_io import POLICY_MAX_BYTES, decode_policy_json
 from dataguard.public_demo import PUBLIC_BODY_BYTES, PUBLIC_INVESTIGATE_PATH, check_origin
@@ -52,9 +53,10 @@ class RequestGuard:
                 return
         mutation = method in {"POST", "PUT", "PATCH", "DELETE"}
         public_investigation = method == "POST" and path == PUBLIC_INVESTIGATE_PATH
+        public_impact = method == "POST" and path == IMPACT_PATH
         policy_request = path == "/policies/impact"
         if mutation:
-            if not public_investigation:
+            if not (public_investigation or public_impact):
                 try:
                     self.authorize(headers.get("authorization"))
                 except HTTPException as error:
@@ -66,8 +68,9 @@ class RequestGuard:
                 except HTTPException as error:
                     await reject(error.status_code, error.detail, error.headers)
                     return
-                if length is not None and int(length) > PUBLIC_BODY_BYTES:
-                    await reject(413, "Public investigation body exceeds 8 KiB")
+                public_limit = IMPACT_MAX_BYTES if public_impact else PUBLIC_BODY_BYTES
+                if length is not None and int(length) > public_limit:
+                    await reject(413, "Public request body exceeds limit")
                     return
             if policy_request and length is not None and int(length) > POLICY_MAX_BYTES:
                 await reject(413, "Policy document exceeds 64 KiB")
@@ -96,8 +99,10 @@ class RequestGuard:
                                 return
                             chunk = message.get("body", b"")
                             body_limit = (
-                                PUBLIC_BODY_BYTES
-                                if public_investigation
+                                IMPACT_MAX_BYTES
+                                if public_impact
+                                else PUBLIC_BODY_BYTES
+                                if public_investigation or public_impact
                                 else (POLICY_MAX_BYTES if policy_request else MAX_BODY_BYTES)
                             )
                             if len(chunk) > body_limit - len(body):
@@ -116,11 +121,16 @@ class RequestGuard:
                 except ValueError:
                     await reject(413, "JSON nesting or structural limit exceeded")
                     return
-                if policy_request:
+                if policy_request or public_impact:
                     try:
                         decode_policy_json(raw)
                     except ValueError:
-                        await reject(422, "Invalid policy request")
+                        await reject(
+                            422,
+                            "Invalid public contract request"
+                            if public_impact
+                            else "Invalid policy request",
+                        )
                         return
                 replayed = False
 

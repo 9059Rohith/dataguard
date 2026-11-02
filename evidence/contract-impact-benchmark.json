@@ -1,0 +1,15 @@
+{
+  "measured_at": "2026-11-02T03:23:54.767902+00:00",
+  "python": "3.12.14",
+  "platform": "Windows",
+  "samples": 1000,
+  "rows": 8,
+  "rules_per_policy": 6,
+  "capture_sha256": "4b0ef1068f5dd661382c1614477aedcb4f874fb5a7fc7e9211e17a03d42ad6f8",
+  "median_ms": 1.2197500036563724,
+  "p95_ms": 2.109499997459352,
+  "max_ms": 841.8502999993507,
+  "first_sample_including_imports_ms": 841.8502999993507,
+  "candidate_accepted": 8,
+  "notes": "Local evaluator elapsed time, including first lazy imports; excludes HTTP and database latency."
+}

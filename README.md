@@ -229,6 +229,21 @@ The suite refuses PostgreSQL test database names without `_test`. Create the DB 
 
 Hosted GitHub Actions are currently blocked by an account-level runner restriction. Definitions exist for SQLite/PostgreSQL tests, lint, audit, Airflow DAG import, container scanning and Terraform validation; executed local evidence is reported independently. No passing hosted badge is claimed.
 
+## Public Contract Impact Workbench
+
+Open [Contract impact](https://rohith-dataguard.vercel.app/console/impact) to compare your own
+baseline and candidate acceptance criteria against one actual immutable GitHub capture.
+Six bounded rules cover metadata, language, archived status, source push freshness, stars,
+and open issues. The explicit UTC clock makes historical and current-age analyses reproducible.
+Results show accepted/rejected transitions, exact per-record evidence, rule witnesses, and source
+and policy SHA-256 fingerprints. Download the complete report or an OpenLineage dataset assertion
+facet validated against the vendored official schema. Disabled rules are omitted from that facet.
+
+This public, side-effect-free experiment does not change stored contracts, inspect private uploads,
+call an AI model, or use investigator quota. Criteria express the visitor's selection preferences;
+they do not rate software quality or security. [Design and primary sources](docs/contract-impact-design.md),
+[API tests](tests/test_contract_impact.py), [measured local benchmark](evidence/contract-impact-benchmark.json).
+
 ## Live, local, or configuration only?
 
 | Scope | Status and boundary |

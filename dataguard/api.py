@@ -201,6 +201,11 @@ def create_app(url=None):
 
     @app.exception_handler(RequestValidationError)
     async def validation_error(request, error):
+        if (
+            request.url.path.removeprefix(request.scope.get("root_path", ""))
+            == "/api/quality/contract-impact"
+        ):
+            return JSONResponse({"detail": "Invalid public contract request"}, status_code=422)
         if request.url.path.removeprefix(request.scope.get("root_path", "")) == "/policies/impact":
             # Pydantic default errors reflect rejected values, discriminator tags and keys.
             return JSONResponse({"detail": "Invalid policy request"}, status_code=422)
@@ -298,6 +303,7 @@ def create_app(url=None):
             "overview",
             "datasets",
             "contracts",
+            "impact",
             "checks",
             "batches",
             "quarantine",
@@ -323,6 +329,13 @@ def create_app(url=None):
     def script():
         return Response(
             Path(__file__).with_name("dashboard.js").read_text(encoding="utf-8"),
+            media_type="text/javascript",
+        )
+
+    @app.get("/impact.js")
+    def impact_script():
+        return Response(
+            Path(__file__).with_name("impact.js").read_text(encoding="utf-8"),
             media_type="text/javascript",
         )
 

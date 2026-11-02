@@ -10,7 +10,7 @@ requires-python = ">=3.12"
 dependencies = ["fastapi>=0.115,<1", "uvicorn>=0.32,<1", "sqlalchemy>=2.0,<3", "psycopg[binary]>=3.2,<4", "prometheus-client>=0.21,<1", "anyio>=4.10,<5"]
 
 [project.optional-dependencies]
-dev = ["pytest>=8,<10", "httpx>=0.28,<1", "httpx2", "ruff>=0.12,<1", "pip-audit>=2.9,<3", "bandit>=1.8,<2"]
+dev = ["pytest>=8,<10", "httpx>=0.28,<1", "httpx2", "ruff>=0.12,<1", "pip-audit>=2.9,<3", "bandit>=1.8,<2", "jsonschema>=4.26,<5"]
 airflow = ["apache-airflow>=3.1,<4"]
 
 [project.scripts]
