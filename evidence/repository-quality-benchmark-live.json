@@ -1,0 +1,60 @@
+{
+  "verified_at": "2026-11-04T13:24:55.939241+00:00",
+  "canonical": "https://rohith-dataguard.vercel.app",
+  "deployment_id": "dpl_7tQyQAR3A4Rt3ayheympRP98bow6",
+  "runtime_source_commit": "146f171ade64",
+  "http_200": [
+    "/ready",
+    "/console/checks",
+    "/dashboard.js",
+    "/api/quality/benchmark?policy=baseline",
+    "/api/quality/benchmark?policy=strict",
+    "/api/quality/benchmark/artifacts/source",
+    "/api/quality/benchmark/artifacts/report"
+  ],
+  "all_responses_no_store": true,
+  "source_sha256": "319786d03ccb4c50a579a4bb1fb69e3a0f4887411b8e8909dd876139b80f24a1",
+  "source_rows": 500,
+  "distinct_source_ids": 500,
+  "downloaded_artifacts_match_committed_json": true,
+  "artifacts_sha256": {
+    "source": "7377c568dc1671ff562d5dba73fdca4de8fb918b6f94d457eb04a54687a05bb5",
+    "report": "8f2ff749e687bf5837488fd2dfdf0fb3345bd71fd1d9e09815fdd125a9f724d5"
+  },
+  "replay_outcomes": {
+    "baseline": "published",
+    "strict": "quarantined"
+  },
+  "strict_failed": {
+    "license": 96,
+    "archived": 177
+  },
+  "workspace_storage": "PostgreSQL",
+  "workspace_public_captures": 2,
+  "workspace_content_and_recovery_reference_unchanged": true,
+  "samples_per_database_and_operation": 30,
+  "measured_operations": [
+    "upload_and_publish",
+    "recheck_and_quarantine",
+    "blocked_recovery",
+    "accepted_recovery"
+  ],
+  "local_tests": {
+    "full_postgresql_passed": 195,
+    "focused_passed": 34,
+    "skipped": 0
+  },
+  "browser": {
+    "path": "/console/checks",
+    "policies_exercised": [
+      "baseline",
+      "strict"
+    ],
+    "expected_statuses_verified": true,
+    "strict_counts_and_witnesses_visible": true,
+    "screenshots": [
+      "repository-quality-benchmark-live.jpg",
+      "repository-quality-benchmark-witnesses.jpg"
+    ]
+  }
+}
