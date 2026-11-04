@@ -3853,6 +3853,67 @@ dialog input {
     scroll-behavior: auto !important;
   }
 }
+.quality-benchmark {
+  margin-bottom: 24px;
+}
+.quality-benchmark h2 {
+  font: 400 clamp(30px, 4vw, 44px)/1.06 var(--serif);
+  margin: 8px 0 12px;
+}
+.quality-benchmark p {
+  color: var(--muted);
+  line-height: 1.7;
+}
+.benchmark-controls {
+  display: flex;
+  align-items: end;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 20px 0 12px;
+}
+.benchmark-controls label {
+  min-width: 0;
+  max-width: 100%;
+  margin: 0;
+}
+.benchmark-controls select {
+  display: block;
+  margin-top: 5px;
+  width: min(100%, 345px);
+}
+.benchmark-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+}
+.benchmark-replay {
+  border-top: 1px solid var(--line);
+  padding-top: 18px;
+  margin-top: 18px;
+}
+.benchmark-replay h3 {
+  font: 400 28px/1.15 var(--serif);
+  margin: 0;
+}
+.benchmark-replay ul {
+  padding: 0;
+  list-style: none;
+}
+.benchmark-replay li {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--line);
+}
+.benchmark-replay li p {
+  margin: 4px 0 0;
+  overflow-wrap: anywhere;
+}
+.benchmark-digest {
+  overflow-wrap: anywhere;
+  font-size: 11px;
+}
 .check-summary {
   display: flex;
   align-items: center;

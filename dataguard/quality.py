@@ -136,8 +136,9 @@ def parse_time(value):
     return parsed
 
 
-def evaluate(records, captured_at, contract):
+def evaluate(records, captured_at, contract, *, as_of=None):
     """Every result is computed from input records; failure indices make checks auditable."""
+    as_of = datetime.now(UTC) if as_of is None else as_of
     required = ("id", "full_name", "updated_at", "stargazers_count", "open_issues_count")
     results = []
 
@@ -193,7 +194,7 @@ def evaluate(records, captured_at, contract):
     invalid_times = []
     for i, row in enumerate(records):
         try:
-            if parse_time(row.get("updated_at")).timestamp() > time.time() + 300:
+            if parse_time(row.get("updated_at")).timestamp() > as_of.timestamp() + 300:
                 invalid_times.append(i)
         except (ValueError, TypeError, OverflowError):
             invalid_times.append(i)
@@ -203,12 +204,12 @@ def evaluate(records, captured_at, contract):
         invalid_times,
         "updated_at must be timezone-aware and no more than five minutes in the future.",
     )
-    age = max(0, (datetime.now(UTC) - parse_time(captured_at)).total_seconds() / 3600)
+    age = max(0, (as_of - parse_time(captured_at)).total_seconds() / 3600)
     result(
         "freshness",
         "Capture freshness",
         [0] if age > contract["max_age_hours"] else [],
-        f"Capture age {age:.2f}h; limit {contract['max_age_hours']}h. Evaluated at {stamp()}.",
+        f"Capture age {age:.2f}h; limit {contract['max_age_hours']}h. Evaluated at {as_of.isoformat()}.",
         1,
     )
     if contract["require_license"]:

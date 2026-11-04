@@ -8,11 +8,11 @@
 
 ## Repository quality workspace
 
-The public workspace has 13 separate routes: overview, datasets, contracts, quality checks, capture history, quarantine, version comparison, data lineage, incidents, recovery, AI investigator, connections, and settings. Every visible repository count is sourced from actual GitHub REST responses. The bundled capture was collected on 1 November 2026; capture and evaluation timestamps are displayed, and freshness is re-evaluated explicitly rather than presented as continuously live.
+The public workspace has 14 routes, including the contract impact workbench, quality checks, capture history, version comparison, lineage and AI investigator. Repository counts come from captured GitHub REST responses. The bundled workspace capture was collected on 1 November 2026. The interface displays capture and evaluation timestamps and makes freshness checks explicit.
 
 The editorial interface uses self-hosted Instrument Serif and Manrope, an ivory-and-forest audit ledger, thin-rule source tables, and a visible provenance trail. Search and sort actual records, open a source detail drawer, then follow that record into its stored checks or prepare a public-data investigation. Capture history supports text and status filters. AI findings support safe Markdown, source links, and capture citations that open the corresponding evidence drawer. Mobile navigation supports Escape, focus containment, and reduced motion. The [design concepts and verification](evidence/design/IMPLEMENTATION.md) document the visual system and its checks.
 
-The source is a fixed, bounded collection of eight public repositories: FastAPI, Pydantic, SQLAlchemy, Starlette, Uvicorn, Prometheus Python client, Psycopg, and Pytest. The collection is an intentional Python infrastructure sample, not a representative ecosystem survey. GitHub open issue counts include pull requests. The normalized source records and provenance are committed in `dataguard/source_capture.json`. See the [GitHub repository API](https://docs.github.com/en/rest/repos/repos#get-a-repository).
+The workspace and investigator use eight allowlisted public repositories covering FastAPI, Pydantic, SQLAlchemy, Starlette, Uvicorn, Prometheus Python client, Psycopg, and Pytest. GitHub open issue counts include pull requests. The separate Apache benchmark has its own source artifact and scope. [Workspace capture](dataguard/source_capture.json) · [GitHub repository API](https://docs.github.com/en/rest/repos/repos#get-a-repository)
 
 - Public visitors can inspect source records, filter them, inspect check evidence, compare versions, trace lineage, export actual JSON evidence, and run the limited public AI investigation without an account or bearer token.
 - Operators connect using the existing `DATAGUARD_TOKEN` bearer credential. It stays in tab memory and clears on reload.
@@ -191,28 +191,22 @@ Comparison requires a committed `published` attempt for **both** IDs in the requ
 
 Missing/blank/short configured tokens fail closed with 503; invalid credentials return 401. Key conflicts/active leases return 409. Contract failure is a persisted `rejected` result. CLI/Airflow are trusted DB clients, using DB credentials rather than the HTTP token. The [Airflow 3 DAG](dags/dataguard_pipeline.py) stages a mounted artifact and publishes its ID; scheduler/workers are separate from the API image.
 
-## Measurements and verification
+## Real-source benchmark and verification
 
-Each microbenchmark has 100 samples, 100 trades + one settlement per batch, one sequential client and nearest-rank percentiles. Raw measurements/timestamps are committed. These are separate environments, not a controlled database comparison.
+Replay the quality contract against 500 distinct Apache repositories captured from the GitHub REST API on 4 November 2026. The baseline passes six checks. The strict policy quarantines the same data because 96 repositories lack license metadata and 177 are archived. The live panel shows the exact source fingerprint, affected repository examples, and downloadable source and measurement files. [Run the live replay](https://rohith-dataguard.vercel.app/console/checks) · [Method and provenance](docs/repository-quality-benchmark.md)
 
-| Stage + validate + publish environment | p50 | p95 | p99 | Evidence |
-|---|---:|---:|---:|---|
-| SQLite; Windows 11, Python 3.12.14 | 42.267 ms | 56.033 ms | 60.838 ms | [Raw SQLite run](evidence/sqlite-benchmark.json) |
-| Local PostgreSQL; Windows 11, Python 3.12.14 | 151.880 ms | 319.956 ms | 396.599 ms | [Raw PostgreSQL run](evidence/postgres-benchmark.json) |
-| PostgreSQL; WSL2 Linux minimal container, Python 3.15.1 | 34.884 ms | 57.207 ms | 86.589 ms | [Native runtime run](evidence/minimal-runtime-pg.json) |
+The measured workflow uses the existing authenticated upload, recheck and recovery endpoints against fresh local SQLite and PostgreSQL databases. The harness checks publication, quarantine under a stricter policy, a blocked recovery with an unchanged reference, and a successful recovery after restoring the baseline. The report contains 30 observations per operation and database, raw timings and percentile calculations. [Measured report](dataguard/quality_benchmark_report.json)
 
-Timings exclude HTTP/network/client serialization. Recovery measurements include child startup and lease waiting. They do not establish load capacity, production SLOs, failover behavior or comparison latency. [Public release checks](evidence/public-release-verification.json) separately record auth boundaries and a small 12-request warm HTTPS sample from India; that is not a load test.
+| Operation | SQLite 3.53.1 p95 | PostgreSQL 18.2 p95 |
+|---|---:|---:|
+| Upload and publish 500 records | 238.53 ms | 337.12 ms |
+| Recheck and quarantine 500 records | 128.42 ms | 179.05 ms |
+| Block recovery under the strict contract | 47.88 ms | 100.22 ms |
+| Persist recovery under the baseline contract | 61.21 ms | 134.46 ms |
 
-The first comparison implementation exposed 15.17s and 36.05s first-read tails in [unfiltered 50-sample runs](evidence/comparison-native-pg.json), [including concurrent-suite results](evidence/comparison-native-pg-contended.json). Investigation found two nested loops repeatedly scanning batch ranges, rather than JIT overhead: the [actual before plan](evidence/comparison-plan-before.json) recorded roughly 100 million rejected join candidates. The implementation now uses a join-free union/group aggregation; a PostgreSQL regression test measures actual plan work under unfavorable join-planner settings.
+The measurements use a single sequential in-process client on Windows 11 and Python 3.12.14. Each timing covers the API request through its response and includes the local database operations. [Protocol and limits](docs/repository-quality-benchmark.md)
 
-One before/after experiment executed `EXPLAIN ANALYZE` on the **first trade-comparison statement for freshly published 10,000-trade versions**, with one settlement/version. Python 3.15.1, PostgreSQL 16.13, WSL2 Linux, Intel Ultra 7 155H host; same admitted row counts and method, no warm-up or percentile claim:
-
-| First trade-comparison statement | Server execution | Instrumented plan work* | Evidence |
-|---|---:|---:|---|
-| Before: record self joins | 40,755.019 ms | 200,070,004 | [Full before plan](evidence/comparison-plan-before.json) |
-| After: union + per-ID aggregation | 43.985 ms | 90,001 | [Full after plan and native HTTP proofs](evidence/comparison-plan-after.json) |
-
-\* Sum of reported rows/filter candidates × loops across plan nodes, not distinct rows or physical reads. This instrumented single observation excludes provenance lookup, settlement comparison, HTTP and publication; it establishes removal of repeated scans, not a production latency guarantee. All older raw tails remain committed. [Host observation](evidence/comparison-host-observation.json) is a point-in-time snapshot. Native same-pair checks verify correct counts, bounded output, head preservation and private HTTP boundaries after the rewrite.
+The legacy settlement comparison artifacts document synthetic engineering regression tests separately. [Comparison verification](evidence/comparison-verification.md) · [Security evidence](evidence/public-security.md)
 
 ```powershell
 .\.venv\Scripts\python.exe -m pytest -q
@@ -225,7 +219,7 @@ $env:TEST_DATABASE_URL = "postgresql+psycopg://dataguard:$env:POSTGRES_PASSWORD@
 .\.venv\Scripts\python.exe -m pytest -q
 ```
 
-The suite refuses PostgreSQL test database names without `_test`. Create the DB only once; never use the live DB. Current local evidence: 71 SQLite passes + one PG-only skip, 72 PostgreSQL passes, and all 72 tests passing in the actual minimal Python 3.15.1 image. [Comparison verification](evidence/comparison-verification.md) records red/green, native execution and package/image context. [Security evidence](evidence/public-security.md) covers pre-body authentication, upload/JSON/deadline/capacity bounds and seed restart behavior.
+The suite refuses PostgreSQL test database names without `_test`. Create a dedicated test database and set `TEST_DATABASE_URL` only for that disposable database.
 
 Hosted GitHub Actions are currently blocked by an account-level runner restriction. Definitions exist for SQLite/PostgreSQL tests, lint, audit, Airflow DAG import, container scanning and Terraform validation; executed local evidence is reported independently. No passing hosted badge is claimed.
 

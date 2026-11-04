@@ -23,6 +23,7 @@ from dataguard.guard import RequestGuard
 from dataguard.policy_engine import PolicyBudgetExceeded, PolicyLab
 from dataguard.policy_models import ImpactReport, ImpactRequest
 from dataguard.quality import QualityStore, quality_router
+from dataguard.quality_benchmark import router as quality_benchmark_router
 from dataguard.service import Busy, Conflict, Pipeline
 
 BatchId = Annotated[int, PathParameter(ge=1, le=2_147_483_647)]
@@ -152,6 +153,7 @@ def create_app(url=None):
     app.state.pipeline = pipeline
     app.state.quality = quality
     app.include_router(quality_router(quality, authorize))
+    app.include_router(quality_benchmark_router)
     app.state.request_limiter = anyio.CapacityLimiter(4)
     app.state.body_timeout_seconds = 10.0
 

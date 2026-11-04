@@ -378,8 +378,45 @@ function checks() {
       ),
     ) +
     selector() +
-    `<div class="check-summary"><div><strong>${c.checks.filter((check) => !check.failed).length}<span>/${c.checks.length}</span></strong><p>Recorded checks passed</p></div><div class="check-matrix">${c.checks.map((check) => `<a href="#check-${check.key}" class="${check.failed ? "failed" : ""}">${icon(check.failed ? "close" : "check", 15)}<span>${escape(check.title)}</span></a>`).join("")}</div></div><div class="toolbar"><div class="right"><span>Evaluated ${date(c.evaluated_at)}</span></div><select id="check-filter" aria-label="Filter quality checks"><option value="all">All checks</option><option value="failed">Failed only</option><option value="passed">Passed only</option></select></div><div id="check-list" class="check-list">${checkRows(c)}</div><div class="privacy-stamp">${icon("info", 13)} Historical results are frozen at evaluation time. Re-evaluate to check current freshness.</div>`
+    `<div class="check-summary"><div><strong>${c.checks.filter((check) => !check.failed).length}<span>/${c.checks.length}</span></strong><p>Recorded checks passed</p></div><div class="check-matrix">${c.checks.map((check) => `<a href="#check-${check.key}" class="${check.failed ? "failed" : ""}">${icon(check.failed ? "close" : "check", 15)}<span>${escape(check.title)}</span></a>`).join("")}</div></div>${qualityBenchmark()}<div class="toolbar"><div class="right"><span>Evaluated ${date(c.evaluated_at)}</span></div><select id="check-filter" aria-label="Filter quality checks"><option value="all">All checks</option><option value="failed">Failed only</option><option value="passed">Passed only</option></select></div><div id="check-list" class="check-list">${checkRows(c)}</div><div class="privacy-stamp">${icon("info", 13)} Historical results are frozen at evaluation time. Re-evaluate to check current freshness.</div>`
   );
+}
+function qualityBenchmark() {
+  return `<section class="panel panel-pad quality-benchmark" id="quality-benchmark" aria-labelledby="quality-benchmark-title">
+    <span class="mini-label">Reproducible source benchmark</span>
+    <h2 id="quality-benchmark-title">The contract at 500 repositories.</h2>
+    <p>Replay DataGuard’s checks over 500 distinct public Apache repositories from the GitHub REST API. Change the contract and see which actual rows fail.</p>
+    <form id="quality-benchmark-form" class="benchmark-controls">
+      <label>Replay policy<select name="policy"><option value="baseline">Baseline · minimum 500 records</option><option value="strict">Strict · license and active status</option></select></label>
+      <button class="button primary" type="submit">Replay source checks ${icon("arrow", 16)}</button>
+    </form>
+    <div class="benchmark-links"><a class="text-link" href="/api/quality/benchmark/artifacts/source">Download pinned source</a><a class="text-link" href="/api/quality/benchmark/artifacts/report">Download benchmark measurements</a></div>
+    <div id="quality-benchmark-result" aria-live="polite"></div>
+  </section>`;
+}
+function renderQualityBenchmark(replay, report) {
+  const checkItems = replay.checks
+    .map(
+      (check) =>
+        `<li>${pill(check.failed ? "Failed" : "Passed", check.failed ? "bad" : "")} <div><strong>${escape(check.title)}</strong><p>${number(check.failed)} of ${number(check.tested)} failed${check.examples.length ? ` · ${check.examples.map(escape).join(", ")}` : ""}</p></div></li>`,
+    )
+    .join("");
+  const operations = [
+    ["upload_and_publish", "Upload and publish"],
+    ["recheck_and_quarantine", "Recheck and quarantine"],
+    ["blocked_recovery", "Blocked recovery"],
+    ["accepted_recovery", "Accepted recovery"],
+  ];
+  const rows = report.runs
+    .flatMap((run) =>
+      operations.map(([key, label]) => {
+        const values = run.operations[key];
+        return `<tr><td>${escape(run.database)} ${escape(run.database_version)}</td><td>${label}</td><td>${number(run.samples_per_operation)}</td><td>${values.median_ms.toFixed(2)} ms</td><td>${values.p95_ms.toFixed(2)} ms</td></tr>`;
+      }),
+    )
+    .join("");
+  const policy = replay.policy === "strict" ? "Strict" : "Baseline";
+  return `<div class="benchmark-replay"><h3>${policy} replay · ${escape(replay.outcome)}</h3><p>${number(replay.rows)} repositories · source observed ${date(replay.captured_at)}. The replay uses that observation time for freshness and makes no workspace writes.</p><ul>${checkItems}</ul><p class="benchmark-digest mono">SHA-256 ${escape(replay.sha256)}</p></div><div class="benchmark-replay"><h3>Measured in disposable databases</h3><p>Sequential in-process API requests against local SQL. Percentiles cover request through response. The timing excludes external HTTP and source retrieval.</p><div class="table-wrap"><table><thead><tr><th>Database</th><th>Operation</th><th>Samples</th><th>Median</th><th>p95</th></tr></thead><tbody>${rows}</tbody></table></div></div>`;
 }
 function checkRows(c, filter = "all", prefix = "") {
   const rows = c.checks.filter((x) => filter === "all" || x.status === filter);
@@ -1016,11 +1053,31 @@ document.addEventListener("submit", async (event) => {
       "note-form",
       "agent-form",
       "access-form",
+      "quality-benchmark-form",
     ].includes(form.id)
   )
     return;
   event.preventDefault();
   const submit = $('button[type="submit"]', form);
+  if (form.id === "quality-benchmark-form") {
+    const result = $("#quality-benchmark-result", form.parentElement);
+    result.textContent = "Replaying the pinned source checks…";
+    try {
+      await withWork(submit, async () => {
+        const policy = new FormData(form).get("policy");
+        const [replay, report] = await Promise.all([
+          api("/benchmark?policy=" + encodeURIComponent(policy)),
+          api("/benchmark/artifacts/report"),
+        ]);
+        if (replay.sha256 !== report.source_sha256)
+          throw Error("The replay and measurement source fingerprints differ.");
+        result.innerHTML = renderQualityBenchmark(replay, report);
+      });
+    } catch (error) {
+      result.textContent = error.message;
+    }
+    return;
+  }
   if (form.id === "access-form") {
     const old = token;
     token = $("#operator-token").value.trim();
