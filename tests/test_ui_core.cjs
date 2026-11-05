@@ -4,7 +4,21 @@ const {
   selectRecords,
   canonical,
   inlineTokens,
+  retryCooldownSeconds,
 } = require("../dataguard/ui-core.js");
+const cooldownNow = Date.parse("Thu, 05 Nov 2026 12:00:00 GMT");
+for (const status of [429, 503]) {
+  assert.equal(retryCooldownSeconds(status, "120", cooldownNow), 120);
+  assert.equal(
+    retryCooldownSeconds(status, "Thu, 05 Nov 2026 12:02:00 GMT", cooldownNow),
+    120,
+  );
+  assert.equal(retryCooldownSeconds(status, "172800", cooldownNow), 172800);
+  for (const delay of [null, "invalid", "0", "-1", "Infinity"])
+    assert.equal(retryCooldownSeconds(status, delay, cooldownNow), 60);
+}
+assert.equal(retryCooldownSeconds(400, "120", cooldownNow), 0);
+assert.equal(retryCooldownSeconds(502, "120", cooldownNow), 0);
 assert.equal(safeHref("javascript:alert(1)"), null);
 assert.equal(safeHref("data:text/html,<script>alert(1)</script>"), null);
 assert.equal(safeHref("https://user:secret@example.com/path"), null);

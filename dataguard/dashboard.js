@@ -244,7 +244,7 @@ async function api(path, method = "GET", body) {
         : "Request validation failed. Check the form values.",
     );
     error.status = r.status;
-    error.retryAfter = Number(r.headers.get("Retry-After") || 0);
+    error.retryAfter = r.headers.get("Retry-After");
     throw error;
   }
   return result;
@@ -882,7 +882,7 @@ function updatePublicCooldown() {
     submit.textContent = `Try again in ${seconds}s`;
     const state = document.querySelector("#public-quota-state");
     if (state)
-      state.textContent = `The public allowance is cooling down. Retry in ${seconds} seconds; the shared allowance may also be in use by other visitors.`;
+      state.textContent = `The public investigator is cooling down. Retry in ${seconds} seconds; provider capacity and shared allowances may also be in use by other visitors.`;
   } else if (publicCooldownUntil) {
     submit.disabled = false;
     submit.innerHTML = `Investigate public data ${icon("arrow", 20)}`;
@@ -891,8 +891,7 @@ function updatePublicCooldown() {
   }
 }
 function startPublicCooldown(seconds) {
-  publicCooldownUntil =
-    Date.now() + Math.min(86400, Math.max(1, seconds)) * 1000;
+  publicCooldownUntil = Date.now() + Math.max(1, seconds) * 1000;
   clearInterval(publicCooldownTimer);
   updatePublicCooldown();
   publicCooldownTimer = setInterval(updatePublicCooldown, 1000);
@@ -1161,8 +1160,9 @@ document.addEventListener("submit", async (event) => {
       }
     });
   } catch (e) {
-    if (form.id === "agent-form" && e.status === 429)
-      startPublicCooldown(e.retryAfter || 60);
+    const cooldown = UI.retryCooldownSeconds(e.status, e.retryAfter);
+    if (form.id === "agent-form" && cooldown)
+      startPublicCooldown(cooldown);
     const id = {
       "upload-form": "upload-error",
       "contract-form": "contract-error",

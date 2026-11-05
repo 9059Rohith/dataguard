@@ -496,7 +496,7 @@ def test_gemini_status_and_authentication_boundary(client, monkeypatch):
     status = client.get("/api/quality/provider").json()
     assert status["provider"] == "Google Gemini"
     assert status["public_data_only"] is True
-    assert status["max_provider_requests"] == 5
+    assert status["max_provider_requests"] == 6
     assert status["configured"] is True
     assert "unit-gemini" not in json.dumps(status)
     assert (

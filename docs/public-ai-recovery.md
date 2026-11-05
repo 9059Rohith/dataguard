@@ -5,8 +5,10 @@ handler retained no underlying status/exception, so its exact cause remains
 unconfirmed. The existing 20-second urllib timeout and provider errors previously
 shared the same generic response.
 
-The investigator now shares one retry across quota and transient failures for an
-entire investigation, with the existing four-turn/five-provider-attempt limits.
+The investigator now shares two retries across quota and transient failures for an
+entire investigation, with four-turn/six-provider-request limits. Without a valid
+provider Retry-After, recovery waits one then two seconds, each with up to 100 ms
+of jitter; the retry allowance never resets after a successful evidence tool turn.
 HTTP 500/502/503/504 and timeout/connection failures can consume that allowance.
 Positive-seconds and future HTTP-date Retry-After values are honored by returning
 the delay without retrying early. Exhausted transients return HTTP 503 with a
@@ -14,9 +16,11 @@ retry interval; quota errors remain HTTP 429. HTTP 400 and malformed provider
 protocols remain explicit errors. Neither unsuccessful inference nor a fabricated
 fallback is presented as a completed investigation.
 
-Each new attempt checks a monotonic 60-second scheduling budget and uses a socket
-timeout no greater than 20 seconds or the remaining budget. This does not provide
-hard cancellation of an already active blocking read. Gemini requests minimal
+Each new attempt checks a monotonic 60-second budget and uses a socket timeout no
+greater than 20 seconds or the remaining budget. A retry wait must leave at least
+one second for the next response. Responses arriving after the deadline are
+rejected before tool execution or completion. This does not provide hard
+cancellation of an already active blocking read. Gemini requests minimal
 reasoning under its existing output-token cap. The billing-disabled free provider
 selection and public-capture-only tools are unchanged; no paid fallback is used.
 
@@ -30,6 +34,10 @@ keys, source records, prompts, provider response bodies or database URLs. New
 controlled-fault tests exercise the actual public capture-list tool and assert
 bounded recovery, redaction, deadline checks and Retry-After handling. These
 tests use failure injection; public captures are unchanged source observations.
+
+The public form honors numeric and HTTP-date Retry-After for both HTTP 429 and
+503. It disables resubmission until that delay expires without shortening long
+delays, and never resubmits automatically or hides an upstream failure as success.
 
 The final [portfolio audit](https://github.com/9059Rohith/settlement-recon/blob/main/docs/openfx-interview-readiness.md)
 separates initial failures, regression proof and deployed requests. Provider

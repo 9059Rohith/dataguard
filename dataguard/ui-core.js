@@ -1,5 +1,12 @@
 "use strict";
 (function (root) {
+  const retryCooldownSeconds = (status, value, now = Date.now()) => {
+    if (![429, 503].includes(status)) return 0;
+    const seconds = /^\d+$/.test(value || "")
+      ? Number(value)
+      : Math.ceil((Date.parse(value) - now) / 1000);
+    return Number.isFinite(seconds) && seconds > 0 ? seconds : 60;
+  };
   const safeHref = (value) => {
     try {
       const url = new URL(String(value));
@@ -239,6 +246,7 @@
     flush();
   };
   const api = {
+    retryCooldownSeconds,
     safeHref,
     selectRecords,
     canonical,
