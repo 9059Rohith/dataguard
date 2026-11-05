@@ -12,7 +12,7 @@ kubectl -n dataguard rollout status deployment/dataguard
 kubectl -n dataguard port-forward service/dataguard 8003:8000
 ```
 
-Secret literals above are convenient demonstration syntax; production should use an external secret controller or secure secret file so command history/process lists do not expose credentials. Configure HTTPS ingress with a trusted certificate and private/VPN access. The container bootstraps v1 schema before starting. Keep one replica for bootstrap; for multiple replicas split initialization into a one-off administrative Job and override the deployment command to `uvicorn dataguard.api:app --host 0.0.0.0 --port 8000` with `DATAGUARD_AUTO_INIT=false`. Use separate DDL and runtime DB identities. No live cluster apply was performed during repository creation.
+Secret literals above are convenient demonstration syntax; production should use an external secret controller or secure secret file so command history/process lists do not expose credentials. Configure HTTPS ingress with a trusted certificate and private/VPN access. The container starts HTTP before retrying v1 database bootstrap in the background; readiness joins that task for up to 15 seconds and still checks current database connectivity. See [probe budgets and isolated recovery evidence](readiness-cold-start.md). Keep one replica for bootstrap; separating all schema initialization into an administrative migration Job and using a restricted runtime DB identity remain deployment work. `DATAGUARD_AUTO_INIT=false` skips pipeline initialization only when background initialization is disabled; quality initialization still runs. No live cluster apply was performed during repository creation.
 
 ## AWS Terraform
 

@@ -127,7 +127,7 @@ def create_app(url=None):
     pipeline = Pipeline(url or os.getenv("DATABASE_URL", "sqlite:///dataguard.db"))
     quality = QualityStore(pipeline.engine)
     background_init = os.getenv("DATAGUARD_BACKGROUND_INIT", "false").lower() == "true"
-    bootstrap_complete = False
+    bootstrap_complete = None
     registry = CollectorRegistry()
     counter = Counter(
         "dataguard_process_total", "Worker invocation outcomes", ["status"], registry=registry
@@ -162,13 +162,13 @@ def create_app(url=None):
                 await anyio.sleep(delay)
                 delay = min(delay * 2, 10)
             else:
-                bootstrap_complete = True
+                bootstrap_complete.set()
                 return
 
     @asynccontextmanager
     async def lifespan(app):
         nonlocal bootstrap_complete
-        bootstrap_complete = False
+        bootstrap_complete = anyio.Event()
         try:
             if background_init:
                 async with anyio.create_task_group() as tasks:
@@ -197,6 +197,7 @@ def create_app(url=None):
     app.state.request_limiter = anyio.CapacityLimiter(4)
     app.state.browser_asset_limiter = anyio.CapacityLimiter(16)
     app.state.body_timeout_seconds = 10.0
+    app.state.readiness_wait_seconds = 15.0
 
     @app.middleware("http")
     async def boundary(request: Request, call_next):
@@ -265,12 +266,19 @@ def create_app(url=None):
         return {"status": "alive"}
 
     @app.get("/ready")
-    def ready():
-        if background_init and not bootstrap_complete:
-            raise HTTPException(
-                503, "Database initialization pending", headers={"Retry-After": "1"}
-            )
-        if not pipeline.ready():
+    async def ready():
+        if background_init:
+            # Join the one lifespan bootstrap, including quality tables and source
+            # capture, without blocking static routes or starting another migration.
+            with anyio.move_on_after(app.state.readiness_wait_seconds):
+                if bootstrap_complete is not None:
+                    await bootstrap_complete.wait()
+            if bootstrap_complete is None or not bootstrap_complete.is_set():
+                raise HTTPException(
+                    503, "Database initialization pending", headers={"Retry-After": "1"}
+                )
+        # Completion is not a cached health result: a later outage must remain 503.
+        if not await anyio.to_thread.run_sync(pipeline.ready):
             raise HTTPException(503, "Database schema is not initialized")
         return {"status": "ready"}
 

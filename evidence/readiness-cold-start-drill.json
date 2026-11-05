@@ -1,0 +1,66 @@
+{
+  "scope": "isolated loopback PostgreSQL; no production requests or model inference",
+  "postgresql_version": "pg_ctl (PostgreSQL) 18.2",
+  "startup_wait_s": 15,
+  "postgres_connect_timeout_s": 5,
+  "docker_probe_client_timeout_s": 22,
+  "docker_probe_outer_timeout_s": 25,
+  "source_data": "Checked-in genuine eight-repository GitHub capture; unchanged",
+  "controlled_faults": "Local DB stop/start; exclusive startup lock released 0.6s after launching readiness probes",
+  "events": [
+    {
+      "event": "cold_database_absent",
+      "utc": "2026-11-05T06:17:16.345362+00:00",
+      "ready": 503,
+      "elapsed_s": 15.094,
+      "health": 200,
+      "console": 200,
+      "detail": "Database initialization pending"
+    },
+    {
+      "event": "cold_recovery",
+      "utc": "2026-11-05T06:17:23.226656+00:00",
+      "ready": 200,
+      "captures": [
+        {
+          "id": "github-6aff80ef4224c08b68054c4f",
+          "digest": "4b0ef1068f5dd661382c1614477aedcb4f874fb5a7fc7e9211e17a03d42ad6f8",
+          "row_count": 8,
+          "source": "https://api.github.com/repos/{owner}/{repo}"
+        }
+      ]
+    },
+    {
+      "event": "concurrent_cold_join",
+      "utc": "2026-11-05T06:17:27.230203+00:00",
+      "responses": [
+        200,
+        200
+      ],
+      "elapsed_s": 0.907,
+      "ready_probe_delay_before_unlock_s": 0.6,
+      "health": 200,
+      "console": 200
+    },
+    {
+      "event": "post_bootstrap_outage",
+      "utc": "2026-11-05T06:17:33.173024+00:00",
+      "ready": 503,
+      "detail": "Database unavailable",
+      "health": 200,
+      "console": 200,
+      "metrics_without_bearer": 401
+    },
+    {
+      "event": "post_bootstrap_recovery",
+      "utc": "2026-11-05T06:17:34.066652+00:00",
+      "ready": 200,
+      "source_unchanged": true
+    },
+    {
+      "event": "full_test_suite",
+      "utc": "2026-11-05T06:18:37.600427+00:00",
+      "summary": "199 passed in 58.45s"
+    }
+  ]
+}

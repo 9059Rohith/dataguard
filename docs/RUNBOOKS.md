@@ -2,6 +2,8 @@
 
 Use a trusted shell with `DATABASE_URL` and, for HTTP, `DATAGUARD_TOKEN`. Avoid pasting source payloads into shared incidents. `/health` checks the process; `/ready` checks DB/schema. Restarting a healthy process cannot repair invalid source data.
 
+During background bootstrap, `/ready` joins the shared startup task for up to 15 seconds, then returns 503 with `Retry-After: 1` if it is still pending. After completion it checks current database connectivity on every request. Allow a probe HTTP deadline of at least 22 seconds; the Docker probe has a 25-second outer budget. A responding `/health` or static console alone does not establish database readiness. See the [isolated cold-start/outage/recovery drill](readiness-cold-start.md).
+
 ## Quarantined export
 
 Trigger: `rejected` increases or Airflow's publish task fails with a quarantined batch ID.

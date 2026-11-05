@@ -1,4 +1,5 @@
 import os
+from concurrent.futures import ThreadPoolExecutor
 from threading import Event
 from time import monotonic, sleep
 
@@ -7,6 +8,7 @@ from fastapi.testclient import TestClient
 from sqlalchemy.exc import OperationalError
 
 from dataguard.api import create_app
+from dataguard.quality import QualityStore
 from dataguard.service import Pipeline
 
 
@@ -52,7 +54,9 @@ def test_background_bootstrap_keeps_console_available_and_recovers(tmp_path, mon
     monkeypatch.setenv("DATAGUARD_BACKGROUND_INIT", "true")
     monkeypatch.setenv("DATAGUARD_AUTO_INIT", "false")
     monkeypatch.setattr(Pipeline, "initialize", initialize_when_available)
-    with TestClient(create_app(f"sqlite:///{tmp_path / 'recovery.db'}")) as client:
+    app = create_app(f"sqlite:///{tmp_path / 'recovery.db'}")
+    app.state.readiness_wait_seconds = 0.05
+    with TestClient(app) as client:
         assert attempted.wait(timeout=2)
         assert client.get("/console/overview").status_code == 200
         assert client.get("/health").status_code == 200
@@ -65,6 +69,73 @@ def test_background_bootstrap_keeps_console_available_and_recovers(tmp_path, mon
         while monotonic() < deadline and client.get("/ready").status_code == 503:
             sleep(0.05)
         assert client.get("/ready").json() == {"status": "ready"}
+
+
+def test_concurrent_readiness_waits_for_shared_quality_bootstrap(tmp_path, monkeypatch):
+    entered = Event()
+    release = Event()
+    initialize = QualityStore.initialize
+    calls = []
+
+    def delayed_quality(store):
+        calls.append(1)
+        entered.set()
+        assert release.wait(3)
+        initialize(store)
+
+    monkeypatch.setenv("DATAGUARD_BACKGROUND_INIT", "true")
+    monkeypatch.setattr(QualityStore, "initialize", delayed_quality)
+    app = create_app(f"sqlite:///{tmp_path / 'shared.db'}")
+    with TestClient(app) as client, ThreadPoolExecutor(max_workers=2) as workers:
+        assert entered.wait(2)
+        pending = [workers.submit(client.get, "/ready") for _ in range(2)]
+        try:
+            sleep(0.15)
+            assert client.get("/console/overview").status_code == 200
+            assert client.get("/health").status_code == 200
+            release.set()
+            assert [request.result(3).status_code for request in pending] == [200, 200]
+            assert len(calls) == 1
+        finally:
+            release.set()
+
+
+def test_readiness_wait_is_bounded_and_does_not_mask_later_outage(tmp_path, monkeypatch):
+    entered = Event()
+    release = Event()
+    initialize = QualityStore.initialize
+
+    def delayed_quality(store):
+        entered.set()
+        assert release.wait(3)
+        initialize(store)
+
+    monkeypatch.setenv("DATAGUARD_BACKGROUND_INIT", "true")
+    monkeypatch.setattr(QualityStore, "initialize", delayed_quality)
+    app = create_app(f"sqlite:///{tmp_path / 'bounded.db'}")
+    app.state.readiness_wait_seconds = 0.1
+    with TestClient(app) as client:
+        assert entered.wait(2)
+        try:
+            started = monotonic()
+            response = client.get("/ready")
+            assert 0.08 <= monotonic() - started < 1
+            assert response.status_code == 503
+            assert response.headers["retry-after"] == "1"
+            release.set()
+            app.state.readiness_wait_seconds = 2
+            assert client.get("/ready").status_code == 200
+
+            def unavailable():
+                raise OperationalError(None, None, ConnectionError("secret database address"))
+
+            monkeypatch.setattr(app.state.pipeline, "ready", unavailable)
+            response = client.get("/ready")
+            assert response.status_code == 503
+            assert response.json() == {"detail": "Database unavailable"}
+            assert "secret" not in response.text
+        finally:
+            release.set()
 
 
 def test_container_entrypoint_uses_validated_port_and_omits_access_query_logs(monkeypatch):
