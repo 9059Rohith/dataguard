@@ -6,6 +6,7 @@ from starlette.exceptions import HTTPException
 from starlette.requests import Request
 from starlette.responses import JSONResponse
 
+from dataguard.archive import is_browser_asset
 from dataguard.contract_impact import IMPACT_MAX_BYTES, IMPACT_PATH
 from dataguard.limits import MAX_BODY_BYTES, check_json_structure
 from dataguard.policy_io import POLICY_MAX_BYTES, decode_policy_json
@@ -80,11 +81,16 @@ class RequestGuard:
             return
 
         reserved_health = method in {"GET", "HEAD"} and path == "/health"
+        limiter = (
+            self.state.browser_asset_limiter
+            if method in {"GET", "HEAD"} and is_browser_asset(path)
+            else self.state.request_limiter
+        )
         acquired = False
         try:
             if not reserved_health:
                 try:
-                    self.state.request_limiter.acquire_nowait()
+                    limiter.acquire_nowait()
                     acquired = True
                 except anyio.WouldBlock:
                     await reject(503, "Request capacity is busy; retry later", {"Retry-After": "1"})
@@ -146,4 +152,4 @@ class RequestGuard:
                 await self.app(scope, receive, protected_send)
         finally:
             if acquired:
-                self.state.request_limiter.release()
+                limiter.release()

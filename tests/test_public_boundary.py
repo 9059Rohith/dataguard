@@ -148,9 +148,18 @@ def test_excess_inflight_requests_fail_fast_without_blocking_liveness(tmp_path, 
             try:
                 assert (await client.get("/summary")).status_code == 503
                 assert (await client.get("/health")).status_code == 200
+                assert (await client.get("/archive-art/overview-ginkgo.svg")).status_code == 200
+                assert (await client.get("/archive-art/unknown.svg")).status_code == 503
             finally:
                 app.state.request_limiter.release_on_behalf_of(other_request)
             assert (await client.get("/summary")).status_code == 200
+            app.state.browser_asset_limiter.total_tokens = 1
+            await app.state.browser_asset_limiter.acquire_on_behalf_of(other_request)
+            try:
+                assert (await client.get("/archive.js")).status_code == 503
+                assert (await client.get("/summary")).status_code == 200
+            finally:
+                app.state.browser_asset_limiter.release_on_behalf_of(other_request)
 
     anyio.run(exercise)
 

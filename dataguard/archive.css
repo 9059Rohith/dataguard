@@ -1,0 +1,389 @@
+/* Field journal plates and motion. Product layout and forms remain in console.css. */
+:root {
+  --paper: #f5efdf;
+  --white: #fffbef;
+  --ink: #142b21;
+  --forest: #13392c;
+  --line: #d6cfbb;
+  --lime: #dce849;
+  --journal-gold: #a48546;
+  --journal-ease: cubic-bezier(0.22, 0.68, 0.27, 1);
+}
+.workspace {
+  background: linear-gradient(180deg, #f8f1e1, var(--paper) 37rem);
+}
+.sidebar {
+  background: linear-gradient(155deg, #153a2d, #0d2a20 69%);
+}
+.sidebar nav a.active,
+.sidebar nav a.active:hover {
+  color: #183021;
+  background: var(--lime);
+  font-weight: 700;
+}
+.sidebar nav a.active::before {
+  display: none;
+}
+.sidebar nav a {
+  transition:
+    background-color 170ms var(--journal-ease),
+    color 170ms var(--journal-ease);
+}
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 25;
+  background: #f8f1e1;
+}
+.breadcrumb .workspace-crumb {
+  margin: 0;
+}
+.archive-scroll-rule {
+  display: none;
+}
+.archive-hero.page-heading {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
+  grid-template-areas: "copy plate" "actions plate";
+  gap: 14px clamp(18px, 3vw, 48px);
+  align-items: center;
+  align-content: center;
+  padding: clamp(22px, 3vw, 44px);
+  margin-block-end: clamp(22px, 3vw, 40px);
+  background: linear-gradient(110deg, #fff9e9, #f1e5c8 120%);
+  border: 1px solid #d8ccad;
+  border-radius: 6px;
+  box-shadow: 0 15px 35px #4a3d2410;
+}
+.archive-copy {
+  grid-area: copy;
+  min-width: 0;
+  align-self: end;
+}
+.archive-copy h1 {
+  font-size: clamp(42px, 4.35vw, 74px);
+  line-height: 1;
+  letter-spacing: -0.023em;
+  text-wrap: balance;
+}
+.archive-copy p {
+  max-width: 48ch;
+  font: 500 clamp(13px, 1.25vw, 17px) / 1.65 var(--ui);
+  color: #40564a;
+  text-wrap: pretty;
+}
+.archive-actions {
+  grid-area: actions;
+  justify-self: start;
+  align-self: start;
+  min-width: 0;
+  flex-wrap: wrap;
+}
+.archive-actions:empty {
+  display: none;
+}
+.archive-hero .impact-stamp {
+  transform: none;
+  padding: 6px 10px;
+  border-inline-start: 2px solid var(--journal-gold);
+  border-block: 0;
+  border-inline-end: 0;
+}
+.archive-hero .impact-stamp strong {
+  font-size: 21px;
+}
+.archive-plate,
+.archive-landscape {
+  position: relative;
+  overflow: hidden;
+  overflow: clip;
+  border: 1px solid #a78e55;
+  border-radius: 2px;
+  min-width: 0;
+  background: #eadcbc;
+  box-shadow: 0 10px 23px #322e2520;
+}
+.archive-plate {
+  grid-area: plate;
+  aspect-ratio: 640 / 440;
+}
+.archive-landscape {
+  grid-area: landscape;
+  align-self: stretch;
+}
+.archive-plate img,
+.archive-landscape img,
+.archive-panel-art img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.archive-landscape img {
+  position: absolute;
+  object-position: 44% 62%;
+}
+.archive-plate::after {
+  position: absolute;
+  inset: 0;
+  content: "";
+  pointer-events: none;
+  background: linear-gradient(
+    110deg,
+    transparent 35%,
+    #fff8c84d 49%,
+    transparent 61%
+  );
+  opacity: 0;
+  transform: translateX(-24%);
+  transition:
+    opacity 350ms var(--journal-ease),
+    transform 800ms var(--journal-ease);
+}
+body[data-page="overview"] .archive-hero {
+  grid-template-columns: minmax(0, 0.48fr) minmax(0, 1.58fr) minmax(0, 1fr);
+  grid-template-areas: "landscape copy plate" "landscape actions plate";
+  padding: clamp(17px, 2.4vw, 31px);
+  min-height: 280px;
+}
+.archive-kicker {
+  display: block;
+  margin: 0 0 10px;
+  color: #5b633d;
+  font: 700 10px/1.4 var(--ui);
+  letter-spacing: 0.17em;
+  text-transform: uppercase;
+}
+.archive-hero .archive-underline {
+  background: linear-gradient(
+    transparent 85%,
+    #bdc943 85%,
+    #dce849 94%,
+    transparent 94%
+  );
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+.archive-utility {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px 24px;
+  padding-block: 12px;
+  margin-block-end: 18px;
+  border-bottom: 1px solid var(--line);
+}
+.archive-utility .text-button,
+.archive-utility .text-link {
+  font-weight: 650;
+}
+.archive-panel {
+  position: relative;
+  isolation: isolate;
+}
+.archive-panel-art {
+  position: absolute;
+  inset: 0 0 auto auto;
+  z-index: -1;
+  width: min(52%, 500px);
+  height: min(100%, 330px);
+  border-radius: inherit;
+  overflow: hidden;
+  pointer-events: none;
+  opacity: 0.26;
+  mask-image:
+    linear-gradient(90deg, transparent, #000 46%),
+    linear-gradient(#000 54%, transparent);
+  mask-composite: intersect;
+}
+.archive-panel-art img {
+  object-position: right center;
+}
+.audit-ledger .archive-panel-art,
+.impact-source .archive-panel-art,
+.grounding-panel .archive-panel-art {
+  opacity: 0.19;
+}
+.quality-benchmark .archive-panel-art {
+  opacity: 0.29;
+}
+.quality-benchmark > p {
+  max-width: 63ch;
+}
+.lineage-flow.archive-panel,
+.recovery-steps.archive-panel {
+  padding-block-end: 46px;
+}
+.lineage-flow .archive-panel-art,
+.recovery-steps .archive-panel-art {
+  inset: auto 0 0 auto;
+  height: 75px;
+  opacity: 0.43;
+  mask-image: linear-gradient(90deg, transparent, #000 52%);
+}
+.recovery-steps > .archive-panel-art {
+  border: 0;
+  padding: 0;
+}
+.footer {
+  flex-wrap: wrap;
+  align-items: center;
+}
+.archive-to-top {
+  color: #385645;
+  font-weight: 700;
+  text-underline-offset: 4px;
+}
+.archive-to-top:hover {
+  text-decoration: underline;
+}
+.button:not(:disabled):active {
+  transform: translateY(1px) scale(0.985);
+}
+[id^="check-"],
+#quality-benchmark {
+  scroll-margin-block-start: 85px;
+}
+
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .archive-plate:hover::after {
+    opacity: 1;
+    transform: translateX(28%);
+  }
+}
+@supports (animation-timeline: scroll()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .archive-scroll-rule {
+      display: block;
+      position: absolute;
+      height: 2px;
+      inset: auto 0 -1px;
+      background: #78882d;
+      transform-origin: left;
+      animation: archive-progress linear both;
+      animation-timeline: scroll(root block);
+      pointer-events: none;
+    }
+    .archive-plate img {
+      animation: archive-plate-drift linear both;
+      animation-timeline: view(block);
+      animation-range: entry 0% exit 100%;
+    }
+  }
+}
+@keyframes archive-progress {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+@keyframes archive-plate-drift {
+  from {
+    transform: translateY(-2%) scale(1.045);
+  }
+  to {
+    transform: translateY(2%) scale(1.045);
+  }
+}
+@media (max-width: 1100px) {
+  body[data-page="overview"] .archive-hero {
+    grid-template-columns: minmax(0, 1.45fr) minmax(0, 1fr);
+    grid-template-areas: "copy plate" "actions plate" "landscape landscape";
+    min-height: auto;
+  }
+  .archive-landscape {
+    min-height: 72px;
+  }
+}
+@media (max-width: 620px) {
+  .topbar {
+    display: grid;
+    grid-template-columns: 44px minmax(0, 1fr) auto;
+    gap: 7px;
+    margin-inline: 14px;
+    padding-block: 4px;
+  }
+  .topbar .breadcrumb {
+    margin-inline: 0;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    line-height: 1.35;
+  }
+  .breadcrumb .workspace-crumb,
+  .breadcrumb .breadcrumb-separator,
+  .top-actions > span {
+    display: none;
+  }
+  .top-actions {
+    gap: 6px;
+  }
+  .top-actions > .icon-button {
+    width: 36px;
+    min-height: 44px;
+    padding: 6px;
+    border: 0;
+  }
+  #connect-button {
+    min-height: 40px;
+    padding-inline: 8px;
+    gap: 6px;
+    font-size: 10px;
+  }
+  .archive-hero.page-heading,
+  body[data-page="overview"] .archive-hero {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: "copy" "actions" "plate";
+    gap: 14px;
+    padding: 19px;
+  }
+  body[data-page="overview"] .archive-hero {
+    grid-template-columns: minmax(0, 0.62fr) minmax(0, 1fr);
+    grid-template-areas: "copy copy" "actions actions" "landscape plate";
+  }
+  .archive-copy h1 {
+    font-size: clamp(39px, 10.2vw, 57px);
+    text-wrap: wrap;
+  }
+  .archive-copy p {
+    font-size: 13px;
+  }
+  .archive-plate {
+    aspect-ratio: 2.15;
+  }
+  body[data-page="overview"] .archive-plate {
+    aspect-ratio: 1.5;
+  }
+  .archive-actions {
+    gap: 8px;
+  }
+  .archive-actions .button {
+    min-height: 42px;
+    padding-inline: 12px;
+    white-space: normal;
+  }
+  .archive-panel-art {
+    width: 64%;
+    opacity: 0.21;
+  }
+  .archive-hero .impact-stamp {
+    line-height: 1.6;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .archive-plate img,
+  .archive-scroll-rule,
+  .archive-plate::after {
+    animation: none;
+    transition: none;
+    transform: none;
+  }
+  .button:not(:disabled):active {
+    transform: none;
+  }
+}

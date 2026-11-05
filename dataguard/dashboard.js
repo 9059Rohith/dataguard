@@ -114,8 +114,8 @@ const link = (to, label) =>
   `<a class="text-link" href="/console/${to}">${label} ${icon("arrow", 13)}</a>`;
 const button = (label, action, style = "", attrs = "") =>
   `<button class="button ${style}" data-action="${action}" ${attrs}>${label}</button>`;
-const heading = (title, desc, actions = "") =>
-  `<div class="page-heading"><div><h1>${title}</h1><p>${desc}</p></div><div class="heading-actions">${actions}</div></div>`;
+const heading = (title, desc, actions = "", kicker = "") =>
+  `<div class="page-heading"><div>${kicker ? `<span class="archive-kicker">${kicker}</span>` : ""}<h1>${title}</h1><p>${desc}</p></div><div class="heading-actions">${actions}</div></div>`;
 const section = (title, right = "") =>
   `<div class="section-title"><h2>${title}</h2>${right}</div>`;
 const empty = (title, desc, ic = "datasets") =>
@@ -289,7 +289,7 @@ function overview() {
   const c = capture();
   if (!c)
     return (
-      heading("Trust is built on evidence.", "Connect a source to begin.") +
+      heading("Make quality visible.", "Connect a source to begin.") +
       empty(
         "No captured data.",
         "An operator can connect the source or import actual records.",
@@ -299,17 +299,10 @@ function overview() {
     bad = workspace.captures.filter((c) => c.status === "quarantined").length;
   return (
     heading(
-      "Trust is built on evidence.",
-      c.visibility === "public" && c.row_count === 8
-        ? "Eight public repositories. One inspectable chain of trust."
-        : `${number(c.row_count)} captured records. One inspectable chain of trust.`,
-      button(
-        `${icon("download", 16)} Export evidence`,
-        "download",
-        "",
-        `data-id="${c.id}"`,
-      ) +
-        `<a class="button primary" href="/console/agent">Investigate data ${icon("arrow", 18)}</a>`,
+      '<span class="archive-underline">Make quality visible.</span>',
+      "Inspect real repository evidence, compare contracts, and trace each quality decision.",
+      `<a class="button primary" href="/console/checks">Explore quality checks ${icon("arrow", 16)}</a><a class="button" href="/console/datasets">Browse datasets</a>`,
+      "Public data engineering",
     ) +
     `<section class="audit-ledger" aria-label="Recorded quality evaluation"><div class="ledger-figures"><div class="ledger-lead"><strong>${passed}<span>/${c.checks.length}</span></strong><span>Checks passed</span></div>${[
       [c.row_count, "Records"],
@@ -322,7 +315,7 @@ function overview() {
       )
       .join(
         "",
-      )}</div>${auditChain(c)}</section><div class="register-layout"><section class="source-register"><div class="register-heading"><h2>Source register</h2>${recordToolbar(true)}</div><div id="records-table">${recordTable(c, 4)}</div></section>${sourceRail(c)}</div>`
+      )}</div>${auditChain(c)}</section><div class="archive-utility">${button(`${icon("download", 15)} Export evidence`, "download", "text-button", `data-id="${c.id}"`)}${link("agent", "Investigate data")}</div><div class="register-layout"><section class="source-register"><div class="register-heading"><h2>Source register</h2>${recordToolbar(true)}</div><div id="records-table">${recordTable(c, 4)}</div></section>${sourceRail(c)}</div>`
   );
 }
 function datasets() {
@@ -875,6 +868,7 @@ function render() {
     "Workspace read " + date(workspace.generated_at);
   if (page === "versions") compare();
   if (page === "agent") updatePublicCooldown();
+  globalThis.DataGuardArchive?.mount($("#main"), page);
 }
 function updatePublicCooldown() {
   const seconds = Math.max(

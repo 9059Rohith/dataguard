@@ -14,8 +14,11 @@
       href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='7' fill='%23143d32'/%3E%3Cpath d='m20 5 12 5v10c0 8-12 15-12 15S8 28 8 20V10L20 5Zm-6 14 4 5 9-11' fill='none' stroke='%23d7e78a' stroke-width='1.6'/%3E%3C/svg%3E"
     />
     <link rel="stylesheet" href="/console.css" />
+    <link rel="stylesheet" href="/archive.css" />
+    <!-- Archive preload -->
     <script defer src="/ui-core.js"></script>
     <script defer src="/impact.js"></script>
+    <script defer src="/archive.js"></script>
     <script defer src="/dashboard.js"></script>
   </head>
   <body>
@@ -108,6 +111,7 @@
       </aside>
       <div class="workspace">
         <header class="topbar">
+          <div class="archive-scroll-rule" aria-hidden="true"></div>
           <button
             class="mobile-menu"
             id="mobile-menu"
@@ -128,7 +132,9 @@
             </svg>
           </button>
           <div class="breadcrumb">
-            Workspace <span>/</span> <strong id="breadcrumb">Overview</strong>
+            <span class="workspace-crumb">Workspace</span>
+            <span class="breadcrumb-separator">/</span>
+            <strong id="breadcrumb">Overview</strong>
           </div>
           <div class="top-actions">
             <span id="access-state"
@@ -166,7 +172,10 @@
           <span
             >DataGuard <span class="muted">/</span> Reliability, by
             evidence.</span
-          ><span id="footer-time">Connecting to workspace</span>
+          ><span id="footer-time">Connecting to workspace</span
+          ><a href="#main" class="archive-to-top"
+            >Back to top <span aria-hidden="true">↑</span></a
+          >
         </footer>
       </div>
     </div>

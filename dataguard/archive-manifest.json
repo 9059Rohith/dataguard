@@ -1,0 +1,222 @@
+[
+  {
+    "file": "overview-ginkgo.svg",
+    "route": "overview",
+    "placement": "hero",
+    "subject": "Ginkgo archival specimen",
+    "source": "Original DataGuard artwork drawn in scripts/create_field_journal_art.py",
+    "usage": "Original artwork created for the DataGuard repository",
+    "format": "Standalone SVG, 640 by 440 viewBox, self-hosted, no external resources",
+    "loading": "critical"
+  },
+  {
+    "file": "overview-forest-engraving.svg",
+    "route": "overview",
+    "placement": "landscape",
+    "subject": "Alpine forest engraving",
+    "source": "Original DataGuard artwork drawn in scripts/create_field_journal_art.py",
+    "usage": "Original artwork created for the DataGuard repository",
+    "format": "Standalone SVG, 640 by 440 viewBox, self-hosted, no external resources",
+    "loading": "lazy"
+  },
+  {
+    "file": "datasets-herbarium.svg",
+    "route": "datasets",
+    "placement": "hero",
+    "subject": "Four collected herbarium leaves",
+    "source": "Original DataGuard artwork drawn in scripts/create_field_journal_art.py",
+    "usage": "Original artwork created for the DataGuard repository",
+    "format": "Standalone SVG, 640 by 440 viewBox, self-hosted, no external resources",
+    "loading": "critical"
+  },
+  {
+    "file": "contracts-pressed-fern.svg",
+    "route": "contracts",
+    "placement": "hero",
+    "subject": "Pressed fern and archival folio",
+    "source": "Original DataGuard artwork drawn in scripts/create_field_journal_art.py",
+    "usage": "Original artwork created for the DataGuard repository",
+    "format": "Standalone SVG, 640 by 440 viewBox, self-hosted, no external resources",
+    "loading": "critical"
+  },
+  {
+    "file": "impact-specimen-pair.svg",
+    "route": "impact",
+    "placement": "hero",
+    "subject": "Matched leaf specimens with a comparison rule",
+    "source": "Original DataGuard artwork drawn in scripts/create_field_journal_art.py",
+    "usage": "Original artwork created for the DataGuard repository",
+    "format": "Standalone SVG, 640 by 440 viewBox, self-hosted, no external resources",
+    "loading": "critical"
+  },
+  {
+    "file": "checks-calibration-rosette.svg",
+    "route": "checks",
+    "placement": "hero",
+    "subject": "Rosette and calibration ring",
+    "source": "Original DataGuard artwork drawn in scripts/create_field_journal_art.py",
+    "usage": "Original artwork created for the DataGuard repository",
+    "format": "Standalone SVG, 640 by 440 viewBox, self-hosted, no external resources",
+    "loading": "critical"
+  },
+  {
+    "file": "batches-sediment-register.svg",
+    "route": "batches",
+    "placement": "hero",
+    "subject": "Sediment layers and indexed levels",
+    "source": "Original DataGuard artwork drawn in scripts/create_field_journal_art.py",
+    "usage": "Original artwork created for the DataGuard repository",
+    "format": "Standalone SVG, 640 by 440 viewBox, self-hosted, no external resources",
+    "loading": "critical"
+  },
+  {
+    "file": "quarantine-sealed-pod.svg",
+    "route": "quarantine",
+    "placement": "hero",
+    "subject": "Seed isolated inside a sealed specimen outline",
+    "source": "Original DataGuard artwork drawn in scripts/create_field_journal_art.py",
+    "usage": "Original artwork created for the DataGuard repository",
+    "format": "Standalone SVG, 640 by 440 viewBox, self-hosted, no external resources",
+    "loading": "critical"
+  },
+  {
+    "file": "versions-double-imprint.svg",
+    "route": "versions",
+    "placement": "hero",
+    "subject": "Two cross sections from retained versions",
+    "source": "Original DataGuard artwork drawn in scripts/create_field_journal_art.py",
+    "usage": "Original artwork created for the DataGuard repository",
+    "format": "Standalone SVG, 640 by 440 viewBox, self-hosted, no external resources",
+    "loading": "critical"
+  },
+  {
+    "file": "lineage-root-etching.svg",
+    "route": "lineage",
+    "placement": "hero",
+    "subject": "A trunk, crown and distinct root branches",
+    "source": "Original DataGuard artwork drawn in scripts/create_field_journal_art.py",
+    "usage": "Original artwork created for the DataGuard repository",
+    "format": "Standalone SVG, 640 by 440 viewBox, self-hosted, no external resources",
+    "loading": "critical"
+  },
+  {
+    "file": "incidents-fracture-plate.svg",
+    "route": "incidents",
+    "placement": "hero",
+    "subject": "Geological fracture study",
+    "source": "Original DataGuard artwork drawn in scripts/create_field_journal_art.py",
+    "usage": "Original artwork created for the DataGuard repository",
+    "format": "Standalone SVG, 640 by 440 viewBox, self-hosted, no external resources",
+    "loading": "critical"
+  },
+  {
+    "file": "recovery-growth-rings.svg",
+    "route": "recovery",
+    "placement": "hero",
+    "subject": "Tree growth rings with a retained reference",
+    "source": "Original DataGuard artwork drawn in scripts/create_field_journal_art.py",
+    "usage": "Original artwork created for the DataGuard repository",
+    "format": "Standalone SVG, 640 by 440 viewBox, self-hosted, no external resources",
+    "loading": "critical"
+  },
+  {
+    "file": "agent-leaf-prism.svg",
+    "route": "agent",
+    "placement": "hero",
+    "subject": "Prism breaking light across a leaf plate",
+    "source": "Original DataGuard artwork drawn in scripts/create_field_journal_art.py",
+    "usage": "Original artwork created for the DataGuard repository",
+    "format": "Standalone SVG, 640 by 440 viewBox, self-hosted, no external resources",
+    "loading": "critical"
+  },
+  {
+    "file": "connections-root-junction.svg",
+    "route": "connections",
+    "placement": "hero",
+    "subject": "Four convergent root systems",
+    "source": "Original DataGuard artwork drawn in scripts/create_field_journal_art.py",
+    "usage": "Original artwork created for the DataGuard repository",
+    "format": "Standalone SVG, 640 by 440 viewBox, self-hosted, no external resources",
+    "loading": "critical"
+  },
+  {
+    "file": "settings-alignment-folio.svg",
+    "route": "settings",
+    "placement": "hero",
+    "subject": "Ruled specimen alignment folio",
+    "source": "Original DataGuard artwork drawn in scripts/create_field_journal_art.py",
+    "usage": "Original artwork created for the DataGuard repository",
+    "format": "Standalone SVG, 640 by 440 viewBox, self-hosted, no external resources",
+    "loading": "critical"
+  },
+  {
+    "file": "ledger-canopy-print.svg",
+    "route": "overview",
+    "placement": ".audit-ledger",
+    "subject": "Canopy ink silhouette",
+    "source": "Original DataGuard artwork drawn in scripts/create_field_journal_art.py",
+    "usage": "Original artwork created for the DataGuard repository",
+    "format": "Standalone SVG, 640 by 440 viewBox, self-hosted, no external resources",
+    "loading": "lazy"
+  },
+  {
+    "file": "provenance-ammonite.svg",
+    "route": "overview",
+    "placement": ".evidence-rail",
+    "subject": "Ammonite preserved in a provenance plate",
+    "source": "Original DataGuard artwork drawn in scripts/create_field_journal_art.py",
+    "usage": "Original artwork created for the DataGuard repository",
+    "format": "Standalone SVG, 640 by 440 viewBox, self-hosted, no external resources",
+    "loading": "lazy"
+  },
+  {
+    "file": "checks-acorn-collection.svg",
+    "route": "checks",
+    "placement": ".quality-benchmark",
+    "subject": "Apache benchmark acorn specimen study",
+    "source": "Original DataGuard artwork drawn in scripts/create_field_journal_art.py",
+    "usage": "Original artwork created for the DataGuard repository",
+    "format": "Standalone SVG, 640 by 440 viewBox, self-hosted, no external resources",
+    "loading": "lazy"
+  },
+  {
+    "file": "impact-mineral-core.svg",
+    "route": "impact",
+    "placement": ".impact-source",
+    "subject": "Longitudinal mineral core engraving",
+    "source": "Original DataGuard artwork drawn in scripts/create_field_journal_art.py",
+    "usage": "Original artwork created for the DataGuard repository",
+    "format": "Standalone SVG, 640 by 440 viewBox, self-hosted, no external resources",
+    "loading": "lazy"
+  },
+  {
+    "file": "lineage-delta-channel.svg",
+    "route": "lineage",
+    "placement": ".lineage-flow",
+    "subject": "Branching delta channels",
+    "source": "Original DataGuard artwork drawn in scripts/create_field_journal_art.py",
+    "usage": "Original artwork created for the DataGuard repository",
+    "format": "Standalone SVG, 640 by 440 viewBox, self-hosted, no external resources",
+    "loading": "lazy"
+  },
+  {
+    "file": "recovery-new-sprout.svg",
+    "route": "recovery",
+    "placement": ".recovery-steps",
+    "subject": "Sprout returning from a retained seed",
+    "source": "Original DataGuard artwork drawn in scripts/create_field_journal_art.py",
+    "usage": "Original artwork created for the DataGuard repository",
+    "format": "Standalone SVG, 640 by 440 viewBox, self-hosted, no external resources",
+    "loading": "lazy"
+  },
+  {
+    "file": "agent-evidence-veins.svg",
+    "route": "agent",
+    "placement": ".grounding-panel",
+    "subject": "Visible skeletal leaf veins",
+    "source": "Original DataGuard artwork drawn in scripts/create_field_journal_art.py",
+    "usage": "Original artwork created for the DataGuard repository",
+    "format": "Standalone SVG, 640 by 440 viewBox, self-hosted, no external resources",
+    "loading": "lazy"
+  }
+]

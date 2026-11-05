@@ -19,6 +19,8 @@ from prometheus_client import CollectorRegistry, Counter, Gauge, Histogram, gene
 from pydantic import BaseModel, ConfigDict, Field
 from sqlalchemy.exc import SQLAlchemyError
 
+from dataguard.archive import cacheable_art, preload
+from dataguard.archive import router as archive_router
 from dataguard.guard import RequestGuard
 from dataguard.policy_engine import PolicyBudgetExceeded, PolicyLab
 from dataguard.policy_models import ImpactReport, ImpactRequest
@@ -154,7 +156,9 @@ def create_app(url=None):
     app.state.quality = quality
     app.include_router(quality_router(quality, authorize))
     app.include_router(quality_benchmark_router)
+    app.include_router(archive_router)
     app.state.request_limiter = anyio.CapacityLimiter(4)
+    app.state.browser_asset_limiter = anyio.CapacityLimiter(16)
     app.state.body_timeout_seconds = 10.0
 
     @app.middleware("http")
@@ -176,7 +180,11 @@ def create_app(url=None):
                 background=response.background,
             )
         response.headers["X-Content-Type-Options"] = "nosniff"
-        response.headers["Cache-Control"] = "no-store"
+        response.headers["Cache-Control"] = (
+            "public, max-age=86400"
+            if response.status_code == 200 and cacheable_art(route_path)
+            else "no-store"
+        )
         response.headers["Content-Security-Policy"] = csp
         return response
 
@@ -318,7 +326,8 @@ def create_app(url=None):
             "settings",
         }:
             raise HTTPException(404, "Console page not found")
-        return Path(__file__).with_name("dashboard.html").read_text(encoding="utf-8")
+        shell = Path(__file__).with_name("dashboard.html").read_text(encoding="utf-8")
+        return shell.replace("<!-- Archive preload -->", preload(page))
 
     @app.get("/console.css")
     def stylesheet():
