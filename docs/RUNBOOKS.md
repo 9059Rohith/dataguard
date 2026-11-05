@@ -54,3 +54,9 @@ Application rollback uses a previous image digest and stable schema. No schema d
 ## Alert caveats
 
 `dataguard_process_total` and latency histogram count API run calls, including idempotent repeats. CLI/Airflow work does not increment those in-process counters. Persisted `dataguard_attempts{status}` counts every attempt and remains meaningful across API restarts. The example reject alert therefore covers API-triggered processing; schedule a SQL-backed quarantine check or alert on persisted count changes for CLI/Airflow deployments. Metrics are operational signals, not billing totals.
+
+## Metrics scrape failure
+
+1. Open the DataGuard target in Prometheus and inspect its last scrape error. `DataGuardMetricsUnavailable` fires when `up{job="dataguard"}` is zero for one minute. Check the target address, service liveness, network path, and scrape timeout. For HTTP 401, check the mounted bearer credential and the operator token rotation status.
+2. If the scrape succeeds but `dataguard_database_up` is zero, follow the database outage runbook. Check `/health` and `/ready` separately so an available HTTP listener does not mask unavailable persistence.
+3. After recovery, confirm the target reports `up=1`, `/ready` returns 200, and the corresponding alert becomes inactive. Confirm the previous source capture can still be read.

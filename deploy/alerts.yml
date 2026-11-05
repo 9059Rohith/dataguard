@@ -1,6 +1,13 @@
 groups:
   - name: dataguard
     rules:
+      - alert: DataGuardMetricsUnavailable
+        expr: up{job="dataguard"} == 0
+        for: 1m
+        labels: {severity: critical}
+        annotations:
+          summary: Prometheus cannot scrape DataGuard metrics
+          runbook: See docs/RUNBOOKS.md metrics scrape failure
       - alert: DataGuardDatabaseUnavailable
         expr: dataguard_database_up == 0
         for: 1m

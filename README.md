@@ -82,6 +82,8 @@ The controlled evaluation runs four policies over three synthetic accepted versi
 | PolicyLab quality-policy experiments | Strict declarative policies, immutable SQL evidence, baseline/candidate rejection transitions, opaque bounded samples and staged recommendations | Catch a proposed policy rejecting valid historical data before enforcement |
 | Operable service and deployment artifacts | FastAPI/CLI, Airflow 3 DAG, private metrics, liveness/readiness, non-root digest-pinned runtime, Compose, Kubernetes and Terraform | Connect correctness to repeatable operational checks and explicit rollout boundaries |
 
+An isolated Prometheus drill observed both database outage and failed-scrape alerts firing and clearing after recovery. [Monitoring drill](docs/prometheus-alert-drill.md)
+
 ```mermaid
 flowchart LR
   Input[CLI / protected API / Airflow] --> Stage[(Immutable source + SHA256)]

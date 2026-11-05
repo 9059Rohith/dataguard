@@ -1,0 +1,134 @@
+{
+  "prometheus_version": "prometheus, version 2.45.3+ds (branch: debian/sid, revision: 2.45.3+ds-2ubuntu0.3)",
+  "postgresql_version": "pg_ctl (PostgreSQL) 18.2",
+  "environment": "isolated PostgreSQL and DataGuard with local WSL Prometheus",
+  "production_touched": false,
+  "hold_seconds": 60,
+  "drill_scrape_interval_seconds": 15,
+  "drill_scrape_timeout_seconds": 10,
+  "drill_evaluation_interval_seconds": 2,
+  "rules_copied_unmodified": true,
+  "rule_states": [
+    {
+      "event": "healthy",
+      "utc": "2026-11-05T05:23:52.275515+00:00",
+      "elapsed_s": 5.78,
+      "ready": 200,
+      "metrics_without_bearer": 401,
+      "metrics_wrong_bearer": 401,
+      "metrics_with_bearer": 200,
+      "captures": [
+        {
+          "id": "github-6aff80ef4224c08b68054c4f",
+          "digest": "4b0ef1068f5dd661382c1614477aedcb4f874fb5a7fc7e9211e17a03d42ad6f8",
+          "row_count": 8,
+          "source": "https://api.github.com/repos/{owner}/{repo}"
+        }
+      ]
+    },
+    {
+      "event": "prometheus_rule_state",
+      "utc": "2026-11-05T05:24:03.150894+00:00",
+      "elapsed_s": 16.66,
+      "alert": "DataGuardDatabaseUnavailable",
+      "state": "inactive"
+    },
+    {
+      "event": "prometheus_rule_state",
+      "utc": "2026-11-05T05:24:03.377931+00:00",
+      "elapsed_s": 16.89,
+      "alert": "DataGuardMetricsUnavailable",
+      "state": "inactive"
+    },
+    {
+      "event": "isolated_postgres_stopped",
+      "utc": "2026-11-05T05:24:06.833307+00:00",
+      "elapsed_s": 20.34
+    },
+    {
+      "event": "database_outage",
+      "utc": "2026-11-05T05:24:17.257018+00:00",
+      "elapsed_s": 30.77,
+      "health": 200,
+      "ready": 503,
+      "metrics": 200,
+      "database_up": 0,
+      "public_replay_rows": 500
+    },
+    {
+      "event": "prometheus_rule_state",
+      "utc": "2026-11-05T05:24:23.670644+00:00",
+      "elapsed_s": 37.19,
+      "alert": "DataGuardDatabaseUnavailable",
+      "state": "pending"
+    },
+    {
+      "event": "prometheus_rule_state",
+      "utc": "2026-11-05T05:25:23.678229+00:00",
+      "elapsed_s": 97.19,
+      "alert": "DataGuardDatabaseUnavailable",
+      "state": "firing"
+    },
+    {
+      "event": "isolated_postgres_restarted",
+      "utc": "2026-11-05T05:25:24.554803+00:00",
+      "elapsed_s": 98.06
+    },
+    {
+      "event": "prometheus_rule_state",
+      "utc": "2026-11-05T05:25:37.591510+00:00",
+      "elapsed_s": 111.09,
+      "alert": "DataGuardDatabaseUnavailable",
+      "state": "inactive"
+    },
+    {
+      "event": "database_recovery",
+      "utc": "2026-11-05T05:25:37.722800+00:00",
+      "elapsed_s": 111.24,
+      "ready": 200,
+      "capture_identity_unchanged": true
+    },
+    {
+      "event": "isolated_api_stopped",
+      "utc": "2026-11-05T05:25:37.731835+00:00",
+      "elapsed_s": 111.24
+    },
+    {
+      "event": "prometheus_rule_state",
+      "utc": "2026-11-05T05:26:03.024485+00:00",
+      "elapsed_s": 136.53,
+      "alert": "DataGuardMetricsUnavailable",
+      "state": "pending"
+    },
+    {
+      "event": "prometheus_rule_state",
+      "utc": "2026-11-05T05:27:04.015824+00:00",
+      "elapsed_s": 197.53,
+      "alert": "DataGuardMetricsUnavailable",
+      "state": "firing"
+    },
+    {
+      "event": "isolated_api_restarted",
+      "utc": "2026-11-05T05:27:04.353198+00:00",
+      "elapsed_s": 197.86
+    },
+    {
+      "event": "prometheus_rule_state",
+      "utc": "2026-11-05T05:27:10.026304+00:00",
+      "elapsed_s": 203.53,
+      "alert": "DataGuardMetricsUnavailable",
+      "state": "inactive"
+    },
+    {
+      "event": "service_recovery",
+      "utc": "2026-11-05T05:27:10.173619+00:00",
+      "elapsed_s": 203.69,
+      "ready": 200,
+      "metrics_without_bearer": 401,
+      "capture_identity_unchanged": true
+    }
+  ],
+  "prometheus_package_version": "2.45.3+ds-2ubuntu0.3",
+  "prometheus_package_sha256": "299dda2866a1efa3a085ac19938528eb918a66c74ccc8025ffc59a753f78d8d3",
+  "canonical_unauthenticated_metrics_status": 401
+}
