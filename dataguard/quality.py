@@ -397,10 +397,16 @@ def fetch_repositories():
 def provider_settings():
     """Provider identity is explicit; an exhausted free quota never falls back to paid usage."""
     gemini = bool(os.getenv("GEMINI_API_KEY", "").strip())
+    gemini_model = os.getenv("DATAGUARD_GEMINI_MODEL", "gemini-3.5-flash-lite")
+    valid_gemini_model = gemini_model in {"gemini-3.5-flash-lite", "gemini-3.1-flash-lite"}
     return {
-        "configured": gemini or bool(os.getenv("OPENAI_API_KEY", "").strip()),
+        "configured": valid_gemini_model
+        if gemini
+        else bool(os.getenv("OPENAI_API_KEY", "").strip()),
         "provider": "Google Gemini" if gemini else "OpenAI",
-        "model": "gemini-3.5-flash-lite" if gemini else os.getenv("OPENAI_MODEL", "gpt-4.1-mini"),
+        "model": (gemini_model if valid_gemini_model else None)
+        if gemini
+        else os.getenv("OPENAI_MODEL", "gpt-4.1-mini"),
         "public_data_only": gemini,
         "billing_mode": "Gemini free tier; project billing disabled at setup"
         if gemini
@@ -457,7 +463,7 @@ def provider_retry_delay(value):
 
 def investigate(store, question, *, public_demo=False):
     configured = provider_settings()
-    if public_demo and not configured["public_data_only"]:
+    if public_demo and (not configured["public_data_only"] or not configured["configured"]):
         raise HTTPException(
             503, "The free public investigator is unavailable. No paid provider will be used."
         )
@@ -466,7 +472,7 @@ def investigate(store, question, *, public_demo=False):
     if not configured["configured"]:
         raise HTTPException(
             503,
-            "AI provider is not configured. Add GEMINI_API_KEY or OPENAI_API_KEY to enable real investigations.",
+            "AI provider is unavailable. Check the server provider credential and model configuration.",
         )
     secret_values = [
         os.getenv(name, "")
@@ -736,12 +742,13 @@ def quality_router(store, authorize):
 
     @router.get("/provider")
     def provider():
+        configured = provider_settings()
         return {
-            **provider_settings(),
+            **configured,
             "public_demo": {
                 "endpoint": "/api/quality/public-investigate",
                 "requires_authentication": False,
-                "configured": bool(os.getenv("GEMINI_API_KEY", "").strip()),
+                "configured": configured["configured"] and configured["public_data_only"],
                 "question_max_characters": 600,
                 "limits": PUBLIC_LIMITS,
                 "limiter_backend": store.engine.dialect.name,
@@ -754,7 +761,8 @@ def quality_router(store, authorize):
     @router.post("/public-investigate")
     def public_agent(body: PublicInvestigation, request: Request):
         check_origin(request)
-        if not os.getenv("GEMINI_API_KEY", "").strip():
+        configured = provider_settings()
+        if not configured["configured"] or not configured["public_data_only"]:
             raise HTTPException(
                 503, "The free public investigator is unavailable. No paid provider will be used."
             )

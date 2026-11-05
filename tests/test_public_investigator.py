@@ -238,12 +238,26 @@ def test_no_raw_ip_is_persisted_and_free_provider_is_required(app, monkeypatch):
     assert len(calls) == 1
 
 
-def test_real_public_tool_loop_never_includes_private_uploads(app, monkeypatch):
+@pytest.mark.parametrize("public_demo", [True, False])
+@pytest.mark.parametrize("model", [None, "gemini-3.1-flash-lite"])
+def test_selected_model_tool_loop_never_includes_private_uploads(
+    app, monkeypatch, model, public_demo
+):
     import io
 
     import dataguard.quality as module
 
+    if model is None:
+        monkeypatch.delenv("DATAGUARD_GEMINI_MODEL", raising=False)
+    else:
+        monkeypatch.setenv("DATAGUARD_GEMINI_MODEL", model)
+    expected_model = model or "gemini-3.5-flash-lite"
+    monkeypatch.setenv("OPENAI_API_KEY", "unit-paid-fallback-must-not-be-used")
     with TestClient(app) as client:
+        status = client.get("/api/quality/provider").json()
+        assert status["model"] == expected_model
+        assert status["configured"] is True
+        assert status["public_demo"]["configured"] is True
         public = client.get("/api/quality/workspace").json()["captures"][0]
         private = client.post(
             "/api/quality/uploads",
@@ -293,23 +307,126 @@ def test_real_public_tool_loop_never_includes_private_uploads(app, monkeypatch):
                 == "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions"
             )
             sent.append(json.loads(request.data))
+            # A configuration change cannot switch a signed conversation mid-turn.
+            monkeypatch.setenv(
+                "DATAGUARD_GEMINI_MODEL",
+                "gemini-3.5-flash-lite" if model else "gemini-3.1-flash-lite",
+            )
             return io.BytesIO(json.dumps({"choices": [{"message": replies.pop(0)}]}).encode())
 
         monkeypatch.setattr(module.urllib.request, "urlopen", respond)
         response = client.post(
-            "/api/quality/public-investigate",
+            "/api/quality/public-investigate" if public_demo else "/api/quality/investigate",
+            headers={} if public_demo else {"Authorization": "Bearer " + TOKEN},
             json={"question": "Inspect the latest public GitHub records."},
         )
     assert response.status_code == 200
     data = response.json()
-    assert data["public_demo"] is True and data["public_data_only"] is True
+    assert data["public_data_only"] is True
+    assert data["model"] == expected_model
+    assert all(payload["model"] == expected_model for payload in sent)
     assert len(sent) == 2
     assert "PRIVATE-UPLOAD-MARKER" not in json.dumps(sent)
     assert "PRIVATE-RECORD-MARKER" not in json.dumps(sent)
     assert data["trace"][1]["result"]["error"] == "Capture is outside public GitHub evidence scope"
     assert data["trace"][2]["result"]["row_count"] == 8
-    assert "records" not in data["trace"][2]["result"]
-    assert data["quota"]["remaining"]["global_minute"] == 1
+    if public_demo:
+        assert data["public_demo"] is True
+        assert "records" not in data["trace"][2]["result"]
+        assert data["quota"]["remaining"]["global_minute"] == 1
+
+
+@pytest.mark.parametrize("model", ["paid-model-secret-marker", "", "   ", " gemini-3.1-flash-lite"])
+def test_invalid_model_disables_ai_before_quota_or_provider(app, monkeypatch, model):
+    import dataguard.quality as module
+
+    monkeypatch.setenv("DATAGUARD_GEMINI_MODEL", model)
+    monkeypatch.setenv("OPENAI_API_KEY", "unit-paid-fallback-must-not-be-used")
+
+    def forbidden(*args, **kwargs):
+        pytest.fail("Invalid Gemini configuration must not reserve quota or call any provider")
+
+    monkeypatch.setattr(module.PublicQuota, "reserve", forbidden)
+    monkeypatch.setattr(module.urllib.request, "urlopen", forbidden)
+    with TestClient(app) as client:
+        assert client.get("/health").json() == {"status": "alive"}
+        assert client.get("/ready").json() == {"status": "ready"}
+        assert client.get("/api/quality/workspace").status_code == 200
+        status = client.get("/api/quality/provider")
+        assert status.status_code == 200
+        assert status.json()["provider"] == "Google Gemini"
+        assert status.json()["public_data_only"] is True
+        assert status.json()["configured"] is False
+        assert status.json()["model"] is None
+        assert status.json()["public_demo"]["configured"] is False
+        for path, headers in [
+            ("/api/quality/public-investigate", {}),
+            ("/api/quality/investigate", {"Authorization": "Bearer " + TOKEN}),
+        ]:
+            response = client.post(
+                path, headers=headers, json={"question": "Inspect public evidence."}
+            )
+            assert response.status_code == 503
+            assert "paid-model-secret-marker" not in status.text + response.text
+
+
+@pytest.mark.parametrize("field", ["model", "provider", "endpoint"])
+def test_public_caller_cannot_override_server_model(app, monkeypatch, field):
+    calls = mock_investigator(monkeypatch)
+    monkeypatch.setenv("DATAGUARD_GEMINI_MODEL", "gemini-3.1-flash-lite")
+    with TestClient(app) as client:
+        response = client.post(
+            "/api/quality/public-investigate",
+            json={"question": "Inspect public evidence.", field: "caller-controlled"},
+        )
+    assert response.status_code == 422
+    assert calls == []
+
+
+def test_gemini_selector_does_not_change_private_openai_configuration(app, monkeypatch):
+    import io
+
+    import dataguard.quality as module
+
+    monkeypatch.delenv("GEMINI_API_KEY")
+    monkeypatch.setenv("DATAGUARD_GEMINI_MODEL", "invalid-gemini-only-setting")
+    monkeypatch.setenv("OPENAI_API_KEY", "unit-private-openai-key-never-sent")
+    monkeypatch.setenv("OPENAI_MODEL", "operator-selected-openai-model")
+    payloads = []
+
+    def respond(request, timeout):
+        assert request.full_url == "https://api.openai.com/v1/chat/completions"
+        payloads.append(json.loads(request.data))
+        message = {"role": "assistant", "content": "Observed retained capture evidence."}
+        if len(payloads) == 1:
+            message = {
+                "role": "assistant",
+                "tool_calls": [
+                    {
+                        "id": "read",
+                        "type": "function",
+                        "function": {"name": "list_captures", "arguments": "{}"},
+                    }
+                ],
+            }
+        return io.BytesIO(json.dumps({"choices": [{"message": message}]}).encode())
+
+    monkeypatch.setattr(module.urllib.request, "urlopen", respond)
+    with TestClient(app) as client:
+        status = client.get("/api/quality/provider").json()
+        assert status["configured"] is True and status["provider"] == "OpenAI"
+        assert status["model"] == "operator-selected-openai-model"
+        assert status["public_demo"]["configured"] is False
+        response = client.post(
+            "/api/quality/investigate",
+            headers={"Authorization": "Bearer " + TOKEN},
+            json={"question": "Inspect retained capture evidence."},
+        )
+    assert response.status_code == 200
+    assert response.json()["public_data_only"] is False
+    assert response.json()["trace"][0]["tool"] == "list_captures"
+    assert len(payloads) == 2
+    assert all(payload["model"] == "operator-selected-openai-model" for payload in payloads)
 
 
 def test_missing_server_protection_and_oversized_model_output_fail_closed(app, monkeypatch):

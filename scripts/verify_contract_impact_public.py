@@ -56,7 +56,8 @@ after = json.loads(call("/api/quality/workspace")[2])
 for key in ("captures", "contract", "actions", "restored"):
     assert before[key] == after[key]
 provider = json.loads(call("/api/quality/provider")[2])
-assert provider["model"] == "gemini-3.5-flash-lite"
+assert provider["provider"] == "Google Gemini" and provider["configured"] is True
+assert provider["model"] in {"gemini-3.5-flash-lite", "gemini-3.1-flash-lite"}
 assert provider["public_demo"]["limits"] == {
     "per_client": {"limit": 3, "seconds": 600},
     "global_minute": {"limit": 2, "seconds": 60},
@@ -75,7 +76,7 @@ evidence = {
         "cross_origin_rejected": True,
         "private_write_requires_authentication": True,
         "stored_state_unchanged": True,
-        "fixed_gemini_model": True,
+        "server_allowlisted_gemini_model": provider["model"],
         "persistent_ai_limits_unchanged": True,
         "model_requests_made": 0,
     },
