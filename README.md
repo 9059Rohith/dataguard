@@ -4,13 +4,13 @@
 
 [Live workspace](https://rohith-dataguard.vercel.app) · [Live API docs](https://rohith-dataguard.vercel.app/docs) · [Source](https://github.com/9059Rohith/dataguard) · [Workspace verification](evidence/quality-verification.md)
 
-![DataGuard editorial audit workspace](evidence/design/redesign-overview-live.jpg)
+![DataGuard field journal with the public quality ledger](evidence/field-journal-production-overview.jpg)
 
 ## Repository quality workspace
 
 The public workspace has 14 routes, including the contract impact workbench, quality checks, capture history, version comparison, lineage and AI investigator. Repository counts come from captured GitHub REST responses. The bundled workspace capture was collected on 1 November 2026. The interface displays capture and evaluation timestamps and makes freshness checks explicit.
 
-The editorial interface uses self-hosted Instrument Serif and Manrope, an ivory-and-forest audit ledger, thin-rule source tables, and a visible provenance trail. Search and sort actual records, open a source detail drawer, then follow that record into its stored checks or prepare a public-data investigation. Capture history supports text and status filters. AI findings support safe Markdown, source links, and capture citations that open the corresponding evidence drawer. Mobile navigation supports Escape, focus containment, and reduced motion. The [design concepts and verification](evidence/design/IMPLEMENTATION.md) document the visual system and its checks.
+The field journal pairs self-hosted Instrument Serif and Manrope with 22 original botanical and geological illustrations across the 14 console routes. The overview leads from its forest and ginkgo plates into the real quality ledger, source trail, and repository register. Search, sort, and inspect source records, then follow them into their stored checks or public investigation. Mobile navigation supports Escape and focus restoration. Reduced motion disables the entry and scroll effects. [Design audit and production verification](docs/field-journal-audit.md) · [Artwork manifest](dataguard/archive-manifest.json)
 
 The workspace and investigator use eight allowlisted public repositories covering FastAPI, Pydantic, SQLAlchemy, Starlette, Uvicorn, Prometheus Python client, Psycopg, and Pytest. GitHub open issue counts include pull requests. The separate Apache benchmark has its own source artifact and scope. [Workspace capture](dataguard/source_capture.json) · [GitHub repository API](https://docs.github.com/en/rest/repos/repos#get-a-repository)
 

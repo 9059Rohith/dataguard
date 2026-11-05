@@ -1,0 +1,69 @@
+{
+  "checked": [
+    {
+      "route": "overview",
+      "width": 390,
+      "dimensions": [
+        390,
+        390
+      ]
+    },
+    {
+      "route": "datasets",
+      "width": 390,
+      "dimensions": [
+        390,
+        390
+      ]
+    },
+    {
+      "route": "checks",
+      "width": 390,
+      "dimensions": [
+        390,
+        390
+      ]
+    },
+    {
+      "route": "impact",
+      "width": 390,
+      "dimensions": [
+        390,
+        390
+      ]
+    },
+    {
+      "route": "overview",
+      "width": 1366,
+      "dimensions": [
+        1366,
+        1366
+      ]
+    },
+    {
+      "route": "datasets",
+      "width": 1366,
+      "dimensions": [
+        1366,
+        1366
+      ]
+    },
+    {
+      "route": "checks",
+      "width": 1366,
+      "dimensions": [
+        1366,
+        1366
+      ]
+    },
+    {
+      "route": "impact",
+      "width": 1366,
+      "dimensions": [
+        1366,
+        1366
+      ]
+    }
+  ],
+  "failures": []
+}

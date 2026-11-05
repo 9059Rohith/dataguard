@@ -1,0 +1,21 @@
+{
+  "url": "https://rohith-dataguard.vercel.app/console/overview",
+  "lighthouse_version": "13.6.0",
+  "measured_at": "2026-11-05T03:38:34.879Z",
+  "form_factor": "mobile",
+  "throttling_method": "simulate",
+  "scores": {
+    "performance": 94,
+    "accessibility": 100,
+    "best-practices": 100,
+    "seo": 100
+  },
+  "metrics": {
+    "largest-contentful-paint": 1661.4070000000002,
+    "cumulative-layout-shift": 0.12043097092847008,
+    "total-blocking-time": 32,
+    "first-contentful-paint": 1211.4070000000002,
+    "speed-index": 3694.1977134282056
+  },
+  "run_warnings": []
+}

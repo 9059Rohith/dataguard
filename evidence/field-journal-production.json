@@ -1,0 +1,225 @@
+{
+  "canonical": "https://rohith-dataguard.vercel.app",
+  "verified_at": "2026-11-05T03:39:50.007491+00:00",
+  "runtime_source_commit": "2c0a6542dcfe",
+  "deployment_id": "dpl_4Upo7Zsfnet5w691TQeMitY3nwcG",
+  "routes": [
+    "overview",
+    "datasets",
+    "contracts",
+    "impact",
+    "checks",
+    "batches",
+    "quarantine",
+    "versions",
+    "lineage",
+    "incidents",
+    "recovery",
+    "agent",
+    "connections",
+    "settings"
+  ],
+  "assets": [
+    {
+      "file": "overview-ginkgo.svg",
+      "route": "overview",
+      "sha256": "f30661374e9d9673cf192401cad7d95d7d314e6ffda4069588ea08e8dd0c033e",
+      "bytes": 12057
+    },
+    {
+      "file": "overview-forest-engraving.svg",
+      "route": "overview",
+      "sha256": "3bcbbe8eae3c5978dce0e1354446b61609f40df9b0d4c9018d62874f2465a31d",
+      "bytes": 80989
+    },
+    {
+      "file": "datasets-herbarium.svg",
+      "route": "datasets",
+      "sha256": "0cbc8987bacd4ad256d9d1909a28ee9bc1b9b8240ebcfd800b92bc96720c279e",
+      "bytes": 29817
+    },
+    {
+      "file": "contracts-pressed-fern.svg",
+      "route": "contracts",
+      "sha256": "de378afbb9dbae71e30145011a9fbaaef9ca611259e47e23014fae5d64ac0811",
+      "bytes": 46623
+    },
+    {
+      "file": "impact-specimen-pair.svg",
+      "route": "impact",
+      "sha256": "0a235db4c346adcb452b3529b1ecb7d1bf71e32a29809cd8c1737bc105b28607",
+      "bytes": 23924
+    },
+    {
+      "file": "checks-calibration-rosette.svg",
+      "route": "checks",
+      "sha256": "1c21c494e2d2aac72b47e61fa87a65ce8f0928ffab8a71ecfceea91e7ffe5a0c",
+      "bytes": 40973
+    },
+    {
+      "file": "batches-sediment-register.svg",
+      "route": "batches",
+      "sha256": "80d2f1791d4acfadf1f15d8ac072ad287b8652a2baef4e7c133149ebe75cfcff",
+      "bytes": 11054
+    },
+    {
+      "file": "quarantine-sealed-pod.svg",
+      "route": "quarantine",
+      "sha256": "2409d5ed38b5a896f1f37169b93f4a52b9303a91c8c4755930339bcbe307348a",
+      "bytes": 7113
+    },
+    {
+      "file": "versions-double-imprint.svg",
+      "route": "versions",
+      "sha256": "fcb70ae2bdb6863fd515cee5664a45ff7b25ead8c781aaedab6006ad4db840ff",
+      "bytes": 12140
+    },
+    {
+      "file": "lineage-root-etching.svg",
+      "route": "lineage",
+      "sha256": "00f1c9b1e11e07c3f6895f358dbce6ef46133aa48ce12bfc14a4093201a7f4a7",
+      "bytes": 11186
+    },
+    {
+      "file": "incidents-fracture-plate.svg",
+      "route": "incidents",
+      "sha256": "346bc36f57a1ecdbec29ae961eed8f863dc160e6a537f40e5d5439b56fdb44b2",
+      "bytes": 8221
+    },
+    {
+      "file": "recovery-growth-rings.svg",
+      "route": "recovery",
+      "sha256": "f7aea55fb395b3357609b22fb67a993283baa841a0f8a3f71bd7188698ce5d4e",
+      "bytes": 9513
+    },
+    {
+      "file": "agent-leaf-prism.svg",
+      "route": "agent",
+      "sha256": "c3c3a56c33e191f0415612421f73261c6362b6003f59be9475ec5b2549ddd74c",
+      "bytes": 10312
+    },
+    {
+      "file": "connections-root-junction.svg",
+      "route": "connections",
+      "sha256": "25a2fe06d7a44b9d37d558adc43bb6c4c65c066d60f602ff87021960b8a0c51f",
+      "bytes": 20614
+    },
+    {
+      "file": "settings-alignment-folio.svg",
+      "route": "settings",
+      "sha256": "57859af814ff9d3200c1c49c4be256624c8e46f44195228dbeb8351467779b5a",
+      "bytes": 56273
+    },
+    {
+      "file": "ledger-canopy-print.svg",
+      "route": "overview",
+      "sha256": "801e6cfbadbd06dd841b7e13be9aaa59700a29ea1c4ea3ad480e943d0d8fb36d",
+      "bytes": 33320
+    },
+    {
+      "file": "provenance-ammonite.svg",
+      "route": "overview",
+      "sha256": "323ebdea0c88360de08d3e93c7ed3d652b14eb4db4520f58438c3094219038a6",
+      "bytes": 7640
+    },
+    {
+      "file": "checks-acorn-collection.svg",
+      "route": "checks",
+      "sha256": "f9e2a17a47bb0da9fdaa258c391228e6647ddb3324c51cf49c76964c83853407",
+      "bytes": 11301
+    },
+    {
+      "file": "impact-mineral-core.svg",
+      "route": "impact",
+      "sha256": "832be7b4a6ee6832a57f00abee178493346f858a7cda4fd5a4ddfadbc456cb08",
+      "bytes": 3482
+    },
+    {
+      "file": "lineage-delta-channel.svg",
+      "route": "lineage",
+      "sha256": "7ec077806c8c27b16f34892a1dc540eac17d25d4130154e4c440a04a24aec24f",
+      "bytes": 8362
+    },
+    {
+      "file": "recovery-new-sprout.svg",
+      "route": "recovery",
+      "sha256": "b555a6d8c409a39de9d7abd3000dcde0084517dddf8ffd31a0de39d48ca6f5fc",
+      "bytes": 15613
+    },
+    {
+      "file": "agent-evidence-veins.svg",
+      "route": "agent",
+      "sha256": "3a130fb615f53fd8d4b9a0a177a803470ef1375b0a6966cf9aa14d8954f05846",
+      "bytes": 20887
+    }
+  ],
+  "distinct_assets": 22,
+  "workspace_storage": "PostgreSQL",
+  "public_workspace_captures": 2,
+  "workspace_same_after_checks": true,
+  "benchmark": {
+    "rows": 500,
+    "baseline": "published",
+    "strict": "quarantined",
+    "strict_failures": {
+      "license": 96,
+      "archived": 177
+    }
+  },
+  "impact_accepted_to_rejected": 8,
+  "unauthenticated_upload_status": 401,
+  "unknown_asset_status": 404,
+  "fonts_verified": 2,
+  "model_calls": 0,
+  "staged_preview": "Vercel SSO redirect, verified preview locally before promotion",
+  "runtime_observation": {
+    "observed_http_status": 500,
+    "path": "/console/overview",
+    "time_utc": "2026-11-05T03:40:59.217Z",
+    "deployment_log_message": "Application exited with code 1.",
+    "specific_cause": "Unconfirmed; bounded logs did not provide a traceback or causal error",
+    "followup_checked_at": "2026-11-05T03:43:50.148151+00:00",
+    "followup_probes": [
+      {
+        "path": "/console/overview",
+        "status": 200,
+        "elapsed_ms": 3281
+      },
+      {
+        "path": "/ready",
+        "status": 200,
+        "elapsed_ms": 1016
+      },
+      {
+        "path": "/console/overview",
+        "status": 200,
+        "elapsed_ms": 531
+      },
+      {
+        "path": "/ready",
+        "status": 200,
+        "elapsed_ms": 484
+      },
+      {
+        "path": "/console/overview",
+        "status": 200,
+        "elapsed_ms": 407
+      },
+      {
+        "path": "/ready",
+        "status": 200,
+        "elapsed_ms": 1500
+      },
+      {
+        "path": "/console/overview",
+        "status": 200,
+        "elapsed_ms": 437
+      },
+      {
+        "path": "/ready",
+        "status": 200,
+        "elapsed_ms": 3719
+      }
+    ]
+  }
+}

@@ -1,0 +1,435 @@
+{
+  "base": "http://127.0.0.1:55466",
+  "checked": [
+    {
+      "route": "overview",
+      "width": 320,
+      "client": 320,
+      "scroll": 320
+    },
+    {
+      "route": "datasets",
+      "width": 320,
+      "client": 320,
+      "scroll": 320
+    },
+    {
+      "route": "contracts",
+      "width": 320,
+      "client": 320,
+      "scroll": 320
+    },
+    {
+      "route": "impact",
+      "width": 320,
+      "client": 320,
+      "scroll": 320
+    },
+    {
+      "route": "checks",
+      "width": 320,
+      "client": 320,
+      "scroll": 320
+    },
+    {
+      "route": "batches",
+      "width": 320,
+      "client": 320,
+      "scroll": 320
+    },
+    {
+      "route": "quarantine",
+      "width": 320,
+      "client": 320,
+      "scroll": 320
+    },
+    {
+      "route": "versions",
+      "width": 320,
+      "client": 320,
+      "scroll": 320
+    },
+    {
+      "route": "lineage",
+      "width": 320,
+      "client": 320,
+      "scroll": 320
+    },
+    {
+      "route": "incidents",
+      "width": 320,
+      "client": 320,
+      "scroll": 320
+    },
+    {
+      "route": "recovery",
+      "width": 320,
+      "client": 320,
+      "scroll": 320
+    },
+    {
+      "route": "agent",
+      "width": 320,
+      "client": 320,
+      "scroll": 320
+    },
+    {
+      "route": "connections",
+      "width": 320,
+      "client": 320,
+      "scroll": 320
+    },
+    {
+      "route": "settings",
+      "width": 320,
+      "client": 320,
+      "scroll": 320
+    },
+    {
+      "route": "overview",
+      "width": 390,
+      "client": 390,
+      "scroll": 390
+    },
+    {
+      "route": "datasets",
+      "width": 390,
+      "client": 390,
+      "scroll": 390
+    },
+    {
+      "route": "contracts",
+      "width": 390,
+      "client": 390,
+      "scroll": 390
+    },
+    {
+      "route": "impact",
+      "width": 390,
+      "client": 390,
+      "scroll": 390
+    },
+    {
+      "route": "checks",
+      "width": 390,
+      "client": 390,
+      "scroll": 390
+    },
+    {
+      "route": "batches",
+      "width": 390,
+      "client": 390,
+      "scroll": 390
+    },
+    {
+      "route": "quarantine",
+      "width": 390,
+      "client": 390,
+      "scroll": 390
+    },
+    {
+      "route": "versions",
+      "width": 390,
+      "client": 390,
+      "scroll": 390
+    },
+    {
+      "route": "lineage",
+      "width": 390,
+      "client": 390,
+      "scroll": 390
+    },
+    {
+      "route": "incidents",
+      "width": 390,
+      "client": 390,
+      "scroll": 390
+    },
+    {
+      "route": "recovery",
+      "width": 390,
+      "client": 390,
+      "scroll": 390
+    },
+    {
+      "route": "agent",
+      "width": 390,
+      "client": 390,
+      "scroll": 390
+    },
+    {
+      "route": "connections",
+      "width": 390,
+      "client": 390,
+      "scroll": 390
+    },
+    {
+      "route": "settings",
+      "width": 390,
+      "client": 390,
+      "scroll": 390
+    },
+    {
+      "route": "overview",
+      "width": 820,
+      "client": 820,
+      "scroll": 820
+    },
+    {
+      "route": "datasets",
+      "width": 820,
+      "client": 820,
+      "scroll": 820
+    },
+    {
+      "route": "contracts",
+      "width": 820,
+      "client": 820,
+      "scroll": 820
+    },
+    {
+      "route": "impact",
+      "width": 820,
+      "client": 820,
+      "scroll": 820
+    },
+    {
+      "route": "checks",
+      "width": 820,
+      "client": 820,
+      "scroll": 820
+    },
+    {
+      "route": "batches",
+      "width": 820,
+      "client": 820,
+      "scroll": 820
+    },
+    {
+      "route": "quarantine",
+      "width": 820,
+      "client": 820,
+      "scroll": 820
+    },
+    {
+      "route": "versions",
+      "width": 820,
+      "client": 820,
+      "scroll": 820
+    },
+    {
+      "route": "lineage",
+      "width": 820,
+      "client": 820,
+      "scroll": 820
+    },
+    {
+      "route": "incidents",
+      "width": 820,
+      "client": 820,
+      "scroll": 820
+    },
+    {
+      "route": "recovery",
+      "width": 820,
+      "client": 820,
+      "scroll": 820
+    },
+    {
+      "route": "agent",
+      "width": 820,
+      "client": 820,
+      "scroll": 820
+    },
+    {
+      "route": "connections",
+      "width": 820,
+      "client": 820,
+      "scroll": 820
+    },
+    {
+      "route": "settings",
+      "width": 820,
+      "client": 820,
+      "scroll": 820
+    },
+    {
+      "route": "overview",
+      "width": 1366,
+      "client": 1366,
+      "scroll": 1366
+    },
+    {
+      "route": "datasets",
+      "width": 1366,
+      "client": 1366,
+      "scroll": 1366
+    },
+    {
+      "route": "contracts",
+      "width": 1366,
+      "client": 1366,
+      "scroll": 1366
+    },
+    {
+      "route": "impact",
+      "width": 1366,
+      "client": 1366,
+      "scroll": 1366
+    },
+    {
+      "route": "checks",
+      "width": 1366,
+      "client": 1366,
+      "scroll": 1366
+    },
+    {
+      "route": "batches",
+      "width": 1366,
+      "client": 1366,
+      "scroll": 1366
+    },
+    {
+      "route": "quarantine",
+      "width": 1366,
+      "client": 1366,
+      "scroll": 1366
+    },
+    {
+      "route": "versions",
+      "width": 1366,
+      "client": 1366,
+      "scroll": 1366
+    },
+    {
+      "route": "lineage",
+      "width": 1366,
+      "client": 1366,
+      "scroll": 1366
+    },
+    {
+      "route": "incidents",
+      "width": 1366,
+      "client": 1366,
+      "scroll": 1366
+    },
+    {
+      "route": "recovery",
+      "width": 1366,
+      "client": 1366,
+      "scroll": 1366
+    },
+    {
+      "route": "agent",
+      "width": 1366,
+      "client": 1366,
+      "scroll": 1366
+    },
+    {
+      "route": "connections",
+      "width": 1366,
+      "client": 1366,
+      "scroll": 1366
+    },
+    {
+      "route": "settings",
+      "width": 1366,
+      "client": 1366,
+      "scroll": 1366
+    },
+    {
+      "route": "overview",
+      "width": 1920,
+      "client": 1920,
+      "scroll": 1920
+    },
+    {
+      "route": "datasets",
+      "width": 1920,
+      "client": 1920,
+      "scroll": 1920
+    },
+    {
+      "route": "contracts",
+      "width": 1920,
+      "client": 1920,
+      "scroll": 1920
+    },
+    {
+      "route": "impact",
+      "width": 1920,
+      "client": 1920,
+      "scroll": 1920
+    },
+    {
+      "route": "checks",
+      "width": 1920,
+      "client": 1920,
+      "scroll": 1920
+    },
+    {
+      "route": "batches",
+      "width": 1920,
+      "client": 1920,
+      "scroll": 1920
+    },
+    {
+      "route": "quarantine",
+      "width": 1920,
+      "client": 1920,
+      "scroll": 1920
+    },
+    {
+      "route": "versions",
+      "width": 1920,
+      "client": 1920,
+      "scroll": 1920
+    },
+    {
+      "route": "lineage",
+      "width": 1920,
+      "client": 1920,
+      "scroll": 1920
+    },
+    {
+      "route": "incidents",
+      "width": 1920,
+      "client": 1920,
+      "scroll": 1920
+    },
+    {
+      "route": "recovery",
+      "width": 1920,
+      "client": 1920,
+      "scroll": 1920
+    },
+    {
+      "route": "agent",
+      "width": 1920,
+      "client": 1920,
+      "scroll": 1920
+    },
+    {
+      "route": "connections",
+      "width": 1920,
+      "client": 1920,
+      "scroll": 1920
+    },
+    {
+      "route": "settings",
+      "width": 1920,
+      "client": 1920,
+      "scroll": 1920
+    }
+  ],
+  "distinctVisibleArtwork": 22,
+  "desktopPublicWorkflows": [
+    "baseline/strict benchmark",
+    "contract comparison",
+    "route history"
+  ],
+  "mobileKeyboardMenu": true,
+  "reducedMotion": true,
+  "scrollLinked": true,
+  "errors": []
+}
