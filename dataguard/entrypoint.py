@@ -4,8 +4,6 @@ import os
 
 from sqlalchemy.engine import URL
 
-from dataguard.service import Pipeline
-
 
 def main():
     port = os.getenv("PORT", "8000")
@@ -20,10 +18,7 @@ def main():
             database=os.getenv("DATABASE_NAME", "dataguard"),
             query={"sslmode": os.getenv("DATABASE_SSLMODE", "require")},
         ).render_as_string(hide_password=False)
-    pipeline = Pipeline(os.environ["DATABASE_URL"])
-    pipeline.initialize()
-    pipeline.engine.dispose()
-    os.environ["DATAGUARD_AUTO_INIT"] = "false"
+    os.environ["DATAGUARD_BACKGROUND_INIT"] = "true"
     # Container ingress is restricted by Compose loopback binding or platform security groups.
     os.execvp(
         "uvicorn",

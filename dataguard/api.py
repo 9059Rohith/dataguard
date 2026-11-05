@@ -2,6 +2,7 @@
 
 import base64
 import hashlib
+import logging
 import os
 import re
 import secrets
@@ -28,6 +29,7 @@ from dataguard.quality import QualityStore, quality_router
 from dataguard.quality_benchmark import router as quality_benchmark_router
 from dataguard.service import Busy, Conflict, Pipeline
 
+logger = logging.getLogger(__name__)
 BatchId = Annotated[int, PathParameter(ge=1, le=2_147_483_647)]
 ComparisonId = Annotated[int, Query(ge=1, le=2_147_483_647)]
 
@@ -124,6 +126,8 @@ def metadata_access(authorization: str | None = Header(default=None)):
 def create_app(url=None):
     pipeline = Pipeline(url or os.getenv("DATABASE_URL", "sqlite:///dataguard.db"))
     quality = QualityStore(pipeline.engine)
+    background_init = os.getenv("DATAGUARD_BACKGROUND_INIT", "false").lower() == "true"
+    bootstrap_complete = False
     registry = CollectorRegistry()
     counter = Counter(
         "dataguard_process_total", "Worker invocation outcomes", ["status"], registry=registry
@@ -134,17 +138,50 @@ def create_app(url=None):
     db_up = Gauge("dataguard_database_up", "Database readiness", registry=registry)
     history = Gauge("dataguard_attempts", "Persisted attempt counts", ["status"], registry=registry)
 
-    @asynccontextmanager
-    async def lifespan(app):
-        if os.getenv("DATAGUARD_AUTO_INIT", "true").lower() == "true":
+    def initialize_database():
+        if background_init or os.getenv("DATAGUARD_AUTO_INIT", "true").lower() == "true":
             pipeline.initialize()
         quality.initialize()
         if os.getenv("DATAGUARD_SEED_DEMO", "").lower() == "true":
             from dataguard.demo import seed_synthetic_demo
 
             seed_synthetic_demo(pipeline)
-        yield
-        pipeline.engine.dispose()
+
+    async def retry_bootstrap():
+        nonlocal bootstrap_complete
+        delay = 1
+        while True:
+            try:
+                await anyio.to_thread.run_sync(initialize_database)
+            except SQLAlchemyError as error:
+                logger.warning(
+                    "Database bootstrap unavailable (%s); retrying in %s seconds",
+                    type(error).__name__,
+                    delay,
+                )
+                await anyio.sleep(delay)
+                delay = min(delay * 2, 10)
+            else:
+                bootstrap_complete = True
+                return
+
+    @asynccontextmanager
+    async def lifespan(app):
+        nonlocal bootstrap_complete
+        bootstrap_complete = False
+        try:
+            if background_init:
+                async with anyio.create_task_group() as tasks:
+                    tasks.start_soon(retry_bootstrap)
+                    try:
+                        yield
+                    finally:
+                        tasks.cancel_scope.cancel()
+            else:
+                initialize_database()
+                yield
+        finally:
+            pipeline.engine.dispose()
 
     app = FastAPI(
         title="DataGuard",
@@ -229,6 +266,10 @@ def create_app(url=None):
 
     @app.get("/ready")
     def ready():
+        if background_init and not bootstrap_complete:
+            raise HTTPException(
+                503, "Database initialization pending", headers={"Retry-After": "1"}
+            )
         if not pipeline.ready():
             raise HTTPException(503, "Database schema is not initialized")
         return {"status": "ready"}
