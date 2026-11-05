@@ -1,0 +1,55 @@
+{
+  "checks": [
+    [
+      "ruff",
+      "check",
+      "dataguard",
+      "tests",
+      "scripts/verify_build.py"
+    ],
+    [
+      "ruff",
+      "format",
+      "--check",
+      "dataguard",
+      "tests",
+      "scripts/verify_build.py"
+    ],
+    [
+      "bandit",
+      "-r",
+      "dataguard",
+      "-ll"
+    ],
+    [
+      "pytest",
+      "-q",
+      "--junitxml=/verification/junit.xml"
+    ]
+  ],
+  "completed_at": "2026-11-05T13:22:37.927892+00:00",
+  "coverage_limits": [
+    "SQLite unit/default suite; optional TEST_DATABASE_URL PostgreSQL rerun not executed",
+    "No live AI provider, Airflow runtime, Terraform apply, GitHub Actions or AWS claim",
+    "Bandit source scan; dependency and container vulnerability scans are separate checks"
+  ],
+  "fingerprints_sha256": {
+    "locks_and_gate": "5f7e4aea67bf44f369ca433ec3c13a3e900b267c42bc3213d3cf3a6e83188e7e",
+    "source": "233cc32af8abec377258791a295c6d363d60c6d5fe3ca3b555380fd25899f9e0",
+    "tests": "f7ad51bdc6da6235949c05de2bf13495894942a72459a1c5c42504cd6bbcdb3e"
+  },
+  "gate": "vercel-linux-build-verification",
+  "pytest": {
+    "errors": 0,
+    "failures": 0,
+    "passed": 244,
+    "skip_reasons": [
+      "PostgreSQL EXPLAIN ANALYZE work-budget regression"
+    ],
+    "skipped": 1,
+    "total": 245
+  },
+  "python": "3.15.1",
+  "schema_version": 1,
+  "status": "passed"
+}

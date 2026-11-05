@@ -2,3 +2,4 @@
 *.png binary
 # Preserve captured log bytes and timestamp-only whitespace for auditable hashes.
 evidence/ai-recovery-20261105/*.log -text -whitespace
+evidence/backup-live-20261105/*.log -text -whitespace

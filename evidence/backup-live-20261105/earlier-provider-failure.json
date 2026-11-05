@@ -1,0 +1,13 @@
+[
+  {
+    "timestamp": 1793884324620,
+    "deployment_id": "dpl_5Kf7SELwNAttyxQvbK6pjRCMcsos",
+    "path": "/api/quality/public-investigate",
+    "http_status": 503,
+    "provider_diagnostics": [
+      "AI upstream HTTP failure status=503 attempt=4",
+      "AI upstream HTTP failure status=503 attempt=2",
+      "AI upstream transport failure type=TimeoutError attempt=3"
+    ]
+  }
+]

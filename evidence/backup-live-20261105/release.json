@@ -1,0 +1,18 @@
+{
+  "date": "2026-11-05",
+  "project": "dataguard",
+  "deployment_id": "dpl_B1mkdRbspxFxD36wZBRPdSZ5iUSD",
+  "runtime_source_commit": "1c281766f2aa4a619e3b8093fc0e947359cd3f07",
+  "alias": {
+    "alias": "rohith-dataguard.vercel.app",
+    "deployment_id": "dpl_B1mkdRbspxFxD36wZBRPdSZ5iUSD",
+    "project_id": "prj_Rj64lgHU4VPrTiLW8Kgt20f2kJ11"
+  },
+  "status": "READY",
+  "promoted": true,
+  "public_url": "https://rohith-dataguard.vercel.app/",
+  "passed": 244,
+  "skipped": 1,
+  "receipt_scope": "Fresh hosted Linux build",
+  "preferred_model": "gemini-3.1-flash-lite"
+}
