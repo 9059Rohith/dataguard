@@ -2,6 +2,7 @@
 
 import hashlib
 import json
+import logging
 import os
 import re
 import time
@@ -9,6 +10,7 @@ import urllib.error
 import urllib.request
 import uuid
 from datetime import UTC, datetime
+from email.utils import parsedate_to_datetime
 from pathlib import Path
 
 from fastapi import APIRouter, Depends, Header, HTTPException, Request
@@ -26,6 +28,7 @@ from dataguard.public_demo import (
 )
 
 schema = MetaData()
+LOGGER = logging.getLogger(__name__)
 captures = Table(
     "quality_captures",
     schema,
@@ -405,6 +408,8 @@ def provider_settings():
         "max_tools": 6,
         "max_provider_requests": 5,
         "max_quota_retries": 1,
+        "max_provider_retries": 1,
+        "deadline_seconds": 60,
         "permissions": (
             "Public GitHub captures only. Private uploads and notes are excluded."
             if gemini
@@ -433,6 +438,20 @@ def is_public_github_capture(document):
             for record in document.get("records", [])
         )
     )
+
+
+def provider_retry_delay(value):
+    if not isinstance(value, str) or not value.isascii() or len(value) > 128:
+        return None
+    if value.isdecimal():
+        return value if int(value) > 0 else None
+    try:
+        target = parsedate_to_datetime(value)
+        if target.tzinfo is None:
+            target = target.replace(tzinfo=UTC)
+        return value if target.timestamp() > time.time() else None
+    except (ValueError, TypeError, OverflowError):
+        return None
 
 
 def investigate(store, question, *, public_demo=False):
@@ -515,7 +534,8 @@ def investigate(store, question, *, public_demo=False):
     trace = []
     inspected_evidence = False
     provider_requests = 0
-    quota_retries = 0
+    provider_retries = 0
+    deadline = time.monotonic() + 60
     for _ in range(4):
         payload = json.dumps(
             {
@@ -524,6 +544,7 @@ def investigate(store, question, *, public_demo=False):
                 "tools": tools,
                 "max_tokens": 2200 if public_only else 1400,
                 "tool_choice": "required" if not inspected_evidence else "auto",
+                **({"reasoning_effort": "minimal"} if public_only else {}),
             }
         ).encode()
         request = urllib.request.Request(
@@ -532,13 +553,20 @@ def investigate(store, question, *, public_demo=False):
             headers={"Authorization": "Bearer " + key, "Content-Type": "application/json"},
         )
         while True:
+            remaining = deadline - time.monotonic()
+            if remaining <= 0:
+                raise HTTPException(
+                    503,
+                    "AI investigation deadline reached; retry later.",
+                    headers={"Retry-After": "60"},
+                )
             provider_requests += 1
             if provider_requests > 5:
                 raise HTTPException(
                     429, "AI request budget reached. Retry later.", headers={"Retry-After": "60"}
                 )
             try:
-                with urllib.request.urlopen(request, timeout=20) as response:  # nosec B310
+                with urllib.request.urlopen(request, timeout=min(20, remaining)) as response:  # nosec B310
                     raw = response.read(200_001)
                     if len(raw) > 200_000:
                         raise ValueError("Provider response exceeds limit")
@@ -547,9 +575,25 @@ def investigate(store, question, *, public_demo=False):
                         raise ValueError("Invalid provider message")
                 break
             except urllib.error.HTTPError as error:
+                LOGGER.warning(
+                    "AI upstream HTTP failure status=%s attempt=%s", error.code, provider_requests
+                )
+                delay = provider_retry_delay((error.headers or {}).get("Retry-After", ""))
+                if error.code in {429, 500, 502, 503, 504} and delay is not None:
+                    raise HTTPException(
+                        429 if error.code == 429 else 503,
+                        "AI provider quota requested a retry delay; no data was changed."
+                        if error.code == 429
+                        else "AI provider requested a retry delay; no data was changed.",
+                        headers={"Retry-After": delay},
+                    ) from None
                 if error.code == 429:
-                    if quota_retries < 1 and provider_requests < 5:
-                        quota_retries += 1
+                    if (
+                        provider_retries < 1
+                        and provider_requests < 5
+                        and deadline - time.monotonic() > 1
+                    ):
+                        provider_retries += 1
                         time.sleep(1)
                         continue
                     raise HTTPException(
@@ -557,10 +601,46 @@ def investigate(store, question, *, public_demo=False):
                         "AI provider quota is exhausted or rate limited. One bounded retry was attempted; retry later. No data was changed.",
                         headers={"Retry-After": "60"},
                     ) from None
+                if error.code in {500, 502, 503, 504}:
+                    if (
+                        provider_retries < 1
+                        and provider_requests < 5
+                        and deadline - time.monotonic() > 1
+                    ):
+                        provider_retries += 1
+                        time.sleep(0.5)
+                        continue
+                    raise HTTPException(
+                        503,
+                        "AI provider temporarily unavailable; retry later. No data was changed.",
+                        headers={"Retry-After": "60"},
+                    ) from None
                 raise HTTPException(
                     502, "AI provider request failed. No data was changed."
                 ) from None
-            except (urllib.error.URLError, TimeoutError, ValueError, KeyError, IndexError):
+            except (urllib.error.URLError, TimeoutError) as error:
+                LOGGER.warning(
+                    "AI upstream transport failure type=%s attempt=%s",
+                    type(error).__name__,
+                    provider_requests,
+                )
+                reason = getattr(error, "reason", error)
+                if (
+                    isinstance(reason, (TimeoutError, ConnectionError))
+                    and provider_retries < 1
+                    and provider_requests < 5
+                    and deadline - time.monotonic() > 1
+                ):
+                    provider_retries += 1
+                    time.sleep(0.5)
+                    continue
+                raise HTTPException(
+                    503,
+                    "AI provider temporarily unavailable; retry later. No data was changed.",
+                    headers={"Retry-After": "60"},
+                ) from None
+            except (ValueError, KeyError, IndexError, TypeError) as error:
+                LOGGER.warning("AI upstream protocol failure type=%s", type(error).__name__)
                 raise HTTPException(
                     502, "AI provider request failed. No data was changed."
                 ) from None

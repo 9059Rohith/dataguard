@@ -466,11 +466,11 @@ def test_gemini_quota_is_explicit_and_retry_is_bounded(client, monkeypatch):
         json={"question": "Investigate public evidence."},
     )
     assert response.status_code == 429
-    assert len(calls) == 2
+    assert len(calls) == 1
     assert set(calls) == {
         "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions"
     }
-    assert response.headers["Retry-After"] == "60"
+    assert response.headers["Retry-After"] == "120"
     assert "quota" in response.json()["detail"].lower()
     assert "provider diagnostic" not in response.text
 
