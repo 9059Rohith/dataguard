@@ -1,0 +1,20 @@
+{
+  "deployment_id": "dpl_5Kf7SELwNAttyxQvbK6pjRCMcsos",
+  "source_commit": "0e1661a5fcb4dd69c802f3f939be137eef5d03ff",
+  "build_log": "hosted-build.log",
+  "receipt_marker": "VERIFICATION_RECEIPT: ",
+  "public_url": "https://rohith-dataguard.vercel.app/",
+  "status": "READY",
+  "promoted": true,
+  "alias": {
+    "alias": "rohith-dataguard.vercel.app",
+    "deployment_id": "dpl_5Kf7SELwNAttyxQvbK6pjRCMcsos",
+    "project_id": "prj_Rj64lgHU4VPrTiLW8Kgt20f2kJ11"
+  },
+  "hosted_passed": 233,
+  "hosted_skipped": 1,
+  "build_log_sha256": "92f8ef290c7ea616b45210e477574c87d09aedbbb86b114f6163592a8e2e2837",
+  "github_actions": "Account billing lock: jobs never started",
+  "aws": "No credentials or apply; existing free Vercel/Neon deployment used",
+  "retest": "14 public API checks; latest 4/4 real AI calls passed; earlier PipeFoundry503s retained; no new browser run"
+}
