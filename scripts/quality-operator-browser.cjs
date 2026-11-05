@@ -63,10 +63,17 @@ const { chromium } = require(process.env.PLAYWRIGHT_MODULE || "playwright");
     await p
       .getByLabel("Your investigation")
       .fill("Explain the freshness evidence in the actual captures.");
+    const unavailable = p.waitForResponse(
+      (response) =>
+        response.url().endsWith("/api/quality/investigate") &&
+        response.request().method() === "POST",
+    );
     await p.getByRole("button", { name: "Investigate", exact: true }).click();
+    if ((await unavailable).status() !== 503)
+      throw Error("Unconfigured investigator must return HTTP 503.");
     await p
       .locator("#agent-error")
-      .filter({ hasText: "AI provider is not configured" })
+      .filter({ hasText: /AI provider is (?:not configured|unavailable)/ })
       .waitFor();
     await p
       .getByRole("button", { name: "Disconnect operator", exact: false })

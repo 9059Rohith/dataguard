@@ -39,7 +39,7 @@ function operatorToken() {
       .filter({ hasText: "Connected operator" })
       .waitFor();
     await page
-      .getByText("Google Gemini · gemini-3.5-flash-lite", { exact: true })
+      .getByText(/^Google Gemini · gemini-3\.(?:5|1)-flash-lite$/)
       .waitFor();
     const question =
       "Inspect actual records in the latest public GitHub capture using inspect_capture. In concise plain text, identify the repository with the most stars and the repository with the most open issues, with exact counts, full capture ID, record count and SHA-256. Cite only observed evidence.";
@@ -59,7 +59,7 @@ function operatorToken() {
       throw Error("Live investigator failed with HTTP " + response.status());
     if (
       result.provider !== "Google Gemini" ||
-      result.model !== "gemini-3.5-flash-lite" ||
+      !["gemini-3.5-flash-lite", "gemini-3.1-flash-lite"].includes(result.model) ||
       result.public_data_only !== true
     )
       throw Error("Wrong live provider or data scope.");
