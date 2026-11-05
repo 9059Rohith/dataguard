@@ -1,0 +1,24 @@
+{
+  "date": "2026-11-05",
+  "project": "dataguard",
+  "source_commit": "6c9dd180ce40c638ea055258cbdae00480423e28",
+  "deployment_id": "dpl_7FkLFT25KfNQ6B1A6pXbzTXC2Umi",
+  "deployment_status": "READY",
+  "promoted": true,
+  "public_url": "https://rohith-dataguard.vercel.app/",
+  "alias_verification": {
+    "alias": "rohith-dataguard.vercel.app",
+    "deployment_id": "dpl_7FkLFT25KfNQ6B1A6pXbzTXC2Umi",
+    "project_id": "prj_Rj64lgHU4VPrTiLW8Kgt20f2kJ11"
+  },
+  "provider": "Vercel Hobby Linux container build",
+  "hosted_tests_passed": 217,
+  "hosted_tests_skipped": 1,
+  "build_log_sha256": "7d33888db8888582b5dc8f8c5330fd7598f5a471f65b4202172bffe541aa68b7",
+  "public_api_checks_passed": 14,
+  "latest_public_ai_checks_passed": 4,
+  "known_initial_provider_failures": "Settlement Recon and FluxLake AI503; next bounded requests after cooldown passed",
+  "github_actions": "Blocked before execution by account billing lock; workflow writes unauthorized",
+  "aws": "No credentials or profile; no AWS apply or deployment",
+  "browser_retest": "Not executed this task: browser automation unavailable"
+}

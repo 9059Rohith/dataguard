@@ -1,5 +1,7 @@
 # DataGuard
 
+**Free hosted release verification (5 Nov 2026):** 217 tests passed, 1 explicit optional skips on the actual Linux builder. Every release image depends on a successful verification receipt. [Build logs, public retests and exact GitHub/AWS blockers](docs/free-hosted-ci.md).
+
 [OpenFX readiness audit](https://github.com/9059Rohith/settlement-recon/blob/main/docs/openfx-interview-readiness.md) · [Interview demonstration](docs/INTERVIEW.md)
 
 **A data reliability workspace with real source evidence.** Inspect public GitHub repository metadata, define quality contracts, investigate failed checks, compare immutable captures, and trace every result to its source and SHA-256 digest.

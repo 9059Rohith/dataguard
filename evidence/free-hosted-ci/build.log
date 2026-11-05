@@ -1,0 +1,388 @@
+Vercel CLI 54.21.1 (Node.js 24.11.1)
+WARNING! Did you mean to deploy the subdirectory "deploy"? Use `vc --cwd deploy` instead.
+Retrieving project…
+Deploying rohiths-projects-5e14931b/dataguard
+Uploading [--------------------] (0.0B/7.8KB)
+Uploading [=======-------------] (2.9KB/7.8KB)
+Uploading [====================] (7.8KB/7.8KB)
+  Inspect         https://vercel.com/rohiths-projects-5e14931b/dataguard/7FkLFT25KfNQ6B1A6pXbzTXC2Umi
+▲ Production      https://dataguard-bpsfb3e2e-rohiths-projects-5e14931b.vercel.app
+Building…
+2026-11-05T11:16:41.908Z  Running build in Washington, D.C., USA (East) – iad1
+2026-11-05T11:16:41.909Z  Build machine configuration: 2 cores, 8 GB
+2026-11-05T11:16:41.923Z  Retrieving list of deployment files...
+2026-11-05T11:16:42.018Z  Previous build caches not available.
+2026-11-05T11:16:42.245Z  Downloading 123 deployment files...
+2026-11-05T11:16:42.895Z  Running "vercel build"
+2026-11-05T11:16:42.904Z  Vercel CLI 65.11.0
+2026-11-05T11:16:43.130Z  ▲ container  buildah: buildah version 1.43.4 (image-spec 1.1.1, runtime-spec 1.2.1) (storage-driver=storage.conf)
+2026-11-05T11:16:43.158Z  ▲ container  buildah storage: driver=overlay graphRoot=/vercel/.containers/storage runRoot=/run/containers/storage backingFs=xfs — verified
+2026-11-05T11:16:43.158Z  → Authenticating to vcr.vercel.com as team_WkR0cDVyRzw7XTRitQwgfgJc
+2026-11-05T11:16:43.272Z  ✓ authenticated
+2026-11-05T11:16:43.272Z  → Ensuring registry repository "dockerfile"
+2026-11-05T11:16:43.370Z  ✓ repository "dockerfile" already exists
+2026-11-05T11:16:43.371Z  ▲ container  Building image vcr.vercel.com/rohiths-projects-5e14931b/dataguard/dockerfile:6c9dd180ce40 (buildah)
+2026-11-05T11:16:43.371Z  → buildah build (linux/amd64)
+2026-11-05T11:16:43.400Z  ▲ container  Buildah store: cold (no images present before build)
+2026-11-05T11:16:43.425Z  [1/3] STEP 1/8: FROM cgr.dev/chainguard/python:latest-dev@sha256:95d8cc85fad8acc8ebad357e1972f2a975c498a65406cd9b00bb2233371a94a2 AS build
+2026-11-05T11:16:43.430Z  Trying to pull cgr.dev/chainguard/python@sha256:95d8cc85fad8acc8ebad357e1972f2a975c498a65406cd9b00bb2233371a94a2...
+2026-11-05T11:16:43.889Z  Getting image source signatures
+2026-11-05T11:16:43.890Z  Copying blob sha256:1c8cbae9c851bea2f5faea3d636f3e83cface508277c6f8d09fd7352ba351276
+2026-11-05T11:16:43.890Z  Copying blob sha256:489a04040a9584bc86df874faf1ac0539e52c46bf66f748392820ef065030b9e
+2026-11-05T11:16:43.890Z  Copying blob sha256:1480ed81b114a09b1fa414abcd15216139bbc5ad427288afbb31b0491f5c719b
+2026-11-05T11:16:43.890Z  Copying blob sha256:914b8f9f21b7c1ece706d12a4c806871a2cc49affc6b77c5e7f4af33df68bb51
+2026-11-05T11:16:43.890Z  Copying blob sha256:ab8a02c07833a1039e29a6f00d644df75dcbc21368e028ffe72ab98cf8c93a11
+2026-11-05T11:16:43.890Z  Copying blob sha256:7912718c0b4de475d6dca57f23a612515f1bf84ae6020fe1048e91cfa20a09cb
+2026-11-05T11:16:44.623Z  Copying blob sha256:ef8985c600269f641c5392a5fdb5fbe99666453ffe6d6d42bba1dbbaa408ce5f
+2026-11-05T11:16:45.023Z  Copying blob sha256:159b2024ec9701893d50060378cabec27f2c7c6ae8d0c5b208a912d2c8d20f5b
+2026-11-05T11:16:45.189Z  Copying blob sha256:e75c5db1dbc2aa23dbb9f87a81bc98bf3cac0503d12095ac460f1f8b20980dba
+2026-11-05T11:16:45.260Z  Copying blob sha256:4f723804274a59d4dce90bf00130250e470bfc5d31ac390a8abb8fa6a668f810
+2026-11-05T11:16:45.360Z  Copying blob sha256:a86aec1682d6b8500db5618174fea5d7decaa00fd39492d03cbc66a0def52e23
+2026-11-05T11:16:53.856Z  Copying config sha256:6580cfc180e1ba5015a2f3c3a7638aeedc2483641aa6b6e2a73850c3d89e7e4f
+2026-11-05T11:16:53.861Z  Writing manifest to image destination
+2026-11-05T11:16:53.896Z  [1/3] STEP 2/8: USER 0
+2026-11-05T11:16:53.921Z  --> d03a6de4151c
+2026-11-05T11:16:53.930Z  [1/3] STEP 3/8: WORKDIR /app
+2026-11-05T11:16:54.259Z  --> 208034ae264f
+2026-11-05T11:16:54.369Z  [1/3] STEP 4/8: COPY requirements.lock ./
+2026-11-05T11:16:55.132Z  --> b9256e667c1b
+2026-11-05T11:16:55.242Z  [1/3] STEP 5/8: RUN --mount=type=cache,target=/root/.cache/pip python -m venv /opt/venv     && /opt/venv/bin/python -m pip install pip==26.2.2     && /opt/venv/bin/python -m pip install --only-binary=:all: -r requirements.lock
+2026-11-05T11:16:59.697Z  Requirement already satisfied: pip==26.2.2 in /opt/venv/lib/python3.15/site-packages (26.2.2)
+2026-11-05T11:17:00.387Z  Collecting annotated-doc==0.0.5 (from -r requirements.lock (line 2))
+2026-11-05T11:17:00.412Z  Downloading annotated_doc-0.0.5-py3-none-any.whl.metadata (6.5 kB)
+2026-11-05T11:17:00.433Z  Collecting annotated-types==0.8.0 (from -r requirements.lock (line 3))
+2026-11-05T11:17:00.438Z  Downloading annotated_types-0.8.0-py3-none-any.whl.metadata (15 kB)
+2026-11-05T11:17:00.464Z  Collecting anyio==4.15.1 (from -r requirements.lock (line 4))
+2026-11-05T11:17:00.470Z  Downloading anyio-4.15.1-py3-none-any.whl.metadata (4.7 kB)
+2026-11-05T11:17:00.493Z  Collecting click==8.5.0 (from -r requirements.lock (line 5))
+2026-11-05T11:17:00.498Z  Downloading click-8.5.0-py3-none-any.whl.metadata (2.6 kB)
+2026-11-05T11:17:00.558Z  Collecting fastapi==0.162.0 (from -r requirements.lock (line 6))
+2026-11-05T11:17:00.563Z  Downloading fastapi-0.162.0-py3-none-any.whl.metadata (26 kB)
+2026-11-05T11:17:00.586Z  Collecting h11==0.16.0 (from -r requirements.lock (line 7))
+2026-11-05T11:17:00.592Z  Downloading h11-0.16.0-py3-none-any.whl.metadata (8.3 kB)
+2026-11-05T11:17:00.607Z  Collecting idna==3.20 (from -r requirements.lock (line 8))
+2026-11-05T11:17:00.611Z  Downloading idna-3.20-py3-none-any.whl.metadata (7.2 kB)
+2026-11-05T11:17:00.634Z  Collecting opentelemetry-api==1.45.2 (from -r requirements.lock (line 9))
+2026-11-05T11:17:00.639Z  Downloading opentelemetry_api-1.45.2-py3-none-any.whl.metadata (1.4 kB)
+2026-11-05T11:17:00.657Z  Collecting prometheus-client==0.26.0 (from -r requirements.lock (line 10))
+2026-11-05T11:17:00.662Z  Downloading prometheus_client-0.26.0-py3-none-any.whl.metadata (2.1 kB)
+2026-11-05T11:17:00.684Z  Collecting psycopg==3.3.6 (from -r requirements.lock (line 11))
+2026-11-05T11:17:00.688Z  Downloading psycopg-3.3.6-py3-none-any.whl.metadata (4.4 kB)
+2026-11-05T11:17:00.854Z  Collecting psycopg-binary==3.3.6 (from -r requirements.lock (line 12))
+2026-11-05T11:17:00.859Z  Downloading psycopg_binary-3.3.6-cp315-cp315-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (2.7 kB)
+2026-11-05T11:17:00.944Z  Collecting pydantic==2.14.2 (from -r requirements.lock (line 13))
+2026-11-05T11:17:00.949Z  Downloading pydantic-2.14.2-py3-none-any.whl.metadata (137 kB)
+2026-11-05T11:17:01.633Z  Collecting pydantic-core==2.50.2 (from -r requirements.lock (line 14))
+2026-11-05T11:17:01.638Z  Downloading pydantic_core-2.50.2-cp315-cp315-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (6.5 kB)
+2026-11-05T11:17:01.886Z  Collecting sqlalchemy==2.1.6 (from -r requirements.lock (line 15))
+2026-11-05T11:17:01.892Z  Downloading sqlalchemy-2.1.6-cp315-cp315-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (9.7 kB)
+2026-11-05T11:17:01.926Z  Collecting starlette==1.10.0 (from -r requirements.lock (line 16))
+2026-11-05T11:17:01.933Z  Downloading starlette-1.10.0-py3-none-any.whl.metadata (6.6 kB)
+2026-11-05T11:17:01.955Z  Collecting typing-extensions==4.16.0 (from -r requirements.lock (line 17))
+2026-11-05T11:17:01.962Z  Downloading typing_extensions-4.16.0-py3-none-any.whl.metadata (3.3 kB)
+2026-11-05T11:17:01.973Z  Collecting typing-inspection==0.4.4 (from -r requirements.lock (line 18))
+2026-11-05T11:17:01.978Z  Downloading typing_inspection-0.4.4-py3-none-any.whl.metadata (2.6 kB)
+2026-11-05T11:17:01.998Z  Collecting tzdata==2026.6 (from -r requirements.lock (line 19))
+2026-11-05T11:17:02.002Z  Downloading tzdata-2026.6-py2.py3-none-any.whl.metadata (1.4 kB)
+2026-11-05T11:17:02.076Z  Collecting uvicorn==0.54.0 (from -r requirements.lock (line 20))
+2026-11-05T11:17:02.079Z  Downloading uvicorn-0.54.0-py3-none-any.whl.metadata (6.6 kB)
+2026-11-05T11:17:02.103Z  Downloading annotated_doc-0.0.5-py3-none-any.whl (5.3 kB)
+2026-11-05T11:17:02.110Z  Downloading annotated_types-0.8.0-py3-none-any.whl (13 kB)
+2026-11-05T11:17:02.117Z  Downloading anyio-4.15.1-py3-none-any.whl (132 kB)
+2026-11-05T11:17:02.123Z  Downloading click-8.5.0-py3-none-any.whl (125 kB)
+2026-11-05T11:17:02.129Z  Downloading fastapi-0.162.0-py3-none-any.whl (148 kB)
+2026-11-05T11:17:02.135Z  Downloading h11-0.16.0-py3-none-any.whl (37 kB)
+2026-11-05T11:17:02.141Z  Downloading idna-3.20-py3-none-any.whl (69 kB)
+2026-11-05T11:17:02.147Z  Downloading opentelemetry_api-1.45.2-py3-none-any.whl (60 kB)
+2026-11-05T11:17:02.154Z  Downloading prometheus_client-0.26.0-py3-none-any.whl (64 kB)
+2026-11-05T11:17:02.161Z  Downloading psycopg-3.3.6-py3-none-any.whl (215 kB)
+2026-11-05T11:17:02.171Z  Downloading psycopg_binary-3.3.6-cp315-cp315-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (5.2 MB)
+2026-11-05T11:17:02.193Z  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 5.2/5.2 MB 264.4 MB/s  0:00:00
+2026-11-05T11:17:02.198Z  Downloading pydantic-2.14.2-py3-none-any.whl (490 kB)
+2026-11-05T11:17:02.207Z  Downloading pydantic_core-2.50.2-cp315-cp315-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (2.2 MB)
+2026-11-05T11:17:02.218Z  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 2.2/2.2 MB 237.5 MB/s  0:00:00
+2026-11-05T11:17:02.225Z  Downloading sqlalchemy-2.1.6-cp315-cp315-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (4.6 MB)
+2026-11-05T11:17:02.243Z  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 4.6/4.6 MB 281.1 MB/s  0:00:00
+2026-11-05T11:17:02.248Z  Downloading starlette-1.10.0-py3-none-any.whl (80 kB)
+2026-11-05T11:17:02.254Z  Downloading typing_extensions-4.16.0-py3-none-any.whl (45 kB)
+2026-11-05T11:17:02.260Z  Downloading typing_inspection-0.4.4-py3-none-any.whl (14 kB)
+2026-11-05T11:17:02.267Z  Downloading tzdata-2026.6-py2.py3-none-any.whl (348 kB)
+2026-11-05T11:17:02.274Z  Downloading uvicorn-0.54.0-py3-none-any.whl (87 kB)
+2026-11-05T11:17:02.385Z  Installing collected packages: tzdata, typing-extensions, psycopg-binary, psycopg, prometheus-client, idna, h11, click, annotated-types, annotated-doc, uvicorn, typing-inspection, sqlalchemy, pydantic-core, opentelemetry-api, anyio, starlette, pydantic, fastapi
+2026-11-05T11:17:05.918Z  
+2026-11-05T11:17:05.919Z  Successfully installed annotated-doc-0.0.5 annotated-types-0.8.0 anyio-4.15.1 click-8.5.0 fastapi-0.162.0 h11-0.16.0 idna-3.20 opentelemetry-api-1.45.2 prometheus-client-0.26.0 psycopg-3.3.6 psycopg-binary-3.3.6 pydantic-2.14.2 pydantic-core-2.50.2 sqlalchemy-2.1.6 starlette-1.10.0 typing-extensions-4.16.0 typing-inspection-0.4.4 tzdata-2026.6 uvicorn-0.54.0
+2026-11-05T11:17:05.920Z  
+2026-11-05T11:17:05.920Z  [notice] A new release of pip is available: 26.2.2 -> 26.3
+2026-11-05T11:17:05.921Z  [notice] To update, run: /opt/venv/bin/python -m pip install --upgrade pip
+2026-11-05T11:17:07.487Z  --> 88dc55892293
+2026-11-05T11:17:07.493Z  [1/3] STEP 6/8: COPY pyproject.toml ./
+2026-11-05T11:17:07.618Z  --> d9e81b9292d2
+2026-11-05T11:17:07.622Z  [1/3] STEP 7/8: COPY dataguard ./dataguard
+2026-11-05T11:17:07.776Z  --> 811e1b5d3d33
+2026-11-05T11:17:07.782Z  [1/3] STEP 8/8: RUN --mount=type=cache,target=/root/.cache/pip /opt/venv/bin/python -m pip install --no-deps .     && mkdir /data && chown 10001:10001 /data     && /opt/venv/bin/python -m pip uninstall -y pip setuptools wheel
+2026-11-05T11:17:08.360Z  Processing ./.
+2026-11-05T11:17:08.365Z  Installing build dependencies: started
+2026-11-05T11:17:09.295Z  Installing build dependencies: finished with status 'done'
+2026-11-05T11:17:09.295Z  Getting requirements to build wheel: started
+2026-11-05T11:17:10.064Z  Getting requirements to build wheel: finished with status 'done'
+2026-11-05T11:17:10.064Z  Preparing metadata (pyproject.toml): started
+2026-11-05T11:17:10.356Z  Preparing metadata (pyproject.toml): finished with status 'done'
+2026-11-05T11:17:10.363Z  Building wheels for collected packages: dataguard-reliability
+2026-11-05T11:17:10.367Z  Building wheel for dataguard-reliability (pyproject.toml): started
+2026-11-05T11:17:10.738Z  Building wheel for dataguard-reliability (pyproject.toml): finished with status 'done'
+2026-11-05T11:17:10.740Z  Created wheel for dataguard-reliability: filename=dataguard_reliability-1.0.0-py3-none-any.whl size=268483 sha256=dc5219d503da97b26838323c35e72950a7fdbe3604f81f46610f2ecb3483d08f
+2026-11-05T11:17:10.740Z  Stored in directory: /tmp/pip-ephem-wheel-cache-se81r2kl/wheels/e4/aa/2a/66e2fb583aba00cfa897eaefdb4530364853b5d6b6cc1ee740
+2026-11-05T11:17:10.743Z  Successfully built dataguard-reliability
+2026-11-05T11:17:10.760Z  Installing collected packages: dataguard-reliability
+2026-11-05T11:17:10.829Z  Successfully installed dataguard-reliability-1.0.0
+2026-11-05T11:17:10.829Z  
+2026-11-05T11:17:10.829Z  [notice] A new release of pip is available: 26.2.2 -> 26.3
+2026-11-05T11:17:10.829Z  [notice] To update, run: /opt/venv/bin/python -m pip install --upgrade pip
+2026-11-05T11:17:11.345Z  Found existing installation: pip 26.2.2
+2026-11-05T11:17:11.379Z  Uninstalling pip-26.2.2:
+2026-11-05T11:17:11.586Z  Successfully uninstalled pip-26.2.2
+2026-11-05T11:17:11.608Z  WARNING: Skipping setuptools as it is not installed.
+2026-11-05T11:17:11.609Z  WARNING: Skipping wheel as it is not installed.
+2026-11-05T11:17:11.829Z  --> 9f8995f63dba
+2026-11-05T11:17:11.835Z  [2/3] STEP 1/9: FROM 9f8995f63dba2d530f359b3169cb5534c1f12853a99a60e34e990055603ef214 AS verify
+2026-11-05T11:17:11.842Z  [2/3] STEP 2/9: COPY requirements-ci.lock requirements-dev.lock ./
+2026-11-05T11:17:11.996Z  --> ba52f77f9e46
+2026-11-05T11:17:12.001Z  [2/3] STEP 3/9: RUN --mount=type=cache,target=/root/.cache/pip PYYAML_FORCE_LIBYAML=0 python -m pip install     --target /test-tools --no-deps --only-binary=:all: --no-binary=pyyaml -r requirements-ci.lock
+2026-11-05T11:17:12.649Z  Collecting attrs==26.1.0 (from -r requirements-ci.lock (line 2))
+2026-11-05T11:17:12.679Z  Downloading attrs-26.1.0-py3-none-any.whl.metadata (8.8 kB)
+2026-11-05T11:17:12.707Z  Collecting bandit==1.9.4 (from -r requirements-ci.lock (line 3))
+2026-11-05T11:17:12.712Z  Downloading bandit-1.9.4-py3-none-any.whl.metadata (7.1 kB)
+2026-11-05T11:17:12.729Z  Collecting certifi==2026.10.23 (from -r requirements-ci.lock (line 4))
+2026-11-05T11:17:12.733Z  Downloading certifi-2026.10.23-py3-none-any.whl.metadata (2.5 kB)
+2026-11-05T11:17:12.748Z  Collecting colorama==0.4.6 (from -r requirements-ci.lock (line 5))
+2026-11-05T11:17:12.753Z  Downloading colorama-0.4.6-py2.py3-none-any.whl.metadata (17 kB)
+2026-11-05T11:17:12.771Z  Collecting httpcore==1.0.9 (from -r requirements-ci.lock (line 6))
+2026-11-05T11:17:12.776Z  Downloading httpcore-1.0.9-py3-none-any.whl.metadata (21 kB)
+2026-11-05T11:17:12.802Z  Collecting httpx==0.28.1 (from -r requirements-ci.lock (line 7))
+2026-11-05T11:17:12.808Z  Downloading httpx-0.28.1-py3-none-any.whl.metadata (7.1 kB)
+2026-11-05T11:17:12.823Z  Collecting iniconfig==2.3.1 (from -r requirements-ci.lock (line 8))
+2026-11-05T11:17:12.828Z  Downloading iniconfig-2.3.1-py3-none-any.whl.metadata (2.8 kB)
+2026-11-05T11:17:12.860Z  Collecting jsonschema==4.26.0 (from -r requirements-ci.lock (line 9))
+2026-11-05T11:17:12.865Z  Downloading jsonschema-4.26.0-py3-none-any.whl.metadata (7.6 kB)
+2026-11-05T11:17:12.882Z  Collecting jsonschema-specifications==2025.9.1 (from -r requirements-ci.lock (line 10))
+2026-11-05T11:17:12.889Z  Downloading jsonschema_specifications-2025.9.1-py3-none-any.whl.metadata (2.9 kB)
+2026-11-05T11:17:12.906Z  Collecting markdown-it-py==4.2.0 (from -r requirements-ci.lock (line 11))
+2026-11-05T11:17:12.911Z  Downloading markdown_it_py-4.2.0-py3-none-any.whl.metadata (7.4 kB)
+2026-11-05T11:17:12.929Z  Collecting mdurl==0.1.2 (from -r requirements-ci.lock (line 12))
+2026-11-05T11:17:12.933Z  Downloading mdurl-0.1.2-py3-none-any.whl.metadata (1.6 kB)
+2026-11-05T11:17:12.952Z  Collecting packaging==26.3 (from -r requirements-ci.lock (line 13))
+2026-11-05T11:17:12.956Z  Downloading packaging-26.3-py3-none-any.whl.metadata (3.5 kB)
+2026-11-05T11:17:12.969Z  Collecting pluggy==1.7.0 (from -r requirements-ci.lock (line 14))
+2026-11-05T11:17:12.976Z  Downloading pluggy-1.7.0-py3-none-any.whl.metadata (5.0 kB)
+2026-11-05T11:17:12.993Z  Collecting pygments==2.21.0 (from -r requirements-ci.lock (line 15))
+2026-11-05T11:17:12.998Z  Downloading pygments-2.21.0-py3-none-any.whl.metadata (2.5 kB)
+2026-11-05T11:17:13.022Z  Collecting pytest==9.2.0 (from -r requirements-ci.lock (line 16))
+2026-11-05T11:17:13.027Z  Downloading pytest-9.2.0-py3-none-any.whl.metadata (7.9 kB)
+2026-11-05T11:17:13.060Z  Collecting pyyaml==6.0.3 (from -r requirements-ci.lock (line 17))
+2026-11-05T11:17:13.065Z  Downloading pyyaml-6.0.3.tar.gz (130 kB)
+2026-11-05T11:17:13.182Z  Installing build dependencies: started
+2026-11-05T11:17:14.184Z  Installing build dependencies: finished with status 'done'
+2026-11-05T11:17:14.184Z  Getting requirements to build wheel: started
+2026-11-05T11:17:15.101Z  Getting requirements to build wheel: finished with status 'done'
+2026-11-05T11:17:15.103Z  Preparing metadata (pyproject.toml): started
+2026-11-05T11:17:15.529Z  Preparing metadata (pyproject.toml): finished with status 'done'
+2026-11-05T11:17:15.551Z  Collecting referencing==0.37.0 (from -r requirements-ci.lock (line 18))
+2026-11-05T11:17:15.554Z  Downloading referencing-0.37.0-py3-none-any.whl.metadata (2.8 kB)
+2026-11-05T11:17:15.583Z  Collecting rich==15.0.0 (from -r requirements-ci.lock (line 19))
+2026-11-05T11:17:15.587Z  Downloading rich-15.0.0-py3-none-any.whl.metadata (18 kB)
+2026-11-05T11:17:15.817Z  Collecting rpds-py==2026.9.1 (from -r requirements-ci.lock (line 20))
+2026-11-05T11:17:15.822Z  Downloading rpds_py-2026.9.1-cp315-cp315-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (4.1 kB)
+2026-11-05T11:17:16.172Z  Collecting ruff==0.17.3 (from -r requirements-ci.lock (line 21))
+2026-11-05T11:17:16.176Z  Downloading ruff-0.17.3-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (20 kB)
+2026-11-05T11:17:16.200Z  Collecting stevedore==5.9.1 (from -r requirements-ci.lock (line 22))
+2026-11-05T11:17:16.204Z  Downloading stevedore-5.9.1-py3-none-any.whl.metadata (2.3 kB)
+2026-11-05T11:17:16.218Z  Downloading attrs-26.1.0-py3-none-any.whl (67 kB)
+2026-11-05T11:17:16.225Z  Downloading bandit-1.9.4-py3-none-any.whl (134 kB)
+2026-11-05T11:17:16.231Z  Downloading certifi-2026.10.23-py3-none-any.whl (135 kB)
+2026-11-05T11:17:16.237Z  Downloading colorama-0.4.6-py2.py3-none-any.whl (25 kB)
+2026-11-05T11:17:16.243Z  Downloading httpcore-1.0.9-py3-none-any.whl (78 kB)
+2026-11-05T11:17:16.250Z  Downloading httpx-0.28.1-py3-none-any.whl (73 kB)
+2026-11-05T11:17:16.257Z  Downloading iniconfig-2.3.1-py3-none-any.whl (7.6 kB)
+2026-11-05T11:17:16.262Z  Downloading jsonschema-4.26.0-py3-none-any.whl (90 kB)
+2026-11-05T11:17:16.268Z  Downloading jsonschema_specifications-2025.9.1-py3-none-any.whl (18 kB)
+2026-11-05T11:17:16.275Z  Downloading markdown_it_py-4.2.0-py3-none-any.whl (91 kB)
+2026-11-05T11:17:16.284Z  Downloading mdurl-0.1.2-py3-none-any.whl (10.0 kB)
+2026-11-05T11:17:16.291Z  Downloading packaging-26.3-py3-none-any.whl (129 kB)
+2026-11-05T11:17:16.297Z  Downloading pluggy-1.7.0-py3-none-any.whl (27 kB)
+2026-11-05T11:17:16.304Z  Downloading pygments-2.21.0-py3-none-any.whl (1.3 MB)
+2026-11-05T11:17:16.317Z  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.3/1.3 MB 129.0 MB/s  0:00:00
+2026-11-05T11:17:16.322Z  Downloading pytest-9.2.0-py3-none-any.whl (411 kB)
+2026-11-05T11:17:16.330Z  Downloading referencing-0.37.0-py3-none-any.whl (26 kB)
+2026-11-05T11:17:16.338Z  Downloading rich-15.0.0-py3-none-any.whl (310 kB)
+2026-11-05T11:17:16.346Z  Downloading rpds_py-2026.9.1-cp315-cp315-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (372 kB)
+2026-11-05T11:17:16.356Z  Downloading ruff-0.17.3-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (10.6 MB)
+2026-11-05T11:17:16.395Z  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 10.6/10.6 MB 287.3 MB/s  0:00:00
+2026-11-05T11:17:16.400Z  Downloading stevedore-5.9.1-py3-none-any.whl (54 kB)
+2026-11-05T11:17:16.498Z  Building wheels for collected packages: pyyaml
+2026-11-05T11:17:16.499Z  Building wheel for pyyaml (pyproject.toml): started
+2026-11-05T11:17:16.943Z  Building wheel for pyyaml (pyproject.toml): finished with status 'done'
+2026-11-05T11:17:16.943Z  Created wheel for pyyaml: filename=pyyaml-6.0.3-py3-none-any.whl size=45452 sha256=b3375123d5d6619e90ad7c5334a63996679a95a18a6e713fc87e074e5a5f4e10
+2026-11-05T11:17:16.944Z  Stored in directory: /root/.cache/pip/wheels/39/c5/03/188d3f8dc792f835b1e767b5e6e0fec41846dc06f6dd368652
+2026-11-05T11:17:16.947Z  Successfully built pyyaml
+2026-11-05T11:17:16.967Z  Installing collected packages: stevedore, ruff, rpds-py, rich, referencing, pyyaml, pytest, pygments, pluggy, packaging, mdurl, markdown-it-py, jsonschema-specifications, jsonschema, iniconfig, httpx, httpcore, colorama, certifi, bandit, attrs
+2026-11-05T11:17:19.789Z  
+2026-11-05T11:17:19.792Z  Successfully installed attrs-26.1.0 bandit-1.9.4 certifi-2026.10.23 colorama-0.4.6 httpcore-1.0.9 httpx-0.28.1 iniconfig-2.3.1 jsonschema-4.26.0 jsonschema-specifications-2025.9.1 markdown-it-py-4.2.0 mdurl-0.1.2 packaging-26.3 pluggy-1.7.0 pygments-2.21.0 pytest-9.2.0 pyyaml-6.0.3 referencing-0.37.0 rich-15.0.0 rpds-py-2026.9.1 ruff-0.17.3 stevedore-5.9.1
+2026-11-05T11:17:19.794Z  WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager, possibly rendering your system unusable. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv. Use the --root-user-action option if you know what you are doing and want to suppress this warning.
+2026-11-05T11:17:19.795Z  
+2026-11-05T11:17:19.795Z  [notice] A new release of pip is available: 26.2.2 -> 26.3
+2026-11-05T11:17:19.795Z  [notice] To update, run: pip install --upgrade pip
+2026-11-05T11:17:20.769Z  --> ab06cb3d4f30
+2026-11-05T11:17:20.775Z  [2/3] STEP 4/9: COPY tests ./tests
+2026-11-05T11:17:20.915Z  --> 4dd8d82f49d1
+2026-11-05T11:17:20.919Z  [2/3] STEP 5/9: COPY scripts/verify_build.py ./scripts/verify_build.py
+2026-11-05T11:17:21.040Z  --> 150440de9627
+2026-11-05T11:17:21.045Z  [2/3] STEP 6/9: COPY dags ./dags
+2026-11-05T11:17:21.186Z  --> 5db21b3564f3
+2026-11-05T11:17:21.193Z  [2/3] STEP 7/9: COPY docs/schemas ./docs/schemas
+2026-11-05T11:17:21.348Z  --> 9dacbb6ecc83
+2026-11-05T11:17:21.353Z  [2/3] STEP 8/9: COPY Dockerfile ./
+2026-11-05T11:17:21.494Z  --> ddc196c59d8c
+2026-11-05T11:17:21.499Z  [2/3] STEP 9/9: RUN --network=none PYTHONPATH=/test-tools:/app /opt/venv/bin/python scripts/verify_build.py /verification/receipt.json
+2026-11-05T11:17:21.678Z  VERIFY: /opt/venv/bin/python -m ruff check dataguard tests scripts/verify_build.py
+2026-11-05T11:17:21.719Z  All checks passed!
+2026-11-05T11:17:21.720Z  VERIFY: /opt/venv/bin/python -m ruff format --check dataguard tests scripts/verify_build.py
+2026-11-05T11:17:21.770Z  38 files already formatted
+2026-11-05T11:17:21.770Z  VERIFY: /opt/venv/bin/python -m bandit -r dataguard -ll
+2026-11-05T11:17:21.941Z  [main]	INFO	profile include tests: None
+2026-11-05T11:17:21.941Z  [main]	INFO	profile exclude tests: None
+2026-11-05T11:17:21.942Z  [main]	INFO	cli include tests: None
+2026-11-05T11:17:21.942Z  [main]	INFO	cli exclude tests: None
+2026-11-05T11:17:21.942Z  [main]	INFO	running on Python 3.15.1
+2026-11-05T11:17:22.054Z  [tester]	WARNING	nosec encountered (B104), but no failed test on file dataguard/entrypoint.py:24
+2026-11-05T11:17:22.054Z  [tester]	WARNING	nosec encountered (B104), but no failed test on file dataguard/entrypoint.py:25
+2026-11-05T11:17:22.054Z  [tester]	WARNING	nosec encountered (B104), but no failed test on file dataguard/entrypoint.py:25
+2026-11-05T11:17:22.054Z  [tester]	WARNING	nosec encountered (B104), but no failed test on file dataguard/entrypoint.py:25
+2026-11-05T11:17:22.054Z  [tester]	WARNING	nosec encountered (B104), but no failed test on file dataguard/entrypoint.py:25
+2026-11-05T11:17:22.054Z  [tester]	WARNING	nosec encountered (B104), but no failed test on file dataguard/entrypoint.py:25
+2026-11-05T11:17:22.261Z  Run started:2026-11-05 11:17:22.260973+00:00
+2026-11-05T11:17:22.261Z  
+2026-11-05T11:17:22.261Z  Test results:
+2026-11-05T11:17:22.261Z  No issues identified.
+2026-11-05T11:17:22.261Z  
+2026-11-05T11:17:22.261Z  Code scanned:
+2026-11-05T11:17:22.261Z  Total lines of code: 3536
+2026-11-05T11:17:22.261Z  Total lines skipped (#nosec): 0
+2026-11-05T11:17:22.261Z  Total potential issues skipped due to specifically being disabled (e.g., #nosec BXXX): 4
+2026-11-05T11:17:22.261Z  
+2026-11-05T11:17:22.261Z  Run metrics:
+2026-11-05T11:17:22.261Z  Total issues (by severity):
+2026-11-05T11:17:22.261Z  Undefined: 0
+2026-11-05T11:17:22.261Z  Low: 13
+2026-11-05T11:17:22.261Z  Medium: 0
+2026-11-05T11:17:22.261Z  High: 0
+2026-11-05T11:17:22.261Z  Total issues (by confidence):
+2026-11-05T11:17:22.261Z  Undefined: 0
+2026-11-05T11:17:22.261Z  Low: 0
+2026-11-05T11:17:22.261Z  Medium: 3
+2026-11-05T11:17:22.262Z  High: 10
+2026-11-05T11:17:22.262Z  Files skipped (0):
+2026-11-05T11:17:22.336Z  VERIFY: /opt/venv/bin/python -m pytest -q --junitxml=/verification/junit.xml
+2026-11-05T11:17:28.346Z  .............................s.......................................... [ 33%]
+2026-11-05T11:17:32.571Z  ........................................................................ [ 66%]
+2026-11-05T11:17:37.148Z  ........................................................................ [ 99%]
+2026-11-05T11:17:37.593Z  ..                                                                       [100%]
+2026-11-05T11:17:37.593Z  =============================== warnings summary ===============================
+2026-11-05T11:17:37.593Z  ../opt/venv/lib/python3.15/site-packages/fastapi/testclient.py:1
+2026-11-05T11:17:37.593Z  /opt/venv/lib/python3.15/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+2026-11-05T11:17:37.593Z  from starlette.testclient import TestClient as TestClient  # noqa
+2026-11-05T11:17:37.593Z  
+2026-11-05T11:17:37.593Z  -- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+2026-11-05T11:17:37.593Z  217 passed, 1 skipped, 1 warning in 14.40s
+2026-11-05T11:17:38.920Z  VERIFICATION_RECEIPT: {"checks": [["ruff", "check", "dataguard", "tests", "scripts/verify_build.py"], ["ruff", "format", "--check", "dataguard", "tests", "scripts/verify_build.py"], ["bandit", "-r", "dataguard", "-ll"], ["pytest", "-q", "--junitxml=/verification/junit.xml"]], "completed_at": "2026-11-05T11:17:38.909809+00:00", "coverage_limits": ["SQLite unit/default suite; optional TEST_DATABASE_URL PostgreSQL rerun not executed", "No live AI provider, Airflow runtime, Terraform apply, GitHub Actions or AWS claim", "Bandit source scan; dependency and container vulnerability scans are separate checks"], "fingerprints_sha256": {"locks_and_gate": "5f7e4aea67bf44f369ca433ec3c13a3e900b267c42bc3213d3cf3a6e83188e7e", "source": "e28aee7dbed7c1ab0565491b5ccb85915acda765fe40d4b88bd81ebf2be5ff0f", "tests": "031ea771c8ce88ce69f2124cecfd050698e7a495676bf08902bbcce01a1a8b17"}, "gate": "vercel-linux-build-verification", "pytest": {"errors": 0, "failures": 0, "passed": 217, "skip_reasons": ["PostgreSQL EXPLAIN ANALYZE work-budget regression"], "skipped": 1, "total": 218}, "python": "3.15.1", "schema_version": 1, "status": "passed"}
+2026-11-05T11:17:39.207Z  --> cf611dad0d53
+2026-11-05T11:17:39.213Z  [3/3] STEP 1/11: FROM cgr.dev/chainguard/python:latest@sha256:bf06e09413bec94d6489f0be783b8f9349339907b89e0f759d190d0b95ab2d8f
+2026-11-05T11:17:39.214Z  Trying to pull cgr.dev/chainguard/python@sha256:bf06e09413bec94d6489f0be783b8f9349339907b89e0f759d190d0b95ab2d8f...
+2026-11-05T11:17:39.707Z  Getting image source signatures
+2026-11-05T11:17:39.709Z  Copying blob sha256:51b61fb7fba21687ce8e4d46c1b76c4ebcde8805431ed4bcad9e0d5dd9625485
+2026-11-05T11:17:39.709Z  Copying blob sha256:7a4877cecca890677d2aeeaaaa4a4659cff0e5b2db98ca578583621e510cc657
+2026-11-05T11:17:39.709Z  Copying blob sha256:411ece58c9aaf279c28e3fd4b8cecf9138cfca931f9bf218e26b5cb4e7e40a8f
+2026-11-05T11:17:39.710Z  Copying blob sha256:39d9af6dbee06c1be51720421a78a229742722ecdaded1f0eb9689806d2ca9d4
+2026-11-05T11:17:39.710Z  Copying blob sha256:7ebb6e9cac1b053911e30cfcdc6fd284b6ca7fdbfc367e979ac019bf4f57ee20
+2026-11-05T11:17:39.710Z  Copying blob sha256:4b77722400ca0697e1599903e809010234492cbb58a0a45bf66753963910c195
+2026-11-05T11:17:39.947Z  Copying blob sha256:5febae4700f292815b4355bfb516b201b8c9c0242195007fc6d00ada6814706f
+2026-11-05T11:17:39.982Z  Copying blob sha256:5995e63edd580cac9604e77496f80b9cadfdb57ef14e4e77ac110e0494e8fad9
+2026-11-05T11:17:39.989Z  Copying blob sha256:72f154a025dd07360e226be7997e4074d19373a0b0ae64e876f1f2bd3c51b808
+2026-11-05T11:17:40.036Z  Copying blob sha256:c4465eb757c6deee4d406304345a7201796b56aea0538c76081cd6d8d4121a8d
+2026-11-05T11:17:40.045Z  Copying blob sha256:2ef7ab293d9c6180eb2f8407636e078c3cd051a80221c2e83b0bb0571f664c0d
+2026-11-05T11:17:41.087Z  Copying config sha256:1171a4549bef702b0c3012c15d04d63445f0f38a6733c099fb3188ec7492934d
+2026-11-05T11:17:41.089Z  Writing manifest to image destination
+2026-11-05T11:17:41.104Z  [3/3] STEP 2/11: ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 PATH=/opt/venv/bin:/usr/bin DATAGUARD_AUTO_INIT=false
+2026-11-05T11:17:41.115Z  --> c12a6b6ead88
+2026-11-05T11:17:41.120Z  [3/3] STEP 3/11: WORKDIR /app
+2026-11-05T11:17:41.148Z  --> 5bbe43214d2a
+2026-11-05T11:17:41.154Z  [3/3] STEP 4/11: COPY --from=build /opt/venv /opt/venv
+2026-11-05T11:17:43.013Z  --> 0380401d5bef
+2026-11-05T11:17:43.020Z  [3/3] STEP 5/11: COPY --from=build --chown=10001:10001 /data /data
+2026-11-05T11:17:43.163Z  --> 92e0c9856722
+2026-11-05T11:17:43.167Z  [3/3] STEP 6/11: COPY --from=verify /verification/receipt.json /app/build-verification.json
+2026-11-05T11:17:43.301Z  --> 1da04c3ce9fb
+2026-11-05T11:17:43.305Z  [3/3] STEP 7/11: USER 10001:10001
+2026-11-05T11:17:43.330Z  --> 951eceee7f15
+2026-11-05T11:17:43.333Z  [3/3] STEP 8/11: EXPOSE 8000
+2026-11-05T11:17:43.360Z  --> 12e2e6ff6180
+2026-11-05T11:17:43.364Z  [3/3] STEP 9/11: HEALTHCHECK --interval=30s --timeout=25s CMD ["python", "-c", "import os,urllib.request; urllib.request.urlopen('http://127.0.0.1:'+os.getenv('PORT','8000')+'/ready', timeout=22)"]
+2026-11-05T11:17:43.381Z  time="2026-11-05T11:17:43Z" level=warning msg="HEALTHCHECK is not supported for OCI image format and will be ignored. Must use `docker` format"
+2026-11-05T11:17:43.392Z  --> 725183ba7f0a
+2026-11-05T11:17:43.398Z  [3/3] STEP 10/11: ENTRYPOINT []
+2026-11-05T11:17:43.417Z  time="2026-11-05T11:17:43Z" level=warning msg="HEALTHCHECK is not supported for OCI image format and will be ignored. Must use `docker` format"
+2026-11-05T11:17:43.428Z  --> 7091aef493c6
+2026-11-05T11:17:43.432Z  [3/3] STEP 11/11: CMD ["python", "-m", "dataguard.entrypoint"]
+2026-11-05T11:17:43.448Z  [3/3] COMMIT vcr.vercel.com/rohiths-projects-5e14931b/dataguard/dockerfile:6c9dd180ce40
+2026-11-05T11:17:43.448Z  time="2026-11-05T11:17:43Z" level=warning msg="HEALTHCHECK is not supported for OCI image format and will be ignored. Must use `docker` format"
+2026-11-05T11:17:43.457Z  --> e20b015b4c23
+2026-11-05T11:17:43.457Z  Successfully tagged vcr.vercel.com/rohiths-projects-5e14931b/dataguard/dockerfile:6c9dd180ce40
+2026-11-05T11:17:43.691Z  e20b015b4c23270cdd4b015f172bb4a8be06c84a7999789f6f5378df4243aabe
+2026-11-05T11:17:43.698Z  ✓ built in 60.3s
+2026-11-05T11:17:43.699Z  → Pushing vcr.vercel.com/rohiths-projects-5e14931b/dataguard/dockerfile:6c9dd180ce40
+2026-11-05T11:17:43.699Z  ▲ container  pushing vcr.vercel.com/rohiths-projects-5e14931b/dataguard/dockerfile:6c9dd180ce40 with zstd compression (level=3, force, oci)
+2026-11-05T11:17:43.723Z  Getting image source signatures
+2026-11-05T11:17:43.724Z  Copying blob sha256:d8e42f67a136d049539001eec357da492bbdca4c190eff79a5420b195bc2f907
+2026-11-05T11:17:43.724Z  Copying blob sha256:49b221cfdb752817914822214c4a570f23941f6fe49ffa654990ef46b0fd3056
+2026-11-05T11:17:43.724Z  Copying blob sha256:81ac36f4bee4102128a3f1f63d1a2a057922351d656f4a4fcdb1b92cd28a95f2
+2026-11-05T11:17:43.725Z  Copying blob sha256:e0b29eecf1630223a78b94a8b4fe356436a0992973c7e7d30e00f98a5b8fc7bf
+2026-11-05T11:17:43.725Z  Copying blob sha256:44316d8e558176e75c50a6eb14b5540d429610f7afeb4ae8c97c8fbf1bfd6d27
+2026-11-05T11:17:43.725Z  Copying blob sha256:f2c593b35523baf1def73c55332e45f4737f935c8936738f28b273508ccf946f
+2026-11-05T11:17:44.299Z  Copying blob sha256:052a01cc85452dbcdea2bd29731121b10f4bf37bda2c2e1fd2a922c55f10bd66
+2026-11-05T11:17:44.404Z  Copying blob sha256:6c4adbc877159723c52f2d6098d5e9bb4f0c831f1fa6756f7010da4db6d199e5
+2026-11-05T11:17:44.465Z  Copying blob sha256:05e96666dfa8e8badae4dc70c1dde7a6e1de7241892fe70da145a711d0615e53
+2026-11-05T11:17:44.539Z  Copying blob sha256:20a55aeed21ccb7d620ea5b1ff646fa5010244af2e233805240069113113b2a8
+2026-11-05T11:17:44.615Z  Copying blob sha256:40aef2b976261a1e007c3ad38f602dda3dd2fac938144efa17fe65901dea8ac4
+2026-11-05T11:17:44.688Z  Copying blob sha256:cedbbeb16f9cefce7bbcc545d4fe8973e8528bc985e4e634440ce3ba56bd39c3
+2026-11-05T11:17:44.822Z  Copying blob sha256:a6de21aabc7f572b531ab2c9130b7119620415d6ae05d8c8a30c1f2cfc3ad79d
+2026-11-05T11:17:44.913Z  Copying blob sha256:478ca549d2d7f777ba96d32bf0e4fdd9a9a1592529029e3e7a150592a4e8a661
+2026-11-05T11:17:46.511Z  Copying config sha256:e20b015b4c23270cdd4b015f172bb4a8be06c84a7999789f6f5378df4243aabe
+2026-11-05T11:17:47.013Z  Writing manifest to image destination
+2026-11-05T11:17:47.197Z  ✓ pushed sha256:4ed6189c900e… in 3.5s
+2026-11-05T11:17:47.197Z  ▲ container  Image reference vcr.vercel.com/rohiths-projects-5e14931b/dataguard/dockerfile@sha256:4ed6189c900e9aac0dd9c283c877f113c50011b06b31cd1bf3eeaea6156ba051
+2026-11-05T11:17:47.221Z  Build Completed in /vercel/output [1m]
+2026-11-05T11:17:47.262Z  Deploying outputs...
+2026-11-05T11:17:53.147Z  Deployment completed
+2026-11-05T11:17:53.151Z  Creating build cache...
+2026-11-05T11:17:53.238Z  Skipping cache upload because no files were prepared
+{
+  "status": "ok",
+  "deployment": {
+    "id": "dpl_7FkLFT25KfNQ6B1A6pXbzTXC2Umi",
+    "url": "https://dataguard-bpsfb3e2e-rohiths-projects-5e14931b.vercel.app",
+    "inspectorUrl": "https://vercel.com/rohiths-projects-5e14931b/dataguard/7FkLFT25KfNQ6B1A6pXbzTXC2Umi",
+    "readyState": "READY",
+    "target": "production",
+    "deploymentApiUrl": "https://api.vercel.com/v13/deployments/dpl_7FkLFT25KfNQ6B1A6pXbzTXC2Umi"
+  },
+  "message": "Deployment dataguard-bpsfb3e2e-rohiths-projects-5e14931b.vercel.app ready.",
+  "next": [
+    {
+      "command": "vercel inspect dataguard-bpsfb3e2e-rohiths-projects-5e14931b.vercel.app --scope rohiths-projects-5e14931b",
+      "when": "Inspect deployment"
+    },
+    {
+      "command": "vercel deploy --prod --scope rohiths-projects-5e14931b",
+      "when": "Promote to production"
+    }
+  ]
+}
