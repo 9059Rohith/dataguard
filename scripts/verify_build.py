@@ -40,9 +40,12 @@ def parse_junit(path: Path) -> dict:
     skips = [case.find("skipped") for case in cases if case.find("skipped") is not None]
     if not cases or failures or errors:
         raise ValueError("JUnit must contain tests and no failures or errors")
+    passed = len(cases) - len(skips)
+    if passed == 0:
+        raise ValueError("JUnit must contain at least one passing test")
     return {
         "total": len(cases),
-        "passed": len(cases) - len(skips),
+        "passed": passed,
         "failures": failures,
         "errors": errors,
         "skipped": len(skips),

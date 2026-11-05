@@ -34,6 +34,18 @@ def test_failed_or_empty_junit_cannot_be_a_passing_receipt(tmp_path, case):
         parse_junit(report)
 
 
+def test_all_skipped_junit_cannot_be_a_passing_receipt(tmp_path):
+    report = tmp_path / "junit.xml"
+    report.write_text(
+        '<testsuites><testsuite><testcase name="optional">'
+        '<skipped message="PostgreSQL not configured" />'
+        "</testcase></testsuite></testsuites>",
+        encoding="utf-8",
+    )
+    with pytest.raises(ValueError, match="passing test"):
+        parse_junit(report)
+
+
 def test_failed_command_removes_stale_receipt_and_stops_gate(tmp_path):
     receipt = tmp_path / "receipt.json"
     receipt.write_text('{"status":"passed"}')
