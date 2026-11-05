@@ -1,5 +1,30 @@
 # Interview discussion guide
 
+## Current interview demonstration
+
+Distinguish the settlement publication engine from the public GitHub quality
+workspace. They share reliability themes, but the public records are actual
+repository metadata, not a bank's settlement feed.
+
+Open [quality checks](https://rohith-dataguard.vercel.app/console/checks). Replay
+the retained 500-repository benchmark under baseline and strict policies. Show
+the recorded 96/500 and 177/500 rule failures, the actual repository witnesses,
+and the source checksum. Explain why different contract policies can publish or
+quarantine the same source records without modifying those records.
+
+Checks attached to a retained capture were evaluated at their recorded time.
+A past freshness pass is not evidence that the dataset is fresh today. Separate
+live database readiness, immutable source provenance and policy evaluation.
+
+For Data Engineering, explain transaction boundaries, publication head pointers,
+version comparison SQL and why rejected data cannot replace the last valid
+dataset. For DevOps, use the [actual Prometheus drill](prometheus-alert-drill.md)
+and [cold-start recovery](readiness-cold-start.md): distinguish a healthy HTTP
+listener from a ready database, and describe the alert hold/evaluation intervals.
+Those are local fault experiments, not production outage or AWS failover results.
+
+## Engineering questions
+
 **What is the business failure you prevent?** A malformed export or duplicate delivery can replace a reconciled settlement view with partial or incorrect data. A batch is staged immutably, validated across tables, then published atomically. Invalid input is isolated while the last valid partition remains available.
 
 **How is this different from catching an exception and retrying?** The failure may occur after some rows were inserted. The transaction rolls those rows back, while the separately committed attempt/lease records that work was in flight. Recovery retries exact staged bytes after lease expiration and verifies a fencing identity. The demo kills a real process after row insertion and checks both publication preservation and row uniqueness.

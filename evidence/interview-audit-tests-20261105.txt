@@ -1,0 +1,8 @@
+.............................s.......................................... [ 34%]
+........................................................................ [ 68%]
+..................................................................       [100%]
+============================= slowest 3 durations =============================
+4.71s call     tests/test_policy_api.py::test_cli_checks_operator_token_and_executes_same_readonly_report
+4.42s call     tests/test_cli.py::test_demo_proves_actual_killed_worker_recovery
+2.94s call     tests/test_policy_api.py::test_controlled_cli_does_not_construct_or_connect_the_operator_database
+209 passed, 1 skipped in 67.33s (0:01:07)

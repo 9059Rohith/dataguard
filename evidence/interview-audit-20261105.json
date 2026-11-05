@@ -1,0 +1,229 @@
+{
+  "project": "dataguard",
+  "verified_at": "2026-11-05T09:54:29.326744+00:00",
+  "evidence_base": "https://github.com/9059Rohith/dataguard/blob/main/evidence/",
+  "test_profiles": {
+    "tests": {
+      "cases": 210,
+      "passed": 209,
+      "skipped": 1,
+      "failed": 0,
+      "errors": 0
+    },
+    "postgres": {
+      "cases": 35,
+      "passed": 35,
+      "skipped": 0,
+      "failed": 0,
+      "errors": 0
+    }
+  },
+  "profiles_overlap": true,
+  "unique_test_cases": 210,
+  "unique_cases_passed": 210,
+  "remaining_skips": {},
+  "runtime_dependency_audit": {
+    "dependencies_checked": 19,
+    "known_vulnerabilities": 0,
+    "scope": "Pinned runtime graph only; not a new remote-container scan"
+  },
+  "live_api": {
+    "project": "dataguard",
+    "checks": [
+      {
+        "url": "https://rohith-dataguard.vercel.app/ready",
+        "method": "GET",
+        "expected_status": 200,
+        "status": 200,
+        "elapsed_ms": 4891.0,
+        "passed": true,
+        "body_sha256": "31bf75f4c0a97cc1f7b60df824fa390b3be9ba014f29b63c87c698ba63d9a9fd"
+      },
+      {
+        "url": "https://rohith-dataguard.vercel.app/api/quality/workspace",
+        "method": "GET",
+        "expected_status": 200,
+        "status": 200,
+        "elapsed_ms": 828.0,
+        "passed": true,
+        "body_sha256": "55e463ea78b7b791577738c73b7a71c85cd43ce0f8177e1a0c5b3d7ac84f0086"
+      },
+      {
+        "url": "https://rohith-dataguard.vercel.app/api/quality/benchmark?policy=strict",
+        "method": "GET",
+        "expected_status": 200,
+        "status": 200,
+        "elapsed_ms": 797.0,
+        "passed": true,
+        "body_sha256": "df80bc3d554c1c0ba28b4b751799d567118e79ec81215eb227059b609b6a89d5"
+      },
+      {
+        "url": "https://rohith-dataguard.vercel.app/recover",
+        "method": "POST",
+        "expected_status": 401,
+        "status": 401,
+        "elapsed_ms": 500.0,
+        "passed": true,
+        "body_sha256": "d2ba41b2fe9844fc50bd6b01ebabc42a63efd015a7e094da1118683f90c5017d"
+      }
+    ],
+    "passed": true
+  },
+  "live_browser": {
+    "file_written_at": "2026-11-05T09:51:22.130969+00:00",
+    "checks": [
+      {
+        "width": 390,
+        "verified": "500-repository baseline published and strict replay showed both expected counts",
+        "errors": [],
+        "consoleErrors": [],
+        "expectedProviderErrors": [],
+        "providerFailures": [],
+        "title": "Quality checks \u2014 DataGuard",
+        "url": "https://rohith-dataguard.vercel.app/console/checks",
+        "screenshot": "interview-audit-390-20261105.png",
+        "browser": "Chromium 1248",
+        "browserPlugin": "Browser plugin not available"
+      },
+      {
+        "width": 1440,
+        "verified": "500-repository baseline published and strict replay showed both expected counts",
+        "errors": [],
+        "consoleErrors": [],
+        "expectedProviderErrors": [],
+        "providerFailures": [],
+        "title": "Quality checks \u2014 DataGuard",
+        "url": "https://rohith-dataguard.vercel.app/console/checks",
+        "screenshot": "interview-audit-1440-20261105.png",
+        "browser": "Chromium 1248",
+        "browserPlugin": "Browser plugin not available"
+      }
+    ]
+  },
+  "live_ai": {
+    "checked_at": "2026-11-05T09:51:03.371637+00:00",
+    "check": {
+      "name": "dataguard",
+      "url": "https://rohith-dataguard.vercel.app/api/quality/public-investigate",
+      "status": 200,
+      "elapsed_ms": 3828.0,
+      "question": "Inspect the retained repository quality evidence and explain one failed check with its source.",
+      "response_sha256": "b12f2f8cf6be6c3129d4d4f3884b3667fdd667572361540693ea19d9734fc2c5",
+      "response": {
+        "answer": "Based on the retained repository quality evidence, all checks across the available captures (`71623033-6147-4fa0-a5b6-2d0019ca5f7a` and `github-6aff80ef4224c08b68054c4f`) successfully passed with zero failures (`\"failed\": 0` for all check keys: `volume`, `schema`, `uniqueness`, `counters`, `timestamps`, and `freshness`). \n\nTherefore, there is currently **no failed check** to inspect in the stored quality evidence.",
+        "provider": "Google Gemini",
+        "model": "gemini-3.5-flash-lite",
+        "public_data_only": true,
+        "provider_requests": 3,
+        "created_at": "2026-11-05T09:50:55.224618+00:00",
+        "trace": [
+          {
+            "tool": "list_captures",
+            "arguments": {},
+            "result": [
+              {
+                "id": "71623033-6147-4fa0-a5b6-2d0019ca5f7a",
+                "name": "GitHub \u00b7 Python dependency ecosystem",
+                "source": "https://api.github.com/repos/{owner}/{repo}",
+                "visibility": "public",
+                "captured_at": "2026-11-01T18:16:18.944038+00:00",
+                "digest": "54d89c05d727cef779eaf4148dd570d2fb21a3f3714cefab86621d44fdf71bd0",
+                "row_count": 8,
+                "status": "published"
+              },
+              {
+                "id": "github-6aff80ef4224c08b68054c4f",
+                "name": "GitHub \u00b7 Python dependency ecosystem",
+                "source": "https://api.github.com/repos/{owner}/{repo}",
+                "visibility": "public",
+                "captured_at": "2026-11-01T18:03:26.631312+00:00",
+                "digest": "4b0ef1068f5dd661382c1614477aedcb4f874fb5a7fc7e9211e17a03d42ad6f8",
+                "row_count": 8,
+                "status": "published"
+              }
+            ]
+          },
+          {
+            "tool": "inspect_capture",
+            "arguments": {
+              "capture_id": "71623033-6147-4fa0-a5b6-2d0019ca5f7a"
+            },
+            "result": {
+              "id": "71623033-6147-4fa0-a5b6-2d0019ca5f7a",
+              "name": "GitHub \u00b7 Python dependency ecosystem",
+              "source": "https://api.github.com/repos/{owner}/{repo}",
+              "visibility": "public",
+              "captured_at": "2026-11-01T18:16:18.944038+00:00",
+              "digest": "54d89c05d727cef779eaf4148dd570d2fb21a3f3714cefab86621d44fdf71bd0",
+              "row_count": 8,
+              "status": "published"
+            }
+          }
+        ],
+        "public_demo": true,
+        "quota": {
+          "remaining": {
+            "global_day": 26,
+            "global_minute": 1,
+            "per_client": 2
+          },
+          "resets_in_seconds": {
+            "global_day": 50948,
+            "global_minute": 8,
+            "per_client": 548
+          },
+          "limits": {
+            "per_client": {
+              "limit": 3,
+              "seconds": 600
+            },
+            "global_minute": {
+              "limit": 2,
+              "seconds": 60
+            },
+            "global_day": {
+              "limit": 30,
+              "seconds": 86400
+            }
+          },
+          "policy": "Fixed UTC windows. A reserved investigation counts even if its provider request fails."
+        },
+        "evidence_notice": "Trace summaries identify the actual public evidence read. Full records remain available in Datasets."
+      },
+      "passed": true
+    }
+  },
+  "deployment": {
+    "id": "dpl_13GD2XUkX95g1tLUMEkpWk6UwzUy",
+    "runtime_commit": "38a0654ffe18",
+    "changed": true
+  },
+  "limits": [
+    "No percentile rank is established",
+    "No AWS apply or successful hosted CI run is established",
+    "PostgreSQL-focused data paths were tested before the later AI-only transport changes; those data implementations did not change"
+  ],
+  "initial_live_ai_failure": {
+    "checked_at": "2026-11-05T09:29:22.902981+00:00",
+    "check": {
+      "name": "dataguard",
+      "url": "https://rohith-dataguard.vercel.app/api/quality/public-investigate",
+      "status": 502,
+      "elapsed_ms": 20969.0,
+      "question": "Inspect the retained repository quality evidence and explain one failed check with its source.",
+      "response_sha256": "3ecce37df189824f57e691936b797ccb2f363f210a35626f2cc012cab3af96ad",
+      "response": {
+        "detail": "AI provider request failed. No data was changed."
+      },
+      "passed": false
+    },
+    "exact_underlying_cause": "Unconfirmed; prior generic handlers did not retain upstream status/exception"
+  },
+  "harness_correction": "Initial PostgreSQL harness database lacked required _test suffix and was safely refused. Corrected isolated database naming; 35 targeted tests passed.",
+  "workflow_hardening": {
+    "status": "prepared_not_applied",
+    "reason": "GitHub rejected workflow file updates because the connected OAuth app lacks workflow scope",
+    "patch": "docs/workflow-hardening.patch",
+    "local_backup_branch": "codex/openfx-workflow-hardening-20261105"
+  }
+}
